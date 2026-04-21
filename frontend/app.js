@@ -15,34 +15,46 @@ const api = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer ' + localStorage.getItem('token')
   }),
-  post: async (path, body, auth = true) => {
-    const opts = {
-      method: 'POST',
-      headers: auth ? api.getHeaders() : { 'Content-Type': 'application/json' }
-    };
-    if (body) opts.body = JSON.stringify(body);
-    const res = await fetch(API_URL + path, opts);
-    if (res.status === 402) { showPaywall(); return { error: 'PAYWALL' }; }
-    if (!res.ok && res.status !== 400 && res.status !== 401 && res.status !== 403 && res.status !== 404) {
-      console.error('API Error:', res.status);
-      throw new Error('HTTP ' + res.status);
+  handleResponse: async (res) => {
+    if (res.status === 402) { showPaywall(); return { error: 'Assinatura necessária.' }; }
+    if (res.status === 429) return { error: 'Muitas tentativas. Aguarde alguns minutos.' };
+    
+    const data = await res.json();
+    if (!res.ok) {
+      return { error: data.error || 'Erro inesperado no servidor.' };
     }
-    return res.json();
+    return data;
+  },
+  post: async (path, body, auth = true) => {
+    try {
+      const opts = {
+        method: 'POST',
+        headers: auth ? api.getHeaders() : { 'Content-Type': 'application/json' }
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(API_URL + path, opts);
+      return await api.handleResponse(res);
+    } catch (e) {
+      return { error: 'OFFLINE' };
+    }
   },
   put: async (path, body) => {
-    const res = await fetch(API_URL + path, { method: 'PUT', headers: api.getHeaders(), body: JSON.stringify(body) });
-    if (res.status === 402) { showPaywall(); return { error: 'PAYWALL' }; }
-    return res.json();
+    try {
+      const res = await fetch(API_URL + path, { method: 'PUT', headers: api.getHeaders(), body: JSON.stringify(body) });
+      return await api.handleResponse(res);
+    } catch (e) { return { error: 'OFFLINE' }; }
   },
   del: async (path) => {
-    const res = await fetch(API_URL + path, { method: 'DELETE', headers: api.getHeaders() });
-    if (res.status === 402) { showPaywall(); return { error: 'PAYWALL' }; }
-    return res.json();
+    try {
+      const res = await fetch(API_URL + path, { method: 'DELETE', headers: api.getHeaders() });
+      return await api.handleResponse(res);
+    } catch (e) { return { error: 'OFFLINE' }; }
   },
   get: async (path, auth = true) => {
-    const res = await fetch(API_URL + path, { headers: auth ? api.getHeaders() : {} });
-    if (res.status === 402) { showPaywall(); return { error: 'PAYWALL' }; }
-    return res.json();
+    try {
+      const res = await fetch(API_URL + path, { headers: auth ? api.getHeaders() : {} });
+      return await api.handleResponse(res);
+    } catch (e) { return { error: 'OFFLINE' }; }
   }
 };
 
@@ -96,36 +108,32 @@ function closeModal(id) { $id(id).classList.remove('open'); }
 
 // ===================== INIT =====================
 window.onload = async () => {
-  // 1. Prioridade Total: Se houver shopId na URL, o usuário quer VER a barbearia (Modo Cliente)
+  // 1. Prioridade Total: Se houver shopId na URL
   if (shopId) {
-    try {
-      const data = await api.get('/public/shop/' + shopId, false);
-      if (data && data.services) {
-        if (data.shopId) shopId = data.shopId; // Atualiza pro UUID correto
-        state.services  = data.services;
-        state.barbers   = data.barbers;
-        state.discounts = data.discounts;
-        state.hours     = data.hours || state.hours;
-        const nameEl = document.querySelector('.booking-shop-name');
-        if (nameEl) nameEl.innerHTML = sanitize(data.shopName);
-      }
-    } catch (e) { /* backend offline — usa dados padrão */ }
+    const data = await api.get('/public/shop/' + shopId, false);
+    if (data && !data.error) {
+      if (data.shopId) shopId = data.shopId;
+      state.services  = data.services;
+      state.barbers   = data.barbers;
+      state.discounts = data.discounts;
+      state.hours     = data.hours || state.hours;
+      const nameEl = document.querySelector('.booking-shop-name');
+      if (nameEl) nameEl.innerHTML = sanitize(data.shopName);
+    }
     goTo('booking');
-    return; // Interrompe aqui para não desviar para o Admin
+    return;
   }
 
-  // 2. Se não for link de cliente, verifica se o usuário é o Dono (Login automático)
+  // 2. Login automático
   const token = localStorage.getItem('token');
   if (token) {
-    try {
-      const data = await api.get('/admin/data');
-      if (data && data.services) {
-        applyAdminData(data);
-        updateSidebarUser(data.shopName);
-        goTo('admin');
-        return;
-      }
-    } catch (e) {
+    const data = await api.get('/admin/data');
+    if (data && !data.error) {
+      applyAdminData(data);
+      updateSidebarUser(data.shopName);
+      goTo('admin');
+      return;
+    } else {
       localStorage.removeItem('token');
     }
   }
@@ -298,19 +306,26 @@ async function doLogin() {
   const btn      = document.querySelector('#login-tab .btn-full');
   if (!email || !password) { showToast('⚠️ Preencha e-mail e senha'); return; }
   setButtonLoading(btn, true, 'Entrar no Dashboard');
-  try {
-    const res = await api.post('/auth/login', { email, password }, false);
-    if (res.error) { showToast('❌ ' + res.error); return; }
-    localStorage.setItem('token', res.token);
-    const data = await api.get('/admin/data');
-    applyAdminData(data);
-    updateSidebarUser(data.shopName);
-    goTo('admin');
-  } catch (e) {
-    showToast('❌ Backend offline ou inacessível');
-  } finally {
+  
+  const res = await api.post('/auth/login', { email, password }, false);
+  if (res.error) {
+    showToast(res.error === 'OFFLINE' ? '❌ Backend offline ou inacessível' : '❌ ' + res.error);
     setButtonLoading(btn, false, 'Entrar no Dashboard');
+    return;
   }
+  
+  localStorage.setItem('token', res.token);
+  const data = await api.get('/admin/data');
+  if (data.error) {
+    showToast('❌ Erro ao carregar dados do painel.');
+    setButtonLoading(btn, false, 'Entrar no Dashboard');
+    return;
+  }
+  
+  applyAdminData(data);
+  updateSidebarUser(data.shopName);
+  goTo('admin');
+  setButtonLoading(btn, false, 'Entrar no Dashboard');
 }
 
 async function doRegister() {
@@ -320,22 +335,24 @@ async function doRegister() {
   const btn      = document.querySelector('#register-tab .btn-full');
   if (!name || !email || !password) { showToast('⚠️ Preencha todos os campos'); return; }
   setButtonLoading(btn, true, 'Criar conta grátis →');
-  try {
-    const res = await api.post('/auth/register', { name, email, password }, false);
-    if (res.error) { showToast('❌ ' + res.error); return; }
-    localStorage.setItem('token', res.token);
-    const data = await api.get('/admin/data');
+  
+  const res = await api.post('/auth/register', { name, email, password }, false);
+  if (res.error) {
+    showToast(res.error === 'OFFLINE' ? '❌ Backend offline ou inacessível' : '❌ ' + res.error);
+    setButtonLoading(btn, false, 'Criar conta grátis →');
+    return;
+  }
+  
+  localStorage.setItem('token', res.token);
+  const data = await api.get('/admin/data');
+  if (!data.error) {
     applyAdminData(data);
     updateSidebarUser(data.shopName || name);
     goTo('admin');
     showToast('✅ Conta criada! Bem-vindo!');
-    // Dispara o wizard de onboarding para novos barbeiros
     setTimeout(function() { maybeShowOnboarding(data); }, 400);
-  } catch (e) {
-    showToast('❌ Backend offline ou inacessível');
-  } finally {
-    setButtonLoading(btn, false, 'Criar conta grátis →');
   }
+  setButtonLoading(btn, false, 'Criar conta grátis →');
 }
 
 function updateSidebarUser(name) {

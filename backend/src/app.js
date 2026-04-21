@@ -41,7 +41,7 @@ app.use(express.static(frontendPath));
 
 // API Routes
 const rateLimit = require('express-rate-limit');
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: { error: 'Muitas tentativas de login/registro. Tente novamente em 15 minutos.' } });
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 50, message: { error: 'Muitas tentativas. Tente novamente em 15 minutos.' } });
 // Rota de diagnóstico para Vercel
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
