@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) throw new Error('❌ FATAL: JWT_SECRET não está definido nas variáveis de ambiente!');
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-for-dev-only';
+if (!process.env.JWT_SECRET) console.error('⚠️ AVISO: JWT_SECRET não está definido! O login não será seguro.');
 
 function authenticate(req, res, next) {
   const authHeader = req.headers['authorization'];
