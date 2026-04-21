@@ -603,8 +603,16 @@ async function confirmBooking() {
     '<div class="summary-row total"><span class="label">💰 Total</span><span class="value">R$' + finalPrice + '</span></div>';
 
   try {
+    // Identifica o shopId (prioriza o da URL, senão o do estado se logado)
+    const activeShopId = shopId || state.shopId;
+    if (!activeShopId) {
+      showToast('❌ Erro: Link da barbearia inválido. Use seu link oficial.');
+      setButtonLoading(confirmBtn, false, '✔ Confirmar Agendamento');
+      return;
+    }
+
     const res = await api.post('/public/appointments', {
-      shopId,
+      shopId:        activeShopId,
       clientName:    name,
       clientPhone:   phone,
       serviceNames:  svcNames,

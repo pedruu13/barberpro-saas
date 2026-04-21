@@ -40,9 +40,11 @@ exports.createAppointment = async (req, res) => {
   try {
     const { shopId, clientName, clientPhone, serviceNames, barberName, date, time, paymentMethod, price } = req.body;
 
-    if (!shopId || !clientName || !serviceNames || !barberName || !date || !time) {
-      return res.status(400).json({ error: 'Dados obrigatórios ausentes.' });
-    }
+    if (!shopId) return res.status(400).json({ error: 'ID da barbearia não identificado.' });
+    if (!clientName) return res.status(400).json({ error: 'Nome do cliente é obrigatório.' });
+    if (!serviceNames) return res.status(400).json({ error: 'Selecione ao menos um serviço.' });
+    if (!barberName) return res.status(400).json({ error: 'Selecione um barbeiro.' });
+    if (!date || !time) return res.status(400).json({ error: 'Data e horário são obrigatórios.' });
 
     // ─── Validação de conflito de horário no backend ──────────────────────────
     const conflict = await prisma.appointment.findFirst({
