@@ -23,8 +23,9 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Permite requisições sem origin (Postman), origens na lista, ou file:// ("null")
-    if (!origin || origin === 'null' || allowedOrigins.includes(origin)) return callback(null, true);
+    // Permite: sem origin (Postman), domínios permitidos, localhost ou qualquer subdomínio .vercel.app
+    const isVercel = origin && origin.endsWith('.vercel.app');
+    if (!origin || origin === 'null' || allowedOrigins.includes(origin) || isVercel) return callback(null, true);
     callback(new Error('CORS: origem não permitida — ' + origin));
   },
   credentials: true
