@@ -96,22 +96,7 @@ function closeModal(id) { $id(id).classList.remove('open'); }
 
 // ===================== INIT =====================
 window.onload = async () => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    try {
-      const data = await api.get('/admin/data');
-      if (data && data.services) {
-        applyAdminData(data);
-        goTo('admin');
-        return;
-      }
-    } catch (e) {
-      // token inválido ou backend offline — continua para landing/booking
-      localStorage.removeItem('token');
-    }
-  }
-
-  // Modo booking: carrega dados públicos da barbearia se houver shopId na URL
+  // 1. Prioridade Total: Se houver shopId na URL, o usuário quer VER a barbearia (Modo Cliente)
   if (shopId) {
     try {
       const data = await api.get('/public/shop/' + shopId, false);
@@ -126,9 +111,27 @@ window.onload = async () => {
       }
     } catch (e) { /* backend offline — usa dados padrão */ }
     goTo('booking');
-  } else {
-    goTo('landing');
+    return; // Interrompe aqui para não desviar para o Admin
   }
+
+  // 2. Se não for link de cliente, verifica se o usuário é o Dono (Login automático)
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const data = await api.get('/admin/data');
+      if (data && data.services) {
+        applyAdminData(data);
+        updateSidebarUser(data.shopName);
+        goTo('admin');
+        return;
+      }
+    } catch (e) {
+      localStorage.removeItem('token');
+    }
+  }
+
+  // 3. Caso contrário, mostra a Landing Page
+  goTo('landing');
 };
 
 function applyAdminData(data) {
