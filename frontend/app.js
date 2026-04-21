@@ -255,12 +255,24 @@ function closeMobileNav() {
 }
 
 function goTo(screen) {
-  closeMobileNav(); // fecha dropdown mobile ao navegar
+  closeMobileNav();
+  
+  // Se estiver tentando ir para o agendamento mas não houver link de barbearia, 
+  // tenta usar a do usuário logado se disponível.
+  if (screen === 'booking' && !shopId && state.shopId) {
+    shopId = state.shopId;
+  }
+
   document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
   $id(screen).classList.add('active');
+  
+  // Se ainda estiver sem shopId ao entrar no booking, avisa o usuário (UX)
+  if (screen === 'booking' && !shopId) {
+    showToast('💡 Crie sua conta para ter seu próprio link de agendamento!');
+    // Renderiza com serviços padrão apenas para demonstração visual
+  }
+
   $id('main-nav').style.display = (screen === 'admin') ? 'none' : '';
-  var mobileDropdown = $id('nav-mobile-dropdown');
-  if (mobileDropdown) mobileDropdown.style.display = (screen === 'admin') ? 'none' : '';
   if (screen === 'booking') renderBooking();
   if (screen === 'admin')   { renderAdmin(); closeSidebar(); }
 }
