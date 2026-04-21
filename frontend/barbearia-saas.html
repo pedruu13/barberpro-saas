@@ -410,9 +410,10 @@
 
       <!-- Bottom -->
       <div class="sidebar-bottom">
+        <button class="btn-full btn-sm-gold" onclick="openPublicPage()" style="margin-bottom:12px; font-weight: 600;">👁️ Ver Agenda Pública</button>
         <div class="sidebar-link-row">
           <span>🔗</span>
-          <a href="#" title="Link da sua barbearia">app.com/barbearia-do-joao</a>
+          <a href="#" id="sidebar-shop-link" target="_blank" title="Link da sua barbearia">Carregando link...</a>
         </div>
         <button class="sidebar-exit-btn" onclick="logout()">🚪 Sair do Admin</button>
       </div>
@@ -469,6 +470,20 @@
               <div class="stat-card-delta"><span class="badge green" style="padding:2px 6px;margin-right:6px">▲ 6%</span>com lembretes</div>
             </div>
           </div>
+          
+          <!-- Card de Link Direto -->
+          <div class="section-card" style="margin-bottom:32px; border: 1px solid var(--gold); background: rgba(212,175,55,0.05)">
+            <div style="padding: 24px; text-align: center;">
+              <h3 style="font-family:'Cormorant Garamond',serif; font-size: 24px; margin-bottom: 8px;">🚀 Seu agendamento online está ativo!</h3>
+              <p style="color: var(--white-dim); margin-bottom: 20px;">Use o link abaixo para divulgar no seu Instagram e WhatsApp:</p>
+              <div style="display: flex; gap: 10px; background: var(--bg-elevated); padding: 12px; border-radius: 8px; border: 1px solid var(--black-border); justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <code id="dash-public-link" style="color: var(--gold); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">carregando...</code>
+                <button class="btn-sm btn-sm-ghost" onclick="copyPublicLink()">Copiar</button>
+              </div>
+              <button class="btn-sm btn-sm-gold" style="padding: 12px 32px;" onclick="openPublicPage()">Abrir minha Página de Agendamento ↗</button>
+            </div>
+          </div>
+
           <div class="dashboard-grid">
             <div class="section-card">
               <div class="section-card-header"><span>📅 Agenda de Hoje — <span id="today-date"></span></span><span

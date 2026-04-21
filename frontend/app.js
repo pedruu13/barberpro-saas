@@ -139,9 +139,46 @@ function applyAdminData(data) {
   state.barbers      = data.barbers      || [];
   state.discounts    = data.discounts    || [];
   state.appointments = (data.appointments || []).map(normalizeAppt);
-  // Só atualiza hours se a API retornou algum dado (protége os defaults locais)
   if (data.hours && data.hours.length > 0) state.hours = data.hours;
   state.shopName     = data.shopName     || '';
+  state.shopId       = data.shopId;
+  state.shopSlug     = data.shopSlug;
+
+  // Atualiza os links de visualização pública
+  const pubLink = getPublicLink(data.shopId);
+  const dashLinkEl = document.getElementById('dash-public-link');
+  if (dashLinkEl) dashLinkEl.innerText = pubLink;
+
+  const sidebarLink = document.getElementById('sidebar-shop-link');
+  if (sidebarLink) {
+    sidebarLink.href = pubLink;
+    sidebarLink.innerText = pubLink.replace(/^https?:\/\//, '');
+  }
+
+  renderAdminAppointments(data.appointments);
+  renderAdminServices(data.services);
+}
+
+function getPublicLink(sid) {
+  const currentPath = window.location.pathname;
+  const baseUrl = window.location.origin + currentPath;
+  return baseUrl + '?shop=' + sid;
+}
+
+function openPublicPage() {
+  const link = getPublicLink(state.shopId);
+  window.open(link, '_blank');
+}
+
+function copyPublicLink() {
+  const link = getPublicLink(state.shopId);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => {
+      showToast('📋 Link copiado com sucesso!');
+    });
+  } else {
+    showToast('Link: ' + link);
+  }
 }
 
 // ===================== STATE =====================
