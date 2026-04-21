@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Shop {
+  id              String    @id @default(uuid())
+  slug            String?   @unique
+  name            String
+  email           String    @unique
+  password        String
+  mpAccessToken   String?
+  plan            String    @default("trial")
+  planStatus      String    @default("active")
+  trialEndsAt     DateTime?
+  planPaidUntil   DateTime?
+  zapiInstance    String?
+  zapiToken       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  services        Service[]
+  barbers         Barber[]
+  discounts       Discount[]
+  appointments    Appointment[]
+  hours           Hours[]
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  shopId      String
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  name        String
+  price       Float
+  duration    Int
+  desc        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Barber {
+  id          String   @id @default(uuid())
+  shopId      String
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  name        String
+  role        String
+  emoji       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Discount {
+  id          String   @id @default(uuid())
+  shopId      String
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  code        String
+  type        String   // "percent" or "fixed"
+  value       Float
+  active      Boolean  @default(true)
+  desc        String
+  uses        Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Appointment {
+  id             String   @id @default(uuid())
+  shopId         String
+  shop           Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  clientName     String
+  clientPhone    String
+  serviceNames   String
+  barberName     String
+  date           String   // Storing as YYYY-MM-DD string for simplicity like MVP
+  time           String   // HH:MM
+  status         String   // pending, confirmed, completed, no-show
+  paymentStatus  String   // pendente, pago, cancelado
+  paymentMethod  String   // "Na barbearia", "Pix Antecipado", "Cartão de Crédito"
+  price          Float
+
+  // To track external payments
+  externalPaymentId String?
+
+  archived       Boolean  @default(false)
+  reminded       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Hours {
+  id        String   @id @default(uuid())
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  day       String   // "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"
+  open      Boolean  @default(true)
+  start     String   @default("08:00") // "HH:MM"
+  end       String   @default("20:00") // "HH:MM"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([shopId, day])
+}

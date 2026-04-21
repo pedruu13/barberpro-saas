@@ -1,0 +1,23 @@
+{
+  "name": "BarberPro",
+  "short_name": "BarberPro",
+  "start_url": "barbearia-saas.html",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#c8a97e",
+  "description": "Sistema completo para Barbearias com agendamento auto-suficiente",
+  "icons": [
+    {
+      "src": "https://i.imgur.com/r9ScdxI.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.imgur.com/r9ScdxI.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

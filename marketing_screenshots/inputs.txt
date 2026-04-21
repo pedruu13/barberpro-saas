@@ -1,0 +1,13 @@
+file 'REELS_01_HOOK.png'
+duration 2
+file 'REELS_02_SOLUTION.png'
+duration 2.5
+file 'REELS_03_FEATURE1.png'
+duration 2
+file 'REELS_04_FEATURE2.png'
+duration 2
+file 'REELS_05_FEATURE3.png'
+duration 2
+file 'REELS_06_CTA.png'
+duration 3.5
+file 'REELS_06_CTA.png'
