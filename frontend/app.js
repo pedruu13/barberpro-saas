@@ -163,8 +163,8 @@ function applyAdminData(data) {
     sidebarLink.innerText = pubLink.replace(/^https?:\/\//, '');
   }
 
-  renderAdminAppointments(data.appointments);
-  renderAdminServices(data.services);
+  renderAdminAppts(); // Nome correto: renderAdminAppts (sem parâmetros, usa o state)
+  renderAdminServicesList(); // Nome correto: renderAdminServicesList
 }
 
 function getPublicLink(sid) {
@@ -307,25 +307,29 @@ async function doLogin() {
   if (!email || !password) { showToast('⚠️ Preencha e-mail e senha'); return; }
   setButtonLoading(btn, true, 'Entrar no Dashboard');
   
-  const res = await api.post('/auth/login', { email, password }, false);
-  if (res.error) {
-    showToast(res.error === 'OFFLINE' ? '❌ Backend offline ou inacessível' : '❌ ' + res.error);
+  try {
+    const res = await api.post('/auth/login', { email, password }, false);
+    if (res.error) {
+      showToast(res.error === 'OFFLINE' ? '❌ Backend offline ou inacessível' : '❌ ' + res.error);
+      return;
+    }
+    
+    localStorage.setItem('token', res.token);
+    const data = await api.get('/admin/data');
+    if (data.error) {
+      showToast('❌ Erro ao carregar dados do painel.');
+      return;
+    }
+    
+    applyAdminData(data);
+    updateSidebarUser(data.shopName);
+    goTo('admin');
+  } catch (e) {
+    showToast('❌ Erro inesperado ao tentar logar.');
+    console.error(e);
+  } finally {
     setButtonLoading(btn, false, 'Entrar no Dashboard');
-    return;
   }
-  
-  localStorage.setItem('token', res.token);
-  const data = await api.get('/admin/data');
-  if (data.error) {
-    showToast('❌ Erro ao carregar dados do painel.');
-    setButtonLoading(btn, false, 'Entrar no Dashboard');
-    return;
-  }
-  
-  applyAdminData(data);
-  updateSidebarUser(data.shopName);
-  goTo('admin');
-  setButtonLoading(btn, false, 'Entrar no Dashboard');
 }
 
 async function doRegister() {
@@ -336,23 +340,30 @@ async function doRegister() {
   if (!name || !email || !password) { showToast('⚠️ Preencha todos os campos'); return; }
   setButtonLoading(btn, true, 'Criar conta grátis →');
   
-  const res = await api.post('/auth/register', { name, email, password }, false);
-  if (res.error) {
-    showToast(res.error === 'OFFLINE' ? '❌ Backend offline ou inacessível' : '❌ ' + res.error);
+  try {
+    const res = await api.post('/auth/register', { name, email, password }, false);
+    if (res.error) {
+      showToast(res.error === 'OFFLINE' ? '❌ Backend offline ou inacessível' : '❌ ' + res.error);
+      return;
+    }
+    
+    localStorage.setItem('token', res.token);
+    const data = await api.get('/admin/data');
+    if (!data.error) {
+      applyAdminData(data);
+      updateSidebarUser(data.shopName || name);
+      goTo('admin');
+      showToast('✅ Conta criada! Bem-vindo!');
+      setTimeout(function() { maybeShowOnboarding(data); }, 400);
+    } else {
+      showToast('❌ Erro ao carregar dados após registro.');
+    }
+  } catch (e) {
+    showToast('❌ Erro inesperado ao tentar criar conta.');
+    console.error(e);
+  } finally {
     setButtonLoading(btn, false, 'Criar conta grátis →');
-    return;
   }
-  
-  localStorage.setItem('token', res.token);
-  const data = await api.get('/admin/data');
-  if (!data.error) {
-    applyAdminData(data);
-    updateSidebarUser(data.shopName || name);
-    goTo('admin');
-    showToast('✅ Conta criada! Bem-vindo!');
-    setTimeout(function() { maybeShowOnboarding(data); }, 400);
-  }
-  setButtonLoading(btn, false, 'Criar conta grátis →');
 }
 
 function updateSidebarUser(name) {
