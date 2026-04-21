@@ -2,7 +2,7 @@
 // Detecta automaticamente a URL da API:
 // - Se servido pelo Express (localhost:3000), usa URL relativa
 // - Se servido via file:// ou outro servidor, usa localhost:3000
-const API_URL = (window.location.protocol === 'file:' || window.location.port !== '3000')
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:3000/api'
   : '/api';
 
