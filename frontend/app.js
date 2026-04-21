@@ -24,6 +24,7 @@ const api = {
     const res = await fetch(API_URL + path, opts);
     if (res.status === 402) { showPaywall(); return { error: 'PAYWALL' }; }
     if (!res.ok && res.status !== 400 && res.status !== 401 && res.status !== 403 && res.status !== 404) {
+      console.error('API Error:', res.status);
       throw new Error('HTTP ' + res.status);
     }
     return res.json();

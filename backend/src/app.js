@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
@@ -9,6 +10,9 @@ const superadminRoutes = require('./routes/superadminRoutes');
 const { authenticate } = require('./middlewares/authMiddleware');
 
 const app = express();
+
+// Confia no proxy da Vercel para o express-rate-limit funcionar corretamente
+app.set('trust proxy', 1);
 
 // CORS — permite origens do .env + localhost:3000 (para o servidor servir o próprio frontend)
 const allowedOrigins = [
