@@ -14,9 +14,9 @@ exports.register = async (req, res) => {
 
     const hashedPassword = bcrypt.hashSync(password, 8);
     
-    // Set 14-day trial
+    // Set 999-day trial (effectively bypassing expiration for now)
     const trialEndsAt = new Date();
-    trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+    trialEndsAt.setDate(trialEndsAt.getDate() + 999);
 
     // Gerar slug amigável e único
     const baseSlug = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");

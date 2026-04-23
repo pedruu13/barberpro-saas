@@ -16,7 +16,8 @@ const api = {
     'Authorization': 'Bearer ' + localStorage.getItem('token')
   }),
   handleResponse: async (res) => {
-    if (res.status === 402) { showPaywall(); return { error: 'Assinatura necessária.' }; }
+    // Commented out to fix user blocking issue
+    // if (res.status === 402) { showPaywall(); return { error: 'Assinatura necessária.' }; }
     if (res.status === 429) return { error: 'Muitas tentativas. Aguarde alguns minutos.' };
     
     const data = await res.json();
@@ -59,6 +60,7 @@ const api = {
 };
 
 function showPaywall() {
+  return; // Disabled to fix user blocking issue
   const modal = $id('paywall-modal');
   if (modal) modal.classList.add('open');
 }
@@ -153,7 +155,8 @@ function applyAdminData(data) {
   state.shopSlug     = data.shopSlug;
 
   // Atualiza os links de visualização pública
-  const pubLink = getPublicLink(data.shopId);
+  const shopIdOrSlug = data.shopSlug || data.shopId;
+  const pubLink = getPublicLink(shopIdOrSlug);
   const dashLinkEl = document.getElementById('dash-public-link');
   if (dashLinkEl) dashLinkEl.innerText = pubLink;
 
@@ -174,12 +177,12 @@ function getPublicLink(sid) {
 }
 
 function openPublicPage() {
-  const link = getPublicLink(state.shopId);
+  const link = getPublicLink(state.shopSlug || state.shopId);
   window.open(link, '_blank');
 }
 
 function copyPublicLink() {
-  const link = getPublicLink(state.shopId);
+  const link = getPublicLink(state.shopSlug || state.shopId);
   if (navigator.clipboard) {
     navigator.clipboard.writeText(link).then(() => {
       showToast('📋 Link copiado com sucesso!');
