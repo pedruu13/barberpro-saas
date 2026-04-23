@@ -89,12 +89,6 @@ exports.createAppointment = async (req, res) => {
       }
     });
 
-    // Busca dados da barbearia (para MP e Z-API)
-    const shop = await prisma.shop.findUnique({ where: { id: shopId } });
-    if (!shop) {
-      return res.status(404).json({ error: 'Barbearia não encontrada no novo banco de dados. Crie uma nova conta para testar.' });
-    }
-
     // Tenta pagamento online (Mercado Pago)
     if (paymentMethod === 'Pix Antecipado' || paymentMethod === 'Cartão de Crédito') {
       const preference = await paymentService.createPixPaymentPreference(shop, newAppt, parseFloat(price) || 0);
