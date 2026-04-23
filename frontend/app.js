@@ -114,6 +114,20 @@ window.onload = async () => {
   if (shopId) {
     const data = await api.get('/public/shop/' + shopId, false);
     if (data && !data.error) {
+      state.shopName  = data.shopName;
+      state.shopAddress = data.shopAddress;
+      
+      // Atualiza o header da página de agendamento
+      if ($id('shop-name-display')) {
+        var nameParts = data.shopName.split(' ');
+        var firstName = nameParts[0];
+        var rest = nameParts.slice(1).join(' ');
+        $id('shop-name-display').innerHTML = firstName + (rest ? ' <span>' + rest + '</span>' : '');
+      }
+      if ($id('shop-address-display')) {
+        $id('shop-address-display').innerText = '✦ Agendamento Online' + (data.shopAddress ? ' · ' + data.shopAddress : '');
+      }
+      
       if (data.shopId) shopId = data.shopId;
       state.services  = data.services;
       state.barbers   = data.barbers;
@@ -151,6 +165,7 @@ function applyAdminData(data) {
   state.appointments = (data.appointments || []).map(normalizeAppt);
   if (data.hours && data.hours.length > 0) state.hours = data.hours;
   state.shopName     = data.shopName     || '';
+  state.shopAddress  = data.address      || '';
   state.shopId       = data.shopId;
   state.shopSlug     = data.shopSlug;
 
@@ -1429,6 +1444,7 @@ async function loadSettings() {
 
     // Preenche campos de dados da loja
     if ($id('cfg-name'))  $id('cfg-name').value  = shop.name  || '';
+    if ($id('cfg-address')) $id('cfg-address').value = shop.address || '';
     if ($id('cfg-email')) $id('cfg-email').value  = shop.email || '';
     if ($id('cfg-pass'))  $id('cfg-pass').value   = '';
 
@@ -1468,6 +1484,7 @@ async function saveSettings() {
   try {
     var body = {};
     var nameVal  = ($id('cfg-name')  ? $id('cfg-name').value.trim()  : '');
+    var addrVal  = ($id('cfg-address') ? $id('cfg-address').value.trim() : '');
     var emailVal = ($id('cfg-email') ? $id('cfg-email').value.trim() : '');
     var passVal  = ($id('cfg-pass')  ? $id('cfg-pass').value         : '');
     var mpVal    = ($id('cfg-mp-token')      ? $id('cfg-mp-token').value.trim()      : '');
@@ -1475,6 +1492,7 @@ async function saveSettings() {
     var zapiTok  = ($id('cfg-zapi-token')    ? $id('cfg-zapi-token').value.trim()    : '');
 
     if (nameVal)  body.name  = nameVal;
+    if (addrVal)  body.address = addrVal;
     if (emailVal) body.email = emailVal;
     if (passVal)  body.password = passVal;
     // Só envia tokens se o usuário digitou algo (campos password ficam vazios por padrão)

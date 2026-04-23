@@ -11,6 +11,7 @@ model Shop {
   id              String    @id @default(uuid())
   slug            String?   @unique
   name            String
+  address         String?
   email           String    @unique
   password        String
   mpAccessToken   String?

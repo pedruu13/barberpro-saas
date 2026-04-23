@@ -7,7 +7,7 @@ exports.getShopSettings = async (req, res) => {
   try {
     const shop = await prisma.shop.findUnique({
       where: { id: req.user.shopId },
-      select: { id: true, name: true, email: true, mpAccessToken: true, zapiInstance: true, zapiToken: true }
+      select: { id: true, name: true, address: true, email: true, mpAccessToken: true, zapiInstance: true, zapiToken: true }
     });
     res.json(shop);
   } catch (error) {
@@ -17,9 +17,10 @@ exports.getShopSettings = async (req, res) => {
 
 exports.updateShopSettings = async (req, res) => {
   try {
-    const { name, email, password, mpAccessToken, zapiInstance, zapiToken } = req.body;
+    const { name, address, email, password, mpAccessToken, zapiInstance, zapiToken } = req.body;
     const updateData = {};
     if (name) updateData.name = name;
+    if (address !== undefined) updateData.address = address;
     if (email) updateData.email = email;
     if (mpAccessToken !== undefined) updateData.mpAccessToken = mpAccessToken;
     if (zapiInstance !== undefined) updateData.zapiInstance = zapiInstance;

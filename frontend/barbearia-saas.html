@@ -182,8 +182,8 @@
   <!-- ===== BOOKING ===== -->
   <div id="booking" class="screen">
     <div class="booking-header">
-      <div class="booking-shop-name">Barbearia <span>do João</span></div>
-      <div class="booking-sub">✦ Agendamento Online · Rua das Flores, 123 — São Paulo</div>
+      <div class="booking-shop-name" id="shop-name-display">Barbearia <span>do João</span></div>
+      <div class="booking-sub" id="shop-address-display">✦ Agendamento Online · Rua das Flores, 123 — São Paulo</div>
     </div>
     <div class="booking-steps">
       <div class="step-indicator active" id="si-1">
@@ -712,6 +712,10 @@
               <div class="form-group" style="margin:0">
                 <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Nome da Barbearia</label>
                 <input type="text" id="cfg-name" placeholder="Ex: Barbearia do João" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Endereço Completo</label>
+                <input type="text" id="cfg-address" placeholder="Ex: Rua das Flores, 123 - Centro" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;box-sizing:border-box">
               </div>
               <div class="form-group" style="margin:0">
                 <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Email de Acesso</label>

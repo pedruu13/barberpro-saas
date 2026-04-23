@@ -25,6 +25,7 @@ exports.getShopInfo = async (req, res) => {
       shopId: shop.id,
       shopSlug: shop.slug,
       shopName: shop.name,
+      shopAddress: shop.address,
       services: shop.services,
       barbers:  shop.barbers,
       discounts: shop.discounts,
