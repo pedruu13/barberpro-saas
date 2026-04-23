@@ -514,10 +514,10 @@
         </div>
         <div class="admin-content">
           <div class="schedule-bar">
-            <button class="schedule-filter active">Hoje</button>
-            <button class="schedule-filter">Amanhã</button>
-            <button class="schedule-filter">Esta semana</button>
-            <button class="schedule-filter">Próxima semana</button>
+            <button class="schedule-filter active" onclick="setAgendaFilter('hoje', this)">Hoje</button>
+            <button class="schedule-filter" onclick="setAgendaFilter('amanha', this)">Amanhã</button>
+            <button class="schedule-filter" onclick="setAgendaFilter('semana', this)">Esta semana</button>
+            <button class="schedule-filter" onclick="setAgendaFilter('proxsemana', this)">Próxima semana</button>
           </div>
           <div class="barber-filter-bar" id="agenda-barber-filters"></div>
           <div class="section-card">

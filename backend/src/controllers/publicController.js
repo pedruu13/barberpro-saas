@@ -46,10 +46,21 @@ exports.createAppointment = async (req, res) => {
     if (!barberName) return res.status(400).json({ error: 'Selecione um barbeiro.' });
     if (!date || !time) return res.status(400).json({ error: 'Data e horário são obrigatórios.' });
 
+    // ─── Resolver Shop por ID ou Slug ─────────────────────────────────────────
+    const shop = await prisma.shop.findFirst({
+      where: { OR: [{ id: String(shopId) }, { slug: String(shopId) }] }
+    });
+
+    if (!shop) {
+      return res.status(404).json({ error: 'Barbearia não encontrada. Verifique o link.' });
+    }
+    const actualShopId = shop.id;
+    // ──────────────────────────────────────────────────────────────────────────
+
     // ─── Validação de conflito de horário no backend ──────────────────────────
     const conflict = await prisma.appointment.findFirst({
       where: {
-        shopId: String(shopId),
+        shopId: actualShopId,
         barberName: String(barberName),
         date: String(date),
         time: String(time),
@@ -64,7 +75,7 @@ exports.createAppointment = async (req, res) => {
 
     const newAppt = await prisma.appointment.create({
       data: {
-        shopId: String(shopId),
+        shopId: actualShopId,
         clientName: String(clientName),
         clientPhone: String(clientPhone || ''),
         serviceNames: String(serviceNames),

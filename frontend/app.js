@@ -1028,8 +1028,12 @@ function renderAdminAppts() {
 var agendaDateFilter = 'hoje';
 var agendaBarberFilter = 0;
 
-function setAgendaFilter(filter) {
+function setAgendaFilter(filter, btn) {
   agendaDateFilter = filter;
+  if (btn) {
+    document.querySelectorAll('.schedule-filter').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
   renderAgenda();
 }
 
@@ -1073,9 +1077,10 @@ function renderAgenda() {
         dateMatch = true;
       }
       if (!dateMatch) return false;
-      if (agendaBarberFilter === 0) return true;
-      var bar = state.barbers.filter(function (b) { return b.id === agendaBarberFilter; })[0];
-      return bar && a.barber === bar.name;
+      if (agendaBarberFilter == 0 || !agendaBarberFilter) return true;
+      var bar = state.barbers.filter(function (b) { return b.id == agendaBarberFilter; })[0];
+      if (!bar) return true; // Se não achar o barbeiro (ex: deletado), mostra o agendamento
+      return a.barber.trim().toLowerCase() === bar.name.trim().toLowerCase();
     }).sort(function (a, b) { return a.time.localeCompare(b.time); });
 
     $id('agenda-list').innerHTML = list.length
