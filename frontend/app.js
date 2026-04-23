@@ -1045,9 +1045,9 @@ function filterAgendaByBarber(barberId) {
 function renderAgenda() {
   var filtersEl = $id('agenda-barber-filters');
   if (filtersEl) {
-    var fHtml = '<button class="barber-filter-btn' + (agendaBarberFilter === 0 ? ' active' : '') + '" onclick="filterAgendaByBarber(0)">Todos</button>';
+    var fHtml = '<button class="barber-filter-btn' + (agendaBarberFilter == 0 ? ' active' : '') + '" onclick="filterAgendaByBarber(0)">Todos</button>';
     state.barbers.forEach(function (b) {
-      fHtml += '<button class="barber-filter-btn' + (agendaBarberFilter === b.id ? ' active' : '') + '" onclick="filterAgendaByBarber(' + JSON.stringify(b.id) + ')">' + sanitize(b.emoji) + ' ' + sanitize(b.name.split(' ')[0]) + '</button>';
+      fHtml += '<button class="barber-filter-btn' + (agendaBarberFilter == b.id ? ' active' : '') + '" onclick="filterAgendaByBarber(\'' + b.id + '\')">' + sanitize(b.emoji) + ' ' + sanitize(b.name.split(' ')[0]) + '</button>';
     });
     filtersEl.innerHTML = fHtml;
   }
@@ -1079,8 +1079,11 @@ function renderAgenda() {
       if (!dateMatch) return false;
       if (agendaBarberFilter == 0 || !agendaBarberFilter) return true;
       var bar = state.barbers.filter(function (b) { return b.id == agendaBarberFilter; })[0];
-      if (!bar) return true; // Se não achar o barbeiro (ex: deletado), mostra o agendamento
-      return a.barber.trim().toLowerCase() === bar.name.trim().toLowerCase();
+      if (!bar) return true; 
+      
+      var apptBarber = a.barber.trim().toLowerCase();
+      var targetBarber = bar.name.trim().toLowerCase();
+      return apptBarber === targetBarber || apptBarber.includes(targetBarber) || targetBarber.includes(apptBarber);
     }).sort(function (a, b) { return a.time.localeCompare(b.time); });
 
     $id('agenda-list').innerHTML = list.length
