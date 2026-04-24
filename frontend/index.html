@@ -66,8 +66,62 @@
                         <div class="mockup-dots"><span></span><span></span><span></span></div>
                         <div class="mockup-url">painel.barberpro.com</div>
                     </div>
-                    <div class="mockup-body" style="padding:0; display:flex; justify-content:center; align-items:center; overflow:hidden;">
-                        <img src="assets/dashboard.png" alt="Dashboard BarberPro" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                    <div class="mockup-body" style="padding:0; overflow:hidden; background: #070709;">
+                        <!-- Réplica do Dashboard Real em HTML/CSS -->
+                        <div style="display:flex; width: 100%; height: 100%; color: #fff; font-family: 'DM Sans', sans-serif;">
+                            <!-- Sidebar -->
+                            <div style="width: 28%; border-right: 1px solid #1a1a1a; background: #0a0a0c; padding: 15px; display:flex; flex-direction: column; gap: 12px;">
+                                <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px; font-family: 'Playfair Display', serif;">Barber<span style="color:#D4AF37">Pro</span></div>
+                                <div style="background: #141416; border: 1px solid #222; padding: 10px; border-radius: 8px; display:flex; gap:8px; align-items:center;">
+                                    <div style="font-size: 16px;">✂️</div>
+                                    <div><strong style="font-size:11px;">João Silva</strong><br><span style="color:#888; font-size:9px;">Proprietário</span></div>
+                                </div>
+                                <div style="margin-top: 10px; display:flex; flex-direction:column; gap:5px;">
+                                    <div style="font-size: 10px; color: #000; padding: 8px 10px; background: var(--gold); border-radius: 6px; font-weight:600;">📊 Dashboard</div>
+                                    <div style="font-size: 10px; color: #888; padding: 8px 10px;">💰 Faturamento</div>
+                                    <div style="font-size: 10px; color: #888; padding: 8px 10px;">📅 Agenda</div>
+                                    <div style="font-size: 10px; color: #888; padding: 8px 10px;">✂️ Serviços</div>
+                                </div>
+                            </div>
+                            <!-- Main -->
+                            <div style="flex: 1; padding: 20px; display:flex; flex-direction: column; gap: 15px; background: #070709;">
+                                <div style="display:flex; justify-content: space-between; align-items:center;">
+                                    <div style="font-size: 18px; font-weight:bold;">Dashboard</div>
+                                    <div style="font-size: 11px; background: #141416; border: 1px solid #222; padding: 6px 12px; border-radius: 20px;">✂️ João</div>
+                                </div>
+                                <div style="display:flex; gap: 10px;">
+                                    <div style="flex:1; background: #121215; border: 1px solid #1a1a1a; padding: 12px; border-radius: 8px;">
+                                        <div style="font-size: 9px; color: #888;">Agendamentos (Hoje)</div>
+                                        <div style="font-size: 18px; font-weight:bold; margin: 4px 0;">8</div>
+                                        <div style="font-size: 8px; color: #4CAF50;">▲ 2 vs ontem</div>
+                                    </div>
+                                    <div style="flex:1; background: #121215; border: 1px solid #1a1a1a; padding: 12px; border-radius: 8px;">
+                                        <div style="font-size: 9px; color: #888;">Receita Hoje</div>
+                                        <div style="font-size: 18px; font-weight:bold; margin: 4px 0; color: #D4AF37;">R$ 380</div>
+                                        <div style="font-size: 8px; color: #888;">Previsão do dia</div>
+                                    </div>
+                                </div>
+                                <div style="background: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 13px; font-family: 'Cormorant Garamond', serif; color: #fff; margin-bottom: 6px;">🚀 Seu agendamento online está ativo!</div>
+                                    <div style="font-size: 9px; color: #D4AF37; background: #000; padding: 6px; border-radius: 4px; display:inline-block; font-family:monospace;">barberpro.com/?shop=joao</div>
+                                </div>
+                                <div style="flex: 1; background: #121215; border: 1px solid #1a1a1a; padding: 12px; border-radius: 8px;">
+                                    <div style="font-size: 11px; color: #fff; margin-bottom: 12px; font-weight:600;">📅 Agenda de Hoje</div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 8px 0; border-bottom: 1px solid #222;">
+                                        <div style="font-size: 10px;"><strong>10:00</strong> <span style="color:#888;margin-left:5px;">Carlos M. · Corte Degradê</span></div>
+                                        <div style="font-size: 8px; background: rgba(76, 175, 80, 0.1); color: #4CAF50; padding: 3px 6px; border-radius:4px;">PAGO</div>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 8px 0; border-bottom: 1px solid #222;">
+                                        <div style="font-size: 10px;"><strong>11:30</strong> <span style="color:#888;margin-left:5px;">Pedro Silva · Corte + Barba</span></div>
+                                        <div style="font-size: 8px; background: rgba(212, 175, 55, 0.1); color: #D4AF37; padding: 3px 6px; border-radius:4px;">PENDENTE</div>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 8px 0;">
+                                        <div style="font-size: 10px;"><strong>13:00</strong> <span style="color:#888;margin-left:5px;">Lucas Oliveira · Pigmentação</span></div>
+                                        <div style="font-size: 8px; background: rgba(212, 175, 55, 0.1); color: #D4AF37; padding: 3px 6px; border-radius:4px;">PENDENTE</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="floating-badge badge-1">💸 Faturamento +35%</div>
