@@ -140,6 +140,19 @@ window.onload = async () => {
     return;
   }
 
+  // Pre-fill link público para evitar flash de "carregando..."
+  const cachedShopId = localStorage.getItem('barberpro_shopId');
+  if (cachedShopId) {
+    const pubLink = getPublicLink(cachedShopId);
+    const dashLinkEl = document.getElementById('dash-public-link');
+    if (dashLinkEl) dashLinkEl.innerText = pubLink;
+    const sidebarLink = document.getElementById('sidebar-shop-link');
+    if (sidebarLink) {
+      sidebarLink.href = pubLink;
+      sidebarLink.innerText = pubLink.replace(/^https?:\/\//, '');
+    }
+  }
+
   // 2. Login automático
   const token = localStorage.getItem('token');
   if (token) {
@@ -163,6 +176,16 @@ function applyAdminData(data) {
   state.barbers      = data.barbers      || [];
   state.discounts    = data.discounts    || [];
   state.appointments = (data.appointments || []).map(normalizeAppt);
+  
+  if (state.appointments.length === 0) {
+    const today = new Date().toISOString().split('T')[0];
+    state.appointments = [
+      { id: 'seed1', client: 'João Paulo', service: 'Corte Degradê', barber: 'Admin', date: today, time: '10:00', status: 'completed', paymentStatus: 'pago', payment: 'Pix Antecipado', price: 45, isSeed: true },
+      { id: 'seed2', client: 'Marcos Silva', service: 'Corte + Barba', barber: 'Admin', date: today, time: '14:30', status: 'pending', paymentStatus: 'pendente', payment: 'Na barbearia', price: 65, isSeed: true },
+      { id: 'seed3', client: 'Lucas Oliveira', service: 'Corte Tradicional', barber: 'Admin', date: 'hoje', time: '16:00', status: 'confirmed', paymentStatus: 'pendente', payment: 'Cartão de Crédito', price: 35, isSeed: true }
+    ];
+  }
+
   if (data.hours && data.hours.length > 0) state.hours = data.hours;
   state.shopName     = data.shopName     || '';
   state.shopAddress  = data.address      || '';
@@ -171,6 +194,8 @@ function applyAdminData(data) {
 
   // Atualiza os links de visualização pública
   const shopIdOrSlug = data.shopSlug || data.shopId;
+  localStorage.setItem('barberpro_shopId', shopIdOrSlug);
+  
   const pubLink = getPublicLink(shopIdOrSlug);
   const dashLinkEl = document.getElementById('dash-public-link');
   if (dashLinkEl) dashLinkEl.innerText = pubLink;
@@ -401,7 +426,21 @@ function updateSidebarUser(name) {
 }
 
 // ===================== BOOKING =====================
-function renderBooking() { renderBookingServices(); renderBookingBarbers(); renderCalendar(); }
+function renderBooking() { 
+  if (state.shopName) {
+    var nameParts = state.shopName.split(' ');
+    var firstName = nameParts[0];
+    var rest = nameParts.slice(1).join(' ');
+    var elName = document.getElementById('shop-name-display');
+    if (elName) elName.innerHTML = firstName + (rest ? ' <span>' + rest + '</span>' : '');
+  }
+  if (state.shopAddress) {
+    var elAddr = document.getElementById('shop-address-display');
+    if (elAddr) elAddr.innerText = '✦ Agendamento Online' + (state.shopAddress ? ' · ' + state.shopAddress : '');
+  }
+  
+  renderBookingServices(); renderBookingBarbers(); renderCalendar(); 
+}
 
 function renderBookingServices() {
   $id('booking-services').innerHTML = state.services.map(function (s) {

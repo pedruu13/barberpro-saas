@@ -425,6 +425,10 @@
         <span class="icon">📊</span>
         <span>Início</span>
       </div>
+      <div class="admin-bnav-item" onclick="adminNav('financeiro',this)">
+        <span class="icon">💰</span>
+        <span>Caixa do Dia</span>
+      </div>
       <div class="admin-bnav-item" onclick="openSidebar()">
         <span class="icon">☰</span>
         <span>Menu</span>
@@ -898,10 +902,14 @@
       <div class="ob-step" id="ob-step-1" style="padding:28px 28px 24px">
         <div style="font-size:36px;margin-bottom:12px">🎉</div>
         <h3 style="font-size:20px;font-weight:700;margin:0 0 8px">Bem-vindo ao BarberPro!</h3>
-        <p style="color:var(--text-dim);font-size:14px;margin:0 0 24px">Vamos configurar sua barbearia em menos de 2 minutos. Primeiro, confirme o nome da sua barbearia:</p>
-        <div class="form-group" style="margin:0 0 24px">
+        <p style="color:var(--text-dim);font-size:14px;margin:0 0 24px">Vamos configurar sua barbearia em menos de 2 minutos. Primeiro, confirme o nome e a logo da sua barbearia:</p>
+        <div class="form-group" style="margin:0 0 16px">
           <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Nome da Barbearia</label>
           <input type="text" id="ob-name" placeholder="Ex: Barbearia do João" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:12px 14px;color:#fff;font-size:15px;box-sizing:border-box">
+        </div>
+        <div class="form-group" style="margin:0 0 24px">
+          <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Logo (Opcional)</label>
+          <input type="file" id="ob-logo" accept="image/*" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;box-sizing:border-box">
         </div>
         <button class="btn-full" onclick="obNext(2)" style="padding:13px">Próximo →</button>
       </div>
