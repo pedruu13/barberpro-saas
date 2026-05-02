@@ -35,11 +35,32 @@ router.put('/discounts/:id',   adminController.updateDiscount);
 router.delete('/discounts/:id',adminController.deleteDiscount);
 
 // Hours
-router.get('/hours',  adminController.getHours);   // <- NOVO
-router.post('/hours', adminController.saveHours);  // <- NOVO
+router.get('/hours',  adminController.getHours);
+router.post('/hours', adminController.saveHours);
+
+// Block Time
+router.post('/blocks', adminController.createBlockTime);
+router.delete('/blocks/:id', adminController.deleteBlockTime);
+
+// Planos de Assinatura
+router.post('/plans', adminController.createSubscriptionPlan);
+router.put('/plans/:id', adminController.updateSubscriptionPlan);
+router.delete('/plans/:id', adminController.deleteSubscriptionPlan);
+router.post('/clients/assign-plan', adminController.assignPlanToClient);
+router.post('/clients/:id/cuts', adminController.updateClientCuts);
 
 // Export CSV
 router.get('/appointments/export', adminController.exportAppointmentsCSV);
 
+// Billing
+const billingController = require('../controllers/billingController');
+router.post('/billing/subscribe', billingController.createSubscriptionLink);
+
+// Analytics
+const analyticsController = require('../controllers/analyticsController');
+router.get('/analytics/dashboard', analyticsController.getDashboardStats);
+
 module.exports = router;
+
+
 

@@ -1,16 +1,18 @@
 const prisma = require('../lib/prisma');
 const notificationService = require('../services/notificationService');
+const logger = require('../lib/logger');
+const { parse, addHours, isWithinInterval, isAfter } = require('date-fns');
 
 /**
  * Processa os lembretes de pré-agendamento (Anti No-Show).
- * O horizonte padrão é 2 horas à frente do horário atual.
+ * Verifica agendamentos nas próximas 2 horas.
  */
 async function processReminders() {
-  console.log('[SCHEDULER] Processando alertas pré-agendamento via Rota Serverless...');
+  logger.info('[SCHEDULER] Iniciando processamento de lembretes...');
+  
   try {
     const now = new Date();
-    // O horizonte de lembretes é de 2 horas à frente (2 * 60 * 60 * 1000 = 7200000 ms)
-    const horizon = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+    const horizon = addHours(now, 2);
 
     const appointments = await prisma.appointment.findMany({
       where: {
@@ -21,35 +23,46 @@ async function processReminders() {
       include: { shop: true }
     });
 
+    let sentCount = 0;
+
     for (const appt of appointments) {
-      // Formata appt.date e appt.time para Date real
-      // assumindo que date seja "YYYY-MM-DD" e time "HH:MM"
-      const apptDateStr = `${appt.date}T${appt.time}:00`;
-      const apptDate = new Date(apptDateStr);
-      
-      // Verifica se a data do agendamento cai na janela das proximas 2 horas
-      // E checa se ele está no futuro (para não alertar coisa do passado)
-      if (apptDate > now && apptDate <= horizon) {
-        console.log(`[SCHEDULER] Enviando lembrete para: ${appt.clientName} (${appt.clientPhone}).`);
+      try {
+        // Converte data (YYYY-MM-DD) e hora (HH:MM) para um objeto Date real
+        // parse(value, format, baseDate)
+        const apptDate = parse(`${appt.date} ${appt.time}`, 'yyyy-MM-dd HH:mm', new Date());
+        
+        // Verifica se o agendamento está entre AGORA e as próximas 2 HORAS
+        if (isAfter(apptDate, now) && apptDate <= horizon) {
+          logger.info({ client: appt.clientName, time: appt.time }, '[SCHEDULER] Disparando lembrete WhatsApp');
 
-        // Dispara Zap
-        await notificationService.sendWhatsAppMessage(
-          appt.clientPhone,
-          `⏰ Lembrete BarberPro: Olá ${appt.clientName}! Passando pra lembrar do seu horário hoje às ${appt.time} na Barbearia ${appt.shop.name} para: ${appt.serviceNames}. Te esperamos lá!`,
-          appt.shop
-        ).catch(e => console.error('[SCHEDULER] Erro WhatsApp:', e));
+          const message = `⏰ Lembrete BarberPro: Olá ${appt.clientName}! Passando pra lembrar do seu horário hoje às ${appt.time} na Barbearia ${appt.shop.name} para: ${appt.serviceNames}. Te esperamos lá!`;
 
-        // Atualiza para não mandar de novo
-        await prisma.appointment.update({
-          where: { id: appt.id },
-          data: { reminded: true }
-        });
+          const success = await notificationService.sendWhatsAppMessage(
+            appt.clientPhone,
+            message,
+            appt.shop
+          );
+
+          if (success) {
+            await prisma.appointment.update({
+              where: { id: appt.id },
+              data: { reminded: true }
+            });
+            sentCount++;
+          }
+        }
+      } catch (err) {
+        logger.error({ apptId: appt.id, error: err.message }, '[SCHEDULER] Erro ao processar agendamento específico');
       }
     }
     
-    return { success: true, message: "Lembretes processados com sucesso." };
+    return { 
+      success: true, 
+      sent: sentCount,
+      message: `${sentCount} lembretes processados com sucesso.` 
+    };
   } catch (error) {
-    console.error('[SCHEDULER] Erro no processamento de alertas', error);
+    logger.error({ error: error.message }, '[SCHEDULER] Falha crítica no processamento de alertas');
     throw error;
   }
 }

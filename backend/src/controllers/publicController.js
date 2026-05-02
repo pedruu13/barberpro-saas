@@ -11,6 +11,7 @@ exports.getShopInfo = async (req, res) => {
         services: { orderBy: { createdAt: 'asc' } },
         barbers:  { orderBy: { createdAt: 'asc' } },
         discounts: { where: { active: true } },
+        subscriptionPlans: true,
         hours: true
       }
     });
@@ -26,9 +27,11 @@ exports.getShopInfo = async (req, res) => {
       shopSlug: shop.slug,
       shopName: shop.name,
       shopAddress: shop.address,
+      pixKey: shop.pixKey,
       services: shop.services,
       barbers:  shop.barbers,
       discounts: shop.discounts,
+      plans: shop.subscriptionPlans,
       hours
     });
   } catch (error) {
@@ -74,6 +77,41 @@ exports.createAppointment = async (req, res) => {
     }
     // ─────────────────────────────────────────────────────────────────────────
 
+    // Buscar a comissão do barbeiro e verificar Clube de Assinatura
+    let commissionValue = 0;
+    const barber = await prisma.barber.findFirst({
+      where: { shopId: actualShopId, name: String(barberName) }
+    });
+    
+    let finalPrice = parseFloat(price) || 0;
+    let finalPaymentMethod = String(paymentMethod || 'Na barbearia');
+    let usingPlan = String(serviceNames).includes('⭐ Usar Plano');
+    let fullyPaidByPlan = false;
+
+    if (clientPhone) {
+      const clientRecord = await prisma.client.findUnique({
+        where: { shopId_phone: { shopId: actualShopId, phone: String(clientPhone) } },
+        include: { plan: true }
+      });
+      
+      if (usingPlan && clientRecord && clientRecord.plan && clientRecord.planExpiresAt && new Date(clientRecord.planExpiresAt) > new Date()) {
+        if (clientRecord.cutsUsed < clientRecord.plan.maxCuts) {
+          if (finalPrice <= 0) {
+            finalPaymentMethod = 'Clube do Barbeiro';
+            fullyPaidByPlan = true;
+          }
+          await prisma.client.update({
+            where: { id: clientRecord.id },
+            data: { cutsUsed: { increment: 1 } }
+          });
+        }
+      }
+    }
+
+    if (barber && barber.commissionPct > 0) {
+      commissionValue = finalPrice * (barber.commissionPct / 100);
+    }
+
     const newAppt = await prisma.appointment.create({
       data: {
         shopId: actualShopId,
@@ -84,11 +122,31 @@ exports.createAppointment = async (req, res) => {
         date: String(date),
         time: String(time),
         status: 'pending',
-        paymentStatus: 'pendente',
-        paymentMethod: String(paymentMethod || 'Na barbearia'),
-        price: parseFloat(price) || 0
+        paymentStatus: fullyPaidByPlan ? 'pago' : 'pendente',
+        paymentMethod: finalPaymentMethod,
+        price: finalPrice,
+        commissionValue
       }
     });
+
+    // Atualizar CRM de Cliente (assíncrono para não bloquear)
+    if (clientPhone) {
+      prisma.client.upsert({
+        where: { shopId_phone: { shopId: actualShopId, phone: String(clientPhone) } },
+        update: {
+          name: String(clientName),
+          totalVisits: { increment: 1 },
+          totalSpent: { increment: finalPrice }
+        },
+        create: {
+          shopId: actualShopId,
+          name: String(clientName),
+          phone: String(clientPhone),
+          totalVisits: 1,
+          totalSpent: finalPrice
+        }
+      }).catch(e => console.error('CRM Update Error:', e));
+    }
 
     // Tenta pagamento online (Mercado Pago)
     if (paymentMethod === 'Pix Antecipado' || paymentMethod === 'Cartão de Crédito') {
@@ -199,6 +257,113 @@ exports.cancelClientAppointment = async (req, res) => {
     res.json({ success: true, appointment: updated });
   } catch (error) {
     console.error('cancelClientAppointment error:', error);
+    res.status(500).json({ error: 'Erro no servidor' });
+  }
+};
+
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../middlewares/authMiddleware');
+
+exports.clientRegister = async (req, res) => {
+  try {
+    const { shopId, name, phone, password } = req.body;
+    if (!shopId || !name || !phone || !password) return res.status(400).json({ error: 'Preencha todos os campos' });
+
+    let client = await prisma.client.findUnique({
+      where: { shopId_phone: { shopId, phone } }
+    });
+
+    if (client) {
+      if (client.password) return res.status(400).json({ error: 'Telefone já cadastrado com senha. Faça login.' });
+      // Se não tinha senha (era um cliente de agendamento antigo), atualiza com a senha
+      client = await prisma.client.update({
+        where: { id: client.id },
+        data: { name, password: bcrypt.hashSync(password, 8) }
+      });
+    } else {
+      client = await prisma.client.create({
+        data: {
+          shopId,
+          name,
+          phone,
+          password: bcrypt.hashSync(password, 8)
+        }
+      });
+    }
+
+    const token = jwt.sign({ clientId: client.id, shopId: client.shopId, role: 'client' }, JWT_SECRET, { expiresIn: '30d' });
+    res.json({ token, client: { id: client.id, name: client.name, phone: client.phone } });
+  } catch (error) {
+    console.error('Client Register Error:', error);
+    res.status(500).json({ error: 'Erro no servidor' });
+  }
+};
+
+exports.clientLogin = async (req, res) => {
+  try {
+    const { shopId, phone, password } = req.body;
+    if (!shopId || !phone || !password) return res.status(400).json({ error: 'Preencha todos os campos' });
+
+    const client = await prisma.client.findUnique({
+      where: { shopId_phone: { shopId, phone } },
+      include: { plan: true }
+    });
+
+    if (!client || !client.password || !bcrypt.compareSync(password, client.password)) {
+      return res.status(401).json({ error: 'Telefone ou senha incorretos' });
+    }
+
+    const token = jwt.sign({ clientId: client.id, shopId: client.shopId, role: 'client' }, JWT_SECRET, { expiresIn: '30d' });
+    
+    // Calcula cota do plano
+    let planInfo = null;
+    if (client.planId && client.planExpiresAt && new Date(client.planExpiresAt) > new Date()) {
+      planInfo = {
+        name: client.plan.name,
+        maxCuts: client.plan.maxCuts,
+        cutsUsed: client.cutsUsed,
+        expiresAt: client.planExpiresAt,
+        isActive: true
+      };
+    } else if (client.planId) {
+       planInfo = { isActive: false, reason: 'expirado' };
+    }
+
+    res.json({ token, client: { id: client.id, name: client.name, phone: client.phone, planInfo } });
+  } catch (error) {
+    console.error('Client Login Error:', error);
+    res.status(500).json({ error: 'Erro no servidor' });
+  }
+};
+
+exports.subscribePlan = async (req, res) => {
+  try {
+    const { shopId, phone, planId } = req.body;
+    if (!shopId || !phone || !planId) return res.status(400).json({ error: 'Faltam dados para assinatura' });
+
+    const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });
+    if (!plan || plan.shopId !== shopId) return res.status(404).json({ error: 'Plano não encontrado' });
+
+    const client = await prisma.client.findUnique({ where: { shopId_phone: { shopId, phone } } });
+    if (!client) return res.status(404).json({ error: 'Cliente não encontrado' });
+
+    // Calcula validade para +30 dias
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+
+    const updated = await prisma.client.update({
+      where: { id: client.id },
+      data: {
+        planId: plan.id,
+        cutsUsed: 0,
+        planExpiresAt: expiresAt
+      }
+    });
+
+    res.json({ success: true, planInfo: { name: plan.name, maxCuts: plan.maxCuts, cutsUsed: 0, expiresAt, isActive: true } });
+  } catch (error) {
+    console.error('Subscribe Plan Error:', error);
     res.status(500).json({ error: 'Erro no servidor' });
   }
 };

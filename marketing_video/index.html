@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>BarberPro - Promo Cinematic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --text: #ffffff;
+      --gold: #D4AF37;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      /* Hide scrollbars for video feel */
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1200px;
+    }
+
+    /* Container Principal da Câmera (Focado para Instagram 9:16) */
+    #camera {
+      width: 100%;
+      max-width: 450px;
+      /* Largura típica de celular */
+      height: 100%;
+      max-height: 800px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg);
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Utilitário para as Cenas */
+    .scene {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s var(--ease), filter 1s var(--ease), transform 1.5s var(--ease);
+      filter: blur(20px);
+      transform: scale(0.9);
+    }
+
+    .scene.active {
+      opacity: 1;
+      filter: blur(0px);
+      transform: scale(1);
+    }
+
+    .scene.exit {
+      opacity: 0;
+      filter: blur(20px);
+      transform: scale(1.1);
+    }
+
+    /* Tipografia Cinemática - Ajustada para Vertical */
+    .huge-text {
+      font-size: 10vw;
+      /* Maior em telas estreitas */
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      text-align: center;
+      background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.5) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      padding: 0 20px;
+    }
+
+    @media (min-width: 450px) {
+      .huge-text {
+        font-size: 45px;
+      }
+    }
+
+    .gold-text {
+      background: linear-gradient(180deg, #F3D275 0%, #D4AF37 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .glow-orb {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.1);
+      opacity: 0;
+      transition: all 2s var(--ease);
+    }
+
+    .scene.active .glow-orb {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+
+    /* Mockups 3D UI - Ajustado para caber no celular */
+    .mockup-container {
+      position: absolute;
+      width: 90%;
+      height: 50%;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(40px);
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      display: flex;
+      flex-direction: column;
+      /* Em pé no celular */
+      overflow: hidden;
+      /* Estado Inicial */
+      opacity: 0;
+      transform: translateY(100px) rotateX(20deg) scale(0.9);
+      transition: all 1.8s var(--ease);
+    }
+
+    .scene.active .mockup-container {
+      opacity: 1;
+      transform: translateY(0) rotateX(0deg) scale(1);
+    }
+
+    /* UI Layout Fake - Vertical */
+    .ui-sidebar {
+      width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .ui-main {
+      flex: 1;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .ui-skeleton {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+
+    .ui-header {
+      height: 30px;
+      width: 60%;
+    }
+
+    .ui-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ui-card {
+      flex: 1;
+      height: 90px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gráfico Animado */
+    .chart-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--gold);
+      box-shadow: 0 0 10px var(--gold);
+      transition: width 2s cubic-bezier(0.25, 1, 0.5, 1) 1s;
+    }
+
+    .scene.active .chart-line {
+      width: 100%;
+    }
+
+    .chart-glow {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(to top, rgba(212, 175, 55, 0.2), transparent);
+      transition: width 2s cubic-bezier(0.25, 1, 0.5, 1) 1s;
+    }
+
+    .scene.active .chart-glow {
+      width: 100%;
+    }
+
+    /* Telefone Mockup - Ajustado para vertical */
+    .phone-mockup {
+      position: absolute;
+      right: 5%;
+      bottom: -10%;
+      width: 220px;
+      height: 450px;
+      border-radius: 30px;
+      border: 6px solid #222;
+      background: #050505;
+      box-shadow: -10px 10px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      transform: translateY(100px) rotate(-5deg) scale(0.9);
+      opacity: 0;
+      transition: all 1.5s var(--ease) 0.5s;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .scene.active .phone-mockup {
+      transform: translateY(0) rotate(-5deg) scale(1);
+      opacity: 1;
+    }
+
+    .vip-card {
+      margin: 40px 20px;
+      height: 180px;
+      background: linear-gradient(135deg, #222, #000);
+      border: 1px solid var(--gold);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vip-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.1), transparent);
+      transform: rotate(45deg) translateX(-100%);
+      transition: transform 2s var(--ease) 1.5s;
+    }
+
+    .scene.active .vip-card::after {
+      transform: rotate(45deg) translateX(100%);
+    }
+
+    #play-btn {
+      position: absolute;
+      z-index: 999;
+      padding: 16px 32px;
+      font-size: 18px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+
+    #play-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Helper para textos menores */
+    .sub-text {
+      font-size: 5vw;
+      color: #888;
+      margin-top: 15px;
+      font-weight: 400;
+      opacity: 0;
+      text-align: center;
+      transform: translateY(20px);
+      transition: all 1s var(--ease) 0.5s;
+      padding: 0 20px;
+    }
+
+    @media (min-width: 450px) {
+      .sub-text {
+        font-size: 18px;
+      }
+    }
+
+    .scene.active .sub-text {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <button id="play-btn">Iniciar Vídeo Promocional</button>
+
+  <div id="camera">
+
+    <!-- SCENE 1: O Problema -->
+    <div class="scene" id="scene-1">
+      <h1 class="huge-text" id="text-1">Anotações no papel.</h1>
+    </div>
+
+    <!-- SCENE 2: O Problema 2 -->
+    <div class="scene" id="scene-2">
+      <h1 class="huge-text" id="text-2">Faltas e atrasos.</h1>
+    </div>
+
+    <!-- SCENE 3: A Virada -->
+    <div class="scene" id="scene-3">
+      <h1 class="huge-text">Chega de perder tempo.</h1>
+    </div>
+
+    <!-- SCENE 4: Logotipo Reveal -->
+    <div class="scene" id="scene-4">
+      <div class="glow-orb"></div>
+      <h1 class="huge-text">Apresentando o <span class="gold-text">BarberPro</span></h1>
+      <p class="sub-text">O sistema definitivo para barbearias de alto nível.</p>
+    </div>
+
+    <!-- SCENE 5: Dashboard 3D -->
+    <div class="scene" id="scene-5">
+      <div class="glow-orb" style="opacity: 0.3; transform: scale(2);"></div>
+      <div class="mockup-container">
+        <div class="ui-sidebar">
+          <div class="ui-skeleton" style="height: 30px; width: 80%; margin-bottom: 20px;"></div>
+          <div class="ui-skeleton" style="height: 20px; width: 100%;"></div>
+          <div class="ui-skeleton" style="height: 20px; width: 100%;"></div>
+          <div class="ui-skeleton"
+            style="height: 20px; width: 100%; background: rgba(212,175,55,0.2); border-left: 2px solid var(--gold);">
+          </div>
+        </div>
+        <div class="ui-main">
+          <div class="ui-skeleton ui-header"></div>
+          <div class="ui-cards">
+            <div class="ui-card">
+              <div style="padding:15px; color:#888; font-size:12px;">Faturamento</div>
+              <div style="padding:0 15px; color:var(--gold); font-size:24px; font-weight:bold;">R$ 14.500</div>
+              <div class="chart-glow"></div>
+              <div class="chart-line"></div>
+            </div>
+            <div class="ui-card">
+              <div style="padding:15px; color:#888; font-size:12px;">Agendamentos</div>
+              <div style="padding:0 15px; color:#fff; font-size:24px; font-weight:bold;">128</div>
+            </div>
+          </div>
+          <div class="ui-skeleton" style="flex:1; width: 100%;"></div>
+        </div>
+      </div>
+      <h1 class="huge-text" style="position:absolute; bottom: 8%; font-size: 24px; z-index: 10;">O controle do seu
+        caixa.</h1>
+    </div>
+
+    <!-- SCENE 6: Clube de Assinatura -->
+    <div class="scene" id="scene-6">
+      <div class="mockup-container" style="opacity: 0.2; transform: scale(0.95); filter: blur(10px);">
+        <!-- Dashboard no fundo -->
+      </div>
+      <div class="phone-mockup">
+        <div style="padding:15px; color:#fff; font-size:12px; text-align:center; border-bottom:1px solid #333;">
+          Barbearia do João</div>
+        <div class="vip-card" style="margin:20px 10px; height: 140px;">
+          <div style="padding:15px;">
+            <div style="color:var(--gold); font-weight:bold; font-size:14px;">Clube Ouro</div>
+            <div style="color:#888; font-size:10px; margin-top:5px;">Assinatura Ativa</div>
+            <div style="color:#fff; font-size:20px; font-weight:bold; margin-top:20px;">2 / 4 <span
+                style="font-size:10px;font-weight:normal;color:#888">cortes usados</span></div>
+          </div>
+        </div>
+      </div>
+      <h1 class="huge-text" style="position:absolute; top: 10%; text-align:center; font-size: 32px; width: 100%;">Crie
+        seu próprio<br><span class="gold-text">Clube de Assinatura</span><br><span
+          style="font-size:18px; color:#888;">Receita previsível.</span></h1>
+    </div>
+
+    <!-- SCENE 7: Outro -->
+    <div class="scene" id="scene-7">
+      <div class="glow-orb" style="background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0) 70%);">
+      </div>
+      <h1 class="huge-text">Comece o seu império.</h1>
+      <p class="sub-text" style="font-size: 2vw; margin-top: 40px; color: var(--gold);">barberpro</p>
+    </div>
+
+  </div>
+
+  <script>
+    const scenes = document.querySelectorAll('.scene');
+    const playBtn = document.getElementById('play-btn');
+
+    // Timeline definitions (scene index, duration in ms)
+    const timeline = [
+      { index: 0, duration: 2500 }, // Cena 1 (Anotações)
+      { index: 1, duration: 2500 }, // Cena 2 (Faltas)
+      { index: 2, duration: 3000 }, // Cena 3 (A Virada)
+      { index: 3, duration: 4000 }, // Cena 4 (Reveal Logo)
+      { index: 4, duration: 5000 }, // Cena 5 (Dashboard)
+      { index: 5, duration: 5000 }, // Cena 6 (Clube)
+      { index: 6, duration: 6000 }  // Cena 7 (Outro)
+    ];
+
+    async function sleep(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    async function playVideo() {
+      playBtn.style.display = 'none';
+
+      for (let i = 0; i < timeline.length; i++) {
+        const step = timeline[i];
+        const currentScene = scenes[step.index];
+
+        // Enter
+        currentScene.classList.add('active');
+
+        // Wait
+        await sleep(step.duration);
+
+        // Exit (unless it's the last scene)
+        if (i < timeline.length - 1) {
+          currentScene.classList.remove('active');
+          currentScene.classList.add('exit');
+        }
+      }
+    }
+
+    playBtn.addEventListener('click', playVideo);
+  </script>
+
+</body>
+
+</html>

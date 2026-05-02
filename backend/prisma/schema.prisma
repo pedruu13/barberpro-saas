@@ -7,6 +7,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Enums
+enum PlanType {
+  trial
+  basic
+  premium
+}
+
+enum PlanStatus {
+  active
+  inactive
+}
+
+enum AppointmentStatus {
+  pending
+  confirmed
+  completed
+  noshow
+}
+
+enum PaymentMethod {
+  in_barbershop
+  pix
+  credit_card
+}
+
 model Shop {
   id              String    @id @default(uuid())
   slug            String?   @unique
@@ -15,12 +40,13 @@ model Shop {
   email           String    @unique
   password        String
   mpAccessToken   String?
-  plan            String    @default("trial")
-  planStatus      String    @default("active")
+  plan            PlanType   @default(trial)
+  planStatus      PlanStatus @default(active)
   trialEndsAt     DateTime?
   planPaidUntil   DateTime?
   zapiInstance    String?
   zapiToken       String?
+  pixKey          String?   // Chave Pix da Barbearia para recebimentos
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -29,6 +55,10 @@ model Shop {
   discounts       Discount[]
   appointments    Appointment[]
   hours           Hours[]
+  expenses        Expense[]
+  clients         Client[]
+  blocks          BlockTime[]
+  subscriptionPlans SubscriptionPlan[]
 }
 
 model Service {
@@ -36,9 +66,10 @@ model Service {
   shopId      String
   shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
   name        String
-  price       Float
+  price       Decimal
   duration    Int
   desc        String
+  category    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -50,6 +81,7 @@ model Barber {
   name        String
   role        String
   emoji       String
+  commissionPct Float  @default(0) // Porcentagem de comissão (ex: 50.0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -76,12 +108,13 @@ model Appointment {
   clientPhone    String
   serviceNames   String
   barberName     String
-  date           String   // Storing as YYYY-MM-DD string for simplicity like MVP
-  time           String   // HH:MM
+  date           String
+  time           String
   status         String   // pending, confirmed, completed, no-show
   paymentStatus  String   // pendente, pago, cancelado
   paymentMethod  String   // "Na barbearia", "Pix Antecipado", "Cartão de Crédito"
-  price          Float
+  price          Decimal
+  commissionValue Decimal @default(0) // Valor da comissão do barbeiro calculado no momento do corte
 
   // To track external payments
   externalPaymentId String?
@@ -104,4 +137,65 @@ model Hours {
   updatedAt DateTime @updatedAt
 
   @@unique([shopId, day])
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  shopId      String
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  description String
+  value       Decimal
+  date        DateTime // Store full date
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Client {
+  id            String   @id @default(uuid())
+  shopId        String
+  shop          Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  name          String
+  phone         String
+  password      String?  // Opcional para clientes antigos que não criaram conta ainda
+  notes         String?
+  totalVisits   Int      @default(0)
+  totalSpent    Float    @default(0)
+
+  // Clube do Barbeiro
+  planId        String?
+  plan          SubscriptionPlan? @relation(fields: [planId], references: [id])
+  planExpiresAt DateTime?
+  cutsUsed      Int      @default(0)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([shopId, phone])
+}
+
+model SubscriptionPlan {
+  id          String   @id @default(uuid())
+  shopId      String
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  name        String
+  price       Decimal
+  maxCuts     Int      @default(4)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  clients     Client[]
+}
+
+model BlockTime {
+  id          String   @id @default(uuid())
+  shopId      String
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  barberName  String   // Qual barbeiro está bloqueado ("Todos" ou nome específico)
+  date        DateTime // Store full date
+  startTime   String   // HH:MM (keep as string for now)
+  endTime     String   // HH:MM
+  reason      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

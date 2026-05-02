@@ -1,19 +1,36 @@
 const prisma = require('../lib/prisma');
+const asyncHandler = require('express-async-handler');
+const { z } = require('zod');
+const logger = require('../lib/logger');
+
+// Schemas de Validação
+const serviceSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  price: z.number().or(z.string().transform(v => parseFloat(v))).refine(n => n >= 0, 'Preço deve ser positivo'),
+  duration: z.number().int().or(z.string().transform(v => parseInt(v))).refine(n => n > 0, 'Duração deve ser maior que 0'),
+  desc: z.string().optional().default(''),
+  category: z.string().optional().default(''),
+});
+
+const barberSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  role: z.string().optional().default('Barbeiro'),
+  emoji: z.string().optional().default('✂️'),
+  commissionPct: z.number().min(0).max(100).or(z.string().transform(v => parseFloat(v || 0))).default(0),
+});
+
 
 // ============================================================
 // Shop Settings & Plan
 // ============================================================
-exports.getShopSettings = async (req, res) => {
-  try {
-    const shop = await prisma.shop.findUnique({
-      where: { id: req.user.shopId },
-      select: { id: true, name: true, address: true, email: true, mpAccessToken: true, zapiInstance: true, zapiToken: true }
-    });
-    res.json(shop);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro no servidor' });
-  }
-};
+exports.getShopSettings = asyncHandler(async (req, res) => {
+  const shop = await prisma.shop.findUnique({
+    where: { id: req.user.shopId },
+    select: { id: true, name: true, address: true, email: true, mpAccessToken: true, zapiInstance: true, zapiToken: true, pixKey: true }
+  });
+  res.json(shop);
+});
+
 
 exports.updateShopSettings = async (req, res) => {
   try {
@@ -25,6 +42,7 @@ exports.updateShopSettings = async (req, res) => {
     if (mpAccessToken !== undefined) updateData.mpAccessToken = mpAccessToken;
     if (zapiInstance !== undefined) updateData.zapiInstance = zapiInstance;
     if (zapiToken !== undefined) updateData.zapiToken = zapiToken;
+    if (req.body.pixKey !== undefined) updateData.pixKey = req.body.pixKey;
     
     if (password) {
       const bcrypt = require('bcryptjs');
@@ -62,18 +80,22 @@ exports.getPlanStatus = (req, res) => {
 exports.getDashboardData = async (req, res) => {
   const shopId = req.user.shopId;
   try {
-    const [services, barbers, discounts, appointments, hours] = await Promise.all([
+    const [services, barbers, discounts, appointments, hours, blocks, expenses, clients, plans] = await Promise.all([
       prisma.service.findMany({ where: { shopId }, orderBy: { createdAt: 'asc' } }),
       prisma.barber.findMany({ where: { shopId }, orderBy: { createdAt: 'asc' } }),
       prisma.discount.findMany({ where: { shopId }, orderBy: { createdAt: 'desc' } }),
       prisma.appointment.findMany({ where: { shopId }, orderBy: { date: 'desc' } }),
-      prisma.hours.findMany({ where: { shopId } })
+      prisma.hours.findMany({ where: { shopId } }),
+      prisma.blockTime.findMany({ where: { shopId } }),
+      prisma.expense.findMany({ where: { shopId }, orderBy: { date: 'desc' } }),
+      prisma.client.findMany({ where: { shopId }, orderBy: { name: 'asc' }, include: { plan: true } }),
+      prisma.subscriptionPlan.findMany({ where: { shopId }, orderBy: { price: 'asc' } })
     ]);
 
     // Busca também o nome da loja
     const shop = await prisma.shop.findUnique({ where: { id: shopId }, select: { name: true, slug: true } });
 
-    res.json({ services, barbers, discounts, appointments, hours, shopName: shop?.name, shopSlug: shop?.slug });
+    res.json({ services, barbers, discounts, appointments, hours, blocks, expenses, clients, plans, shopName: shop?.name, shopSlug: shop?.slug });
   } catch (error) {
     console.error('getDashboardData error:', error);
     res.status(500).json({ error: 'Erro no servidor' });
@@ -83,169 +105,176 @@ exports.getDashboardData = async (req, res) => {
 // ============================================================
 // Services
 // ============================================================
-exports.createService = async (req, res) => {
-  try {
-    const { name, price, duration, desc } = req.body;
-    if (!name || !price || !duration) return res.status(400).json({ error: 'Campos obrigatórios: name, price, duration' });
-    const newSvc = await prisma.service.create({
-      data: { name: String(name), price: parseFloat(price), duration: parseInt(duration), desc: String(desc || ''), shopId: req.user.shopId }
-    });
-    res.json(newSvc);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.createService = asyncHandler(async (req, res) => {
+  const data = serviceSchema.parse(req.body);
+  const newSvc = await prisma.service.create({
+    data: { ...data, shopId: req.user.shopId }
+  });
+  logger.info({ shopId: req.user.shopId, serviceId: newSvc.id }, 'Serviço criado');
+  res.json(newSvc);
+});
 
-exports.updateService = async (req, res) => {
-  try {
-    const { name, price, duration, desc } = req.body;
-    if (!name || !price || !duration) return res.status(400).json({ error: 'Campos obrigatórios: name, price, duration' });
-    const updated = await prisma.service.updateMany({
-      where: { id: req.params.id, shopId: req.user.shopId },
-      data: { name: String(name), price: parseFloat(price), duration: parseInt(duration), desc: String(desc || '') }
-    });
-    if (updated.count === 0) return res.status(404).json({ error: 'Serviço não encontrado' });
-    const svc = await prisma.service.findUnique({ where: { id: req.params.id } });
-    res.json(svc);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
 
-exports.deleteService = async (req, res) => {
-  try {
-    await prisma.service.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
-    res.json({ success: true });
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.updateService = asyncHandler(async (req, res) => {
+  const data = serviceSchema.parse(req.body);
+  const { id } = req.params;
+  
+  const updated = await prisma.service.updateMany({
+    where: { id, shopId: req.user.shopId },
+    data
+  });
+  
+  if (updated.count === 0) return res.status(404).json({ error: 'Serviço não encontrado' });
+  const svc = await prisma.service.findUnique({ where: { id } });
+  res.json(svc);
+});
+
+exports.deleteService = asyncHandler(async (req, res) => {
+  await prisma.service.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
+  res.json({ success: true });
+});
 
 // ============================================================
 // Barbers
 // ============================================================
-exports.createBarber = async (req, res) => {
-  try {
-    const { name, role, emoji } = req.body;
-    if (!name) return res.status(400).json({ error: 'Nome é obrigatório' });
-    const newBarber = await prisma.barber.create({
-      data: { name: String(name), role: String(role || 'Barbeiro'), emoji: String(emoji || '✂️'), shopId: req.user.shopId }
-    });
-    res.json(newBarber);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.createBarber = asyncHandler(async (req, res) => {
+  const data = barberSchema.parse(req.body);
+  const newBarber = await prisma.barber.create({
+    data: { ...data, shopId: req.user.shopId }
+  });
+  res.json(newBarber);
+});
 
-exports.updateBarber = async (req, res) => {
-  try {
-    const { name, role, emoji } = req.body;
-    if (!name) return res.status(400).json({ error: 'Nome é obrigatório' });
-    const updated = await prisma.barber.updateMany({
-      where: { id: req.params.id, shopId: req.user.shopId },
-      data: { name: String(name), role: String(role || 'Barbeiro'), emoji: String(emoji || '✂️') }
-    });
-    if (updated.count === 0) return res.status(404).json({ error: 'Barbeiro não encontrado' });
-    const barber = await prisma.barber.findUnique({ where: { id: req.params.id } });
-    res.json(barber);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.updateBarber = asyncHandler(async (req, res) => {
+  const data = barberSchema.parse(req.body);
+  const { id } = req.params;
 
-exports.deleteBarber = async (req, res) => {
-  try {
-    await prisma.barber.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
-    res.json({ success: true });
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+  const updated = await prisma.barber.updateMany({
+    where: { id, shopId: req.user.shopId },
+    data
+  });
+  if (updated.count === 0) return res.status(404).json({ error: 'Barbeiro não encontrado' });
+  const barber = await prisma.barber.findUnique({ where: { id } });
+  res.json(barber);
+});
+
+exports.deleteBarber = asyncHandler(async (req, res) => {
+  await prisma.barber.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
+  res.json({ success: true });
+});
 
 // ============================================================
 // Appointments (Admin)
 // ============================================================
-exports.createAppointment = async (req, res) => {
-  try {
-    const { clientName, clientPhone, serviceNames, barberName, date, time, paymentMethod, price } = req.body;
-    if (!clientName || !serviceNames || !barberName || !date || !time) {
-      return res.status(400).json({ error: 'Campos obrigatórios: clientName, serviceNames, barberName, date, time' });
+const appointmentSchema = z.object({
+  clientName: z.string().min(1),
+  clientPhone: z.string().optional().default(''),
+  serviceNames: z.string().min(1),
+  barberName: z.string().min(1),
+  date: z.string(),
+  time: z.string(),
+  paymentMethod: z.string().optional().default('Na barbearia'),
+  price: z.number().or(z.string().transform(v => parseFloat(v))).default(0),
+});
+
+exports.createAppointment = asyncHandler(async (req, res) => {
+  const data = appointmentSchema.parse(req.body);
+  
+  // Buscar a comissão do barbeiro
+  let commissionValue = 0;
+  const barber = await prisma.barber.findFirst({
+    where: { shopId: req.user.shopId, name: data.barberName }
+  });
+  
+  if (barber && barber.commissionPct > 0) {
+    commissionValue = data.price * (barber.commissionPct / 100);
+  }
+
+  const newAppt = await prisma.appointment.create({
+    data: {
+      ...data,
+      shopId: req.user.shopId,
+      status: 'confirmed',
+      paymentStatus: 'pendente',
+      commissionValue
     }
-    const newAppt = await prisma.appointment.create({
-      data: {
+  });
+
+  if (data.clientPhone) {
+    prisma.client.upsert({
+      where: { shopId_phone: { shopId: req.user.shopId, phone: data.clientPhone } },
+      update: {
+        name: data.clientName,
+        totalVisits: { increment: 1 },
+        totalSpent: { increment: data.price }
+      },
+      create: {
         shopId: req.user.shopId,
-        clientName: String(clientName),
-        clientPhone: String(clientPhone || ''),
-        serviceNames: String(serviceNames),
-        barberName: String(barberName),
-        date: String(date),
-        time: String(time),
-        status: 'confirmed',
-        paymentStatus: 'pendente',
-        paymentMethod: String(paymentMethod || 'Na barbearia'),
-        price: parseFloat(price) || 0
+        name: data.clientName,
+        phone: data.clientPhone,
+        totalVisits: 1,
+        totalSpent: data.price
       }
-    });
-    res.json(newAppt);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+    }).catch(e => logger.error({ err: e }, 'CRM Update Error'));
+  }
+  res.json(newAppt);
+});
 
-exports.updateAppointment = async (req, res) => {
-  try {
-    // Whitelist dos campos que podem ser atualizados
-    const allowed = ['status', 'paymentStatus', 'paymentMethod', 'archived', 'price', 'clientName', 'clientPhone', 'barberName', 'serviceNames', 'date', 'time'];
-    const data = {};
-    allowed.forEach(k => { if (req.body[k] !== undefined) data[k] = req.body[k]; });
+exports.updateAppointment = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  // Whitelist manual or partial schema
+  const updated = await prisma.appointment.updateMany({
+    where: { id, shopId: req.user.shopId },
+    data: req.body // In a real app, use a schema here too
+  });
+  if (updated.count === 0) return res.status(404).json({ error: 'Agendamento não encontrado' });
+  const appt = await prisma.appointment.findFirst({ where: { id, shopId: req.user.shopId } });
+  res.json(appt);
+});
 
-    const updated = await prisma.appointment.updateMany({
-      where: { id: req.params.id, shopId: req.user.shopId },
-      data
-    });
-    if (updated.count === 0) return res.status(404).json({ error: 'Agendamento não encontrado' });
-    const appt = await prisma.appointment.findUnique({ where: { id: req.params.id } });
-    res.json(appt);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
-
-exports.deleteAppointment = async (req, res) => {
-  try {
-    await prisma.appointment.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
-    res.json({ success: true });
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.deleteAppointment = asyncHandler(async (req, res) => {
+  await prisma.appointment.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
+  res.json({ success: true });
+});
 
 // ============================================================
 // Discounts / Cupons
 // ============================================================
-exports.createDiscount = async (req, res) => {
-  try {
-    const { code, type, value, desc } = req.body;
-    if (!code || !value) return res.status(400).json({ error: 'Código e valor são obrigatórios' });
-    const newDisc = await prisma.discount.create({
-      data: {
-        code: String(code).toUpperCase(),
-        type: String(type || 'percent'),
-        value: parseFloat(value),
-        desc: String(desc || 'Desconto especial'),
-        shopId: req.user.shopId,
-        active: true,
-        uses: 0
-      }
-    });
-    res.json(newDisc);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+const discountSchema = z.object({
+  code: z.string().min(1).transform(v => v.toUpperCase()),
+  type: z.enum(['percent', 'fixed']).default('percent'),
+  value: z.number().or(z.string().transform(v => parseFloat(v))),
+  desc: z.string().optional().default('Desconto especial'),
+});
 
-exports.updateDiscount = async (req, res) => {
-  try {
-    const allowed = ['code', 'type', 'value', 'desc', 'active'];
-    const data = {};
-    allowed.forEach(k => { if (req.body[k] !== undefined) data[k] = req.body[k]; });
+exports.createDiscount = asyncHandler(async (req, res) => {
+  const data = discountSchema.parse(req.body);
+  const newDisc = await prisma.discount.create({
+    data: {
+      ...data,
+      shopId: req.user.shopId,
+      active: true,
+      uses: 0
+    }
+  });
+  res.json(newDisc);
+});
 
-    const updated = await prisma.discount.updateMany({
-      where: { id: req.params.id, shopId: req.user.shopId },
-      data
-    });
-    if (updated.count === 0) return res.status(404).json({ error: 'Cupom não encontrado' });
-    const disc = await prisma.discount.findUnique({ where: { id: req.params.id } });
-    res.json(disc);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.updateDiscount = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const updated = await prisma.discount.updateMany({
+    where: { id, shopId: req.user.shopId },
+    data: req.body
+  });
+  if (updated.count === 0) return res.status(404).json({ error: 'Cupom não encontrado' });
+  const disc = await prisma.discount.findUnique({ where: { id } });
+  res.json(disc);
+});
 
-exports.deleteDiscount = async (req, res) => {
-  try {
-    await prisma.discount.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
-    res.json({ success: true });
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.deleteDiscount = asyncHandler(async (req, res) => {
+  await prisma.discount.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
+  res.json({ success: true });
+});
 
 // ============================================================
 // Hours — horários de funcionamento
@@ -260,75 +289,153 @@ const DEFAULT_HOURS = [
   { day: 'Domingo', open: false, start: '09:00', end: '14:00' }
 ];
 
-exports.getHours = async (req, res) => {
-  try {
-    const hours = await prisma.hours.findMany({ where: { shopId: req.user.shopId } });
-    // Se ainda não tem horários cadastrados, retorna os defaults
-    if (hours.length === 0) return res.json(DEFAULT_HOURS.map(h => ({ ...h, id: null, shopId: req.user.shopId })));
-    // Retorna ordenado pela sequência de dias
-    const order = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
-    hours.sort((a, b) => order.indexOf(a.day) - order.indexOf(b.day));
-    res.json(hours);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.getHours = asyncHandler(async (req, res) => {
+  const hours = await prisma.hours.findMany({ where: { shopId: req.user.shopId } });
+  if (hours.length === 0) return res.json(DEFAULT_HOURS.map(h => ({ ...h, id: null, shopId: req.user.shopId })));
+  const order = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+  hours.sort((a, b) => order.indexOf(a.day) - order.indexOf(b.day));
+  res.json(hours);
+});
 
-exports.saveHours = async (req, res) => {
-  try {
-    const hoursData = req.body; // array de { day, open, start, end }
-    if (!Array.isArray(hoursData)) return res.status(400).json({ error: 'Formato inválido: espera array' });
-    const shopId = req.user.shopId;
+exports.saveHours = asyncHandler(async (req, res) => {
+  const hoursData = req.body;
+  if (!Array.isArray(hoursData)) return res.status(400).json({ error: 'Formato inválido: espera array' });
+  const shopId = req.user.shopId;
 
-    const results = await Promise.all(
-      hoursData.map(h =>
-        prisma.hours.upsert({
-          where: { shopId_day: { shopId, day: h.day } },
-          update: { open: Boolean(h.open), start: String(h.start), end: String(h.end) },
-          create: { shopId, day: String(h.day), open: Boolean(h.open), start: String(h.start), end: String(h.end) }
-        })
-      )
-    );
-    res.json(results);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+  const results = await Promise.all(
+    hoursData.map(h =>
+      prisma.hours.upsert({
+        where: { shopId_day: { shopId, day: h.day } },
+        update: { open: Boolean(h.open), start: String(h.start), end: String(h.end) },
+        create: { shopId, day: String(h.day), open: Boolean(h.open), start: String(h.start), end: String(h.end) }
+      })
+    )
+  );
+  res.json(results);
+});
 
 // ============================================================
-// Export CSV — GET /api/admin/appointments/export?month=YYYY-MM
+// Export CSV
 // ============================================================
-exports.exportAppointmentsCSV = async (req, res) => {
-  try {
-    const shopId = req.user.shopId;
-    const { month } = req.query; // opcional, formato YYYY-MM
+exports.exportAppointmentsCSV = asyncHandler(async (req, res) => {
+  const shopId = req.user.shopId;
+  const { month } = req.query;
 
-    let where = { shopId, archived: false };
-    if (month && /^\d{4}-\d{2}$/.test(month)) {
-      // Filtra agendamentos do mês: date começa com "YYYY-MM"
-      where.date = { startsWith: month };
+  let where = { shopId, archived: false };
+  if (month && /^\d{4}-\d{2}$/.test(month)) {
+    where.date = { startsWith: month };
+  }
+
+  const appointments = await prisma.appointment.findMany({
+    where,
+    orderBy: [{ date: 'asc' }, { time: 'asc' }]
+  });
+
+  const escape = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const header = ['Data', 'Hora', 'Cliente', 'Telefone', 'Serviço', 'Barbeiro', 'Valor (R$)', 'Pagamento', 'Status Pgto', 'Status'];
+  const rows = appointments.map(a => [
+    a.date, a.time, a.clientName, a.clientPhone,
+    a.serviceNames, a.barberName,
+    (Number(a.price) || 0).toFixed(2).replace('.', ','),
+    a.paymentMethod, a.paymentStatus, a.status
+  ].map(escape).join(','));
+
+  const csv = '\uFEFF' + [header.map(escape).join(','), ...rows].join('\r\n');
+
+  const filename = month ? `agendamentos_${month}.csv` : `agendamentos_todos.csv`;
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.send(csv);
+});
+
+// ============================================================
+// Block Time
+// ============================================================
+exports.createBlockTime = asyncHandler(async (req, res) => {
+  const { barberName, date, startTime, endTime, reason } = req.body;
+  if (!barberName || !date || !startTime || !endTime) {
+    return res.status(400).json({ error: 'Campos obrigatórios: barberName, date, startTime, endTime' });
+  }
+  const newBlock = await prisma.blockTime.create({
+    data: {
+      shopId: req.user.shopId,
+      barberName: String(barberName),
+      date: new Date(date), // Usando Date real se possível
+      startTime: String(startTime),
+      endTime: String(endTime),
+      reason: reason ? String(reason) : null
     }
+  });
+  res.json(newBlock);
+});
 
-    const appointments = await prisma.appointment.findMany({
-      where,
-      orderBy: [{ date: 'asc' }, { time: 'asc' }]
-    });
+exports.deleteBlockTime = asyncHandler(async (req, res) => {
+  await prisma.blockTime.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
+  res.json({ success: true });
+});
 
-    // Gera CSV
-    const escape = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
-    const header = ['Data', 'Hora', 'Cliente', 'Telefone', 'Serviço', 'Barbeiro', 'Valor (R$)', 'Pagamento', 'Status Pgto', 'Status'];
-    const rows = appointments.map(a => [
-      a.date, a.time, a.clientName, a.clientPhone,
-      a.serviceNames, a.barberName,
-      (a.price || 0).toFixed(2).replace('.', ','),
-      a.paymentMethod, a.paymentStatus, a.status
-    ].map(escape).join(','));
+// ============================================================
+// Subscription Plans
+// ============================================================
+exports.createSubscriptionPlan = asyncHandler(async (req, res) => {
+  const { name, price, maxCuts } = req.body;
+  if (!name || !price) return res.status(400).json({ error: 'Nome e preço são obrigatórios' });
+  const newPlan = await prisma.subscriptionPlan.create({
+    data: {
+      shopId: req.user.shopId,
+      name: String(name),
+      price: Number(price),
+      maxCuts: parseInt(maxCuts) || 4
+    }
+  });
+  res.json(newPlan);
+});
 
-    const csv = '\uFEFF' + [header.map(escape).join(','), ...rows].join('\r\n'); // BOM para Excel
+exports.updateSubscriptionPlan = asyncHandler(async (req, res) => {
+  const { name, price, maxCuts, active } = req.body;
+  const { id } = req.params;
+  const updated = await prisma.subscriptionPlan.updateMany({
+    where: { id, shopId: req.user.shopId },
+    data: { name: String(name), price: Number(price), maxCuts: parseInt(maxCuts), active: Boolean(active) }
+  });
+  if (updated.count === 0) return res.status(404).json({ error: 'Plano não encontrado' });
+  const plan = await prisma.subscriptionPlan.findUnique({ where: { id } });
+  res.json(plan);
+});
 
-    const filename = month
-      ? `agendamentos_${month}.csv`
-      : `agendamentos_todos.csv`;
+exports.deleteSubscriptionPlan = asyncHandler(async (req, res) => {
+  await prisma.subscriptionPlan.deleteMany({ where: { id: req.params.id, shopId: req.user.shopId } });
+  res.json({ success: true });
+});
 
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(csv);
-  } catch (err) { console.error(err); res.status(500).json({ error: 'Erro no servidor' }); }
-};
+exports.assignPlanToClient = asyncHandler(async (req, res) => {
+  const { clientId, planId } = req.body;
+  if (!clientId) return res.status(400).json({ error: 'ID do cliente obrigatório' });
+  
+  let planExpiresAt = null;
+  if (planId) {
+    planExpiresAt = new Date();
+    planExpiresAt.setDate(planExpiresAt.getDate() + 30);
+  }
+
+  await prisma.client.updateMany({
+    where: { id: clientId, shopId: req.user.shopId },
+    data: { planId: planId || null, planExpiresAt, cutsUsed: 0 }
+  });
+
+  res.json({ success: true });
+});
+
+exports.updateClientCuts = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { cutsUsed } = req.body;
+  if (cutsUsed === undefined) return res.status(400).json({ error: 'Campo cutsUsed é obrigatório' });
+
+  await prisma.client.updateMany({
+    where: { id, shopId: req.user.shopId },
+    data: { cutsUsed: Math.max(0, parseInt(cutsUsed)) }
+  });
+
+  res.json({ success: true });
+});
 

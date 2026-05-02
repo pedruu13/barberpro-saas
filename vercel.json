@@ -6,6 +6,7 @@
       "maxDuration": 15
     }
   },
+
   "routes": [
     { "src": "/api/health", "dest": "/api/index.js" },
     { "src": "/api/cron/(.*)", "dest": "/api/index.js" },

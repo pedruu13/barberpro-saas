@@ -1,93 +1,70 @@
 /**
  * notificationService.js
- * Integração com Z-API para WhatsApp.
- * Documentação: https://developer.z-api.io/
- *
- * Configuração por barbearia (multi-tenant):
- *   shop.zapiInstance  → ID da instância Z-API (ex: "3D...")
- *   shop.zapiToken     → Token da instância Z-API
- *
- * Variável de ambiente global (fallback único para todas as lojas):
- *   ZAPI_INSTANCE, ZAPI_TOKEN, ZAPI_CLIENT_TOKEN
+ * Integração robusta com Z-API para WhatsApp e placeholders para e-mail.
  */
-
-const https = require('https');
+const logger = require('../lib/logger');
 
 /**
- * Envia mensagem de texto via Z-API.
- * @param {string} phone     - Número no formato internacional sem + (ex: "5511999990000")
+ * Envia mensagem de texto via Z-API usando a Fetch API nativa.
+ * @param {string} phone     - Número no formato internacional (ex: "5511999990000")
  * @param {string} message   - Texto a enviar
  * @param {object} [shop]    - Objeto shop com zapiInstance e zapiToken (opcional)
  * @returns {Promise<boolean>}
  */
 async function sendWhatsAppMessage(phone, message, shop = null) {
-  // Normaliza o número: remove tudo que não for dígito
-  const normalized = String(phone || '').replace(/\D/g, '');
+  let normalized = String(phone || '').replace(/\D/g, '');
+  
+  // Adiciona o 55 (Brasil) caso o número tenha apenas 10 ou 11 dígitos
+  if (normalized.length === 10 || normalized.length === 11) {
+    normalized = '55' + normalized;
+  }
+
   if (!normalized || normalized.length < 10) {
-    console.log(`[WhatsApp] Número inválido ou ausente: "${phone}" — notificação ignorada.`);
+    logger.warn({ phone }, '[WhatsApp] Número inválido ou ausente. Notificação ignorada.');
     return false;
   }
 
-  // Prioridade: credenciais da barbearia → variáveis de ambiente globais
-  const instance    = shop?.zapiInstance    || process.env.ZAPI_INSTANCE;
-  const token       = shop?.zapiToken       || process.env.ZAPI_TOKEN;
+  const instance = shop?.zapiInstance || process.env.ZAPI_INSTANCE;
+  const token = shop?.zapiToken || process.env.ZAPI_TOKEN;
   const clientToken = process.env.ZAPI_CLIENT_TOKEN;
 
   if (!instance || !token) {
-    console.log(`[WhatsApp] Z-API não configurado para esta barbearia. Mensagem que seria enviada para ${normalized}:\n${message}`);
+    logger.debug({ normalized, message }, '[WhatsApp] Z-API não configurado para esta barbearia. Logando mensagem no console.');
     return false;
   }
 
-  return new Promise((resolve) => {
-    const body = JSON.stringify({ phone: normalized, message });
-    const options = {
-      hostname: 'api.z-api.io',
-      path: `/instances/${instance}/token/${token}/send-text`,
+  const url = `https://api.z-api.io/instances/${instance}/token/${token}/send-text`;
+  
+  try {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type':  'application/json',
-        'Content-Length': Buffer.byteLength(body),
+        'Content-Type': 'application/json',
         ...(clientToken ? { 'Client-Token': clientToken } : {})
-      }
-    };
-
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          console.log(`[WhatsApp] ✅ Mensagem enviada para ${normalized}`);
-          resolve(true);
-        } else {
-          console.error(`[WhatsApp] ❌ Erro Z-API ${res.statusCode}: ${data}`);
-          resolve(false);
-        }
-      });
+      },
+      body: JSON.stringify({ phone: normalized, message })
     });
 
-    req.on('error', (e) => {
-      console.error(`[WhatsApp] ❌ Falha na requisição Z-API:`, e.message);
-      resolve(false);
-    });
+    const data = await response.json();
 
-    req.setTimeout(8000, () => {
-      console.error('[WhatsApp] ❌ Timeout na requisição Z-API (8s)');
-      req.destroy();
-      resolve(false);
-    });
-
-    req.write(body);
-    req.end();
-  });
+    if (response.ok) {
+      logger.info({ normalized }, '[WhatsApp] ✅ Mensagem enviada com sucesso');
+      return true;
+    } else {
+      logger.error({ status: response.status, data }, '[WhatsApp] ❌ Erro na API Z-API');
+      return false;
+    }
+  } catch (error) {
+    logger.error({ error: error.message }, '[WhatsApp] ❌ Falha na requisição Z-API');
+    return false;
+  }
 }
 
 /**
- * Envia notificação por e-mail.
- * Placeholder para integração futura com Nodemailer / Resend / SendGrid.
+ * Envia notificação por e-mail (Placeholder).
  */
 async function sendEmailNotification(email, subject, text) {
-  // TODO: integrar provedor de e-mail (ex: Resend, Nodemailer + SMTP)
-  console.log(`[Email] Stub — para: ${email} | assunto: ${subject}\n${text}`);
+  logger.info({ email, subject }, '[Email] Stub disparado (implementação futura)');
   return true;
 }
 

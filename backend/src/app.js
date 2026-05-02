@@ -8,6 +8,9 @@ const publicRoutes = require('./routes/publicRoutes');
 const adminRoutes  = require('./routes/adminRoutes');
 const superadminRoutes = require('./routes/superadminRoutes');
 const { authenticate } = require('./middlewares/authMiddleware');
+const logger = require('./lib/logger');
+const { ZodError } = require('zod');
+
 
 const app = express();
 
@@ -65,4 +68,20 @@ app.use((req, res, next) => {
   }
 });
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      error: 'Erro de validação',
+      details: err.errors.map(e => ({ path: e.path.join('.'), message: e.message }))
+    });
+  }
+
+  logger.error(err);
+  res.status(err.status || 500).json({
+    error: process.env.NODE_ENV === 'production' ? 'Erro interno no servidor' : err.message
+  });
+});
+
 module.exports = app;
+

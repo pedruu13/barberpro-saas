@@ -1,6 +1,15 @@
 const request = require('supertest');
 const app = require('../src/app');
 
+// Mock Prisma
+jest.mock('../src/lib/prisma', () => ({
+  shop: {
+    findFirst: jest.fn()
+  }
+}));
+
+const prisma = require('../src/lib/prisma');
+
 describe('Server Basics & Public Routes', () => {
   it('GET /health should return status ok', async () => {
     const res = await request(app).get('/health');
@@ -9,9 +18,8 @@ describe('Server Basics & Public Routes', () => {
   });
 
   it('GET /api/public/shop/:id should return 404 for invalid shop uuid', async () => {
-    // Assuming 'invalid-id' is not a valid uuid format or just not found
+    prisma.shop.findFirst.mockResolvedValue(null);
     const res = await request(app).get('/api/public/shop/invalid-id');
-    // Prisma usually throws or returns null
     expect(res.statusCode).toBe(404);
   });
 });
