@@ -82,6 +82,7 @@ model Barber {
   role        String
   emoji       String
   commissionPct Float  @default(0) // Porcentagem de comissão (ex: 50.0)
+  pixKey      String?  // Chave Pix do Barbeiro
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

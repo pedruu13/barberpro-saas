@@ -17,6 +17,7 @@ const barberSchema = z.object({
   role: z.string().optional().default('Barbeiro'),
   emoji: z.string().optional().default('✂️'),
   commissionPct: z.number().min(0).max(100).or(z.string().transform(v => parseFloat(v || 0))).default(0),
+  pixKey: z.string().optional().nullable().default(null),
 });
 
 
