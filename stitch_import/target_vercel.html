@@ -126,21 +126,23 @@
     <div class="noir-booking-container">
       <div class="noir-booking-aside">
         <div class="booking-header">
-          <div class="booking-brand">
-            <h2 style="font-family: var(--font-serif); color: var(--gold); letter-spacing: 1px;">BarberPro</h2>
-            <p style="font-size: 11px; color: var(--white-dim); text-transform: uppercase; letter-spacing: 2px;">Agendamento Elite</p>
+          <div class="artisan-badge"><span>Agendamento Elite</span></div>
+          <div class="booking-shop-name" id="shop-name-display">Barber<span>Pro</span></div>
+          <div class="booking-sub" id="shop-address-display">Atelier de Precisão</div>
+          <div class="booking-header-actions">
+            <button class="btn-nav btn-ghost" onclick="goTo('client-login')">Acessar Área VIP</button>
           </div>
-          
-          <div class="booking-steps-vertical">
-            <div class="step-indicator active" id="step-ind-1">
-              <span>01 SELEÇÃO DE SERVIÇO</span>
-            </div>
-            <div class="step-indicator" id="step-ind-2">
-              <span>02 RESERVA DE HORÁRIO</span>
-            </div>
-            <div class="step-indicator" id="step-ind-3">
-              <span>03 FINALIZAÇÃO ELITE</span>
-            </div>
+        </div>
+
+        <div class="booking-steps-vertical">
+          <div class="step-indicator active" id="si-1">
+            <div class="step-num">01</div><span>Seleção de Serviço</span>
+          </div>
+          <div class="step-indicator" id="si-2">
+            <div class="step-num">02</div><span>Reserva de Horário</span>
+          </div>
+          <div class="step-indicator" id="si-3">
+            <div class="step-num">03</div><span>Finalização Elite</span>
           </div>
         </div>
       </div>
@@ -150,13 +152,13 @@
           <!-- Step 1 -->
           <div class="step-panel active" id="step1">
             <div id="booking-plans-container" style="display:none;"></div>
-            <h2 class="step-title">Escolha o <em>Serviço</em></h2>
-            <p class="step-desc">Selecione os serviços que deseja realizar hoje.</p>
+            <h2 class="step-title">Escolha o <em>Ofício</em></h2>
+            <p class="step-desc">Selecione os serviços que compõem sua experiência.</p>
             
             <div class="service-list" id="booking-services"></div>
             
-            <h2 class="step-title" style="margin-top:48px">Escolha o <em>Profissional</em></h2>
-            <p class="step-desc">Selecione o barbeiro de sua preferência.</p>
+            <h2 class="step-title" style="margin-top:48px">Escolha o <em>Mestre</em></h2>
+            <p class="step-desc">Selecione seu profissional de preferência.</p>
             <div class="barber-grid" id="booking-barbers"></div>
             
             <div class="step-nav">

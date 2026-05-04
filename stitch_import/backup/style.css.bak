@@ -1,22 +1,30 @@
-/* =========================================
-   STYLE.CSS - Sidebar e Overlay (Design Moderno SaaS)
-   ========================================= */
+:root {
+  /* Modern Noir Palette */
+  --midnight: #050505;
+  --onyx: #0A0A0A;
+  --coal: #111111;
+  --artisan-gold: #D4AF37;
+  --gold-muted: rgba(212, 175, 55, 0.15);
+  --gold-border: rgba(212, 175, 55, 0.3);
+  --white-soft: rgba(255, 255, 255, 0.85);
+  --white-dim: rgba(255, 255, 255, 0.5);
+  
+  /* Typography */
+  --font-serif: 'Noto Serif', serif;
+  --font-sans: 'Manrope', sans-serif;
+}
 
-/* ========== OVERLAY ========== */
-.sidebar-overlay {
-  /* Começa invisível */
-  display: none; 
-  opacity: 0;
-  
-  /* Posicionamento */
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5); /* Fundo escuro atrás da sidebar */
-  z-index: 998; /* Menor que a sidebar */
-  
-  /* Transição */
-  transition: opacity 0.3s ease-in-out;
-  cursor: pointer;
+.glass-panel {
+  background: rgba(15, 15, 15, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.noir-card {
+  background: linear-gradient(145deg, #111, #080808);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 /* Quando ativa */
@@ -1047,15 +1055,12 @@ input, select {
     }
 
     .noir-booking-aside {
-      background: linear-gradient(180deg, #1A1A1A 0%, #121414 100%);
+      background: var(--black-soft);
       border-right: 1px solid var(--black-border);
-      padding: 60px 48px;
+      padding: 48px 40px;
       display: flex;
       flex-direction: column;
-      gap: 64px;
-      position: sticky;
-      top: 0;
-      height: calc(100vh - 72px);
+      gap: 60px;
     }
 
     .noir-booking-main {
@@ -1071,26 +1076,20 @@ input, select {
 
     .booking-steps-vertical .step-indicator {
       justify-content: flex-start;
-      padding: 16px 0;
-      opacity: 0.3;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      border-left: 2px solid transparent;
-      padding-left: 20px;
-      margin-left: -20px;
+      padding: 12px 0;
+      opacity: 0.4;
+      transition: opacity 0.3s ease;
     }
 
     .booking-steps-vertical .step-indicator.active {
       opacity: 1;
-      border-left-color: var(--gold);
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
     }
 
     .booking-steps-vertical .step-indicator span {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: var(--white);
+      letter-spacing: 0.1em;
     }
 
     .noir-sub-title {

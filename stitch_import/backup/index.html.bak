@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#121414">
+  <title>BarberPro Ã¢â‚¬â€ Precisão Digital. Mestria Artesanal.</title>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Serif:ital,wght@0,400..700;1,400..700&family=Manrope:wght@200..800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline": "#99907c",
+            "primary": "#f2ca50",
+            "background": "#121414",
+            "surface": "#121414",
+            "on-surface": "#e2e2e2",
+            "primary-container": "#d4af37",
+            "on-primary-container": "#3c2f00",
+            "surface-container-lowest": "#0c0f0f",
+            "surface-container-low": "#1a1c1c",
+            "surface-container": "#1e2020",
+            "surface-container-high": "#282a2b",
+            "surface-container-highest": "#333535",
+          },
+          "fontFamily": {
+            "serif": ["Noto Serif", "serif"],
+            "sans": ["Manrope", "sans-serif"],
+            "display": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    body { background-color: #121414; color: #e2e2e2; font-family: 'Manrope', sans-serif; }
+    
+    /* Global Transition */
+    * { transition: background-color 0.3s ease, border-color 0.3s ease; }
+  </style>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</head>
+
+<body>
+
+  <!-- Global Navigation (Elite Noir) -->
+  <header class="fixed top-0 w-full z-50 bg-black/40 backdrop-blur-md border-b border-white/5 shadow-[0_0_15px_rgba(212,175,55,0.03)]">
+    <div class="flex justify-between items-center px-8 h-16 w-full">
+      <div class="text-xl font-bold text-white tracking-tighter italic font-serif cursor-pointer" onclick="goTo('landing')">BarberPro</div>
+      <nav class="hidden md:flex gap-8 font-sans tracking-tight uppercase text-xs">
+        <a class="text-zinc-400 hover:text-primary transition-colors duration-300" href="#" onclick="goTo('booking')">Serviços</a>
+        <a class="text-zinc-400 hover:text-primary transition-colors duration-300" href="#">Galeria</a>
+        <a class="text-zinc-400 hover:text-primary transition-colors duration-300" href="#">VIP Member</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <button class="font-sans tracking-tight uppercase text-xs text-zinc-400 hover:text-white transition-colors" onclick="goTo('client-login')">MEU PERFIL</button>
+        <button class="font-sans tracking-tight uppercase text-xs text-primary-container border border-primary-container/30 px-4 py-2 rounded hover:bg-primary-container/10 transition-all" onclick="goTo('booking')">AGENDAR</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== LANDING PAGE (STITCH ELITE) ===== -->
+  <div id="landing" class="screen active">
+    <main>
+      <!-- Hero -->
+      <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+          <img class="w-full h-full object-cover grayscale opacity-40 contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChIi426DWTOFonRoR9VOojHh2mrhlB2ZhULmIdizPCl737Esm65BiT622KmhMWyXV2Q1fLPCyOXuKvJrFBcD4q3DutQnSeM3SMC5vpTc1MRreAQ25aVyZfXwqXYWMbPxycJpPZe1uQbpjGYwmgxExXhcoeCPJXXj92DvXglyJlWC5G65ZxJE_LAiUMc99f0UHecnTCw0s3sWJ06WdIB-Vb_3-314QB1-gu7Tc2ze-v4bO89_d3rIzYg__nAXQ09I-gekA56XIkqs6z"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+        </div>
+        <div class="relative z-10 text-center max-w-4xl px-8">
+          <div class="mb-6 inline-flex items-center gap-2 px-4 py-1 glass-panel text-primary-container font-bold text-[10px] uppercase tracking-widest rounded-full">
+            <span class="w-2 h-2 bg-primary-container rounded-full animate-pulse"></span>
+            Precisão Digital. Mestria Artesanal.
+          </div>
+          <h1 class="font-serif text-5xl md:text-8xl text-white mb-6 uppercase leading-tight italic tracking-tighter">Mestria em <span class="text-primary-container">Grooming</span></h1>
+          <p class="font-sans text-lg text-zinc-400 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+            Combinamos a tradição da barbearia clássica com tecnologia de ponta para criar experiências de cuidado pessoal incomparáveis.
+          </p>
+          <div class="flex flex-col md:flex-row gap-4 justify-center">
+            <button class="bg-primary-container text-on-primary-container px-12 py-5 font-bold text-xs uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all rounded" onclick="goTo('booking')">Marcar Agora</button>
+            <button class="glass-panel text-white px-12 py-5 font-bold text-xs uppercase tracking-widest border border-white/10 hover:bg-white/5 transition-all rounded" onclick="goTo('client-login')">Ver Meus Horários</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- History -->
+      <section class="py-32 relative overflow-hidden bg-surface-container-lowest">
+        <div class="max-w-7xl mx-auto px-8 relative z-10">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+            <div class="relative">
+              <div class="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-primary-container opacity-30"></div>
+              <div class="aspect-[4/5] overflow-hidden rounded-lg">
+                <img class="w-full h-full object-cover grayscale brightness-75 hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB02V84GF1iQ74mCTBdc45elE1ZN61N8nTRf5M_I3Ci3AuVTPtutHl9zaBocKmGhsSskqK5q0-YoOhNgXGln3U9ktM893znxiBRPuyAyayEvB50-oOLQxIvhLpfuhfEEZwwulbNbvi7-zfavFT9t1IggfrUSMVYqUFrJEVj0NxqPg5ft816IGlEJ8zJDJQCQL-0T1UEdhuO4EyisEBRZ53blbcoTJZK9ib0lDNJ7bYUdBwOiaMZ6EvJVvc6bB9hcrtOD_p3HfVapVqV"/>
+              </div>
+            </div>
+            <div>
+              <span class="text-primary-container font-sans text-xs font-bold uppercase tracking-[0.3em] mb-4 block italic">Herança & Inovação</span>
+              <h2 class="font-serif text-4xl md:text-6xl text-white mb-8 uppercase leading-tight italic tracking-tighter">Nossa História: <br/><span class="text-primary-container">Legado de Ferro</span></h2>
+              <p class="font-sans text-zinc-400 mb-12 font-light leading-relaxed text-lg">
+                Desde 2012, o BarberPro tem redefinido os padrões de estética masculina. Nascemos da necessidade de criar um refúgio onde a técnica manual se encontra com a inovação digital. Não cortamos apenas cabelo; calibramos identidades.
+              </p>
+              <div class="grid grid-cols-2 gap-12 mb-12">
+                <div>
+                  <div class="text-5xl font-black text-white mb-2 tracking-tighter italic">12K+</div>
+                  <div class="text-primary-container font-sans text-[10px] uppercase tracking-widest font-bold">Sessões Realizadas</div>
+                </div>
+                <div>
+                  <div class="text-5xl font-black text-white mb-2 tracking-tighter italic">98%</div>
+                  <div class="text-primary-container font-sans text-[10px] uppercase tracking-widest font-bold">ÃƒÂndice de Precisão</div>
+                </div>
+              </div>
+              <button class="flex items-center gap-4 text-white font-bold text-xs uppercase tracking-widest group" onclick="goTo('booking')">
+                Marcar Experiência <span class="material-symbols-outlined text-primary-container group-hover:translate-x-3 transition-transform">trending_flat</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-surface-container-lowest border-t border-white/5 py-20">
+      <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="text-white font-black uppercase tracking-tighter text-2xl italic font-serif">BarberPro</div>
+        <div class="font-sans text-[10px] tracking-widest uppercase text-zinc-600">
+          © 2024 BarberPro TECHNOLOGIES. PRECISION ENGINEERED.
+        </div>
+        <div class="flex gap-8">
+          <a href="#" class="text-[10px] text-zinc-600 uppercase tracking-widest hover:text-white transition-colors">Instagram</a>
+          <a href="#" class="text-[10px] text-zinc-600 uppercase tracking-widest hover:text-white transition-colors">Spotify</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===== LOGIN (ELITE) ===== -->
+  <div id="login" class="screen">
+    <div class="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      <div class="absolute inset-0 z-0">
+        <div class="absolute top-0 left-0 w-96 h-96 bg-primary-container/10 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[100px]"></div>
+      </div>
+      <div class="relative z-10 w-full max-w-md glass-panel p-10 rounded-xl space-y-8 border-t border-white/10 shadow-2xl">
+        <div class="text-center space-y-2">
+          <div class="text-3xl font-serif font-black text-white tracking-tighter italic uppercase">BarberPro</div>
+          <p class="text-primary-container font-sans text-[10px] font-bold uppercase tracking-[0.2em]">Painel do Barbeiro</p>
+        </div>
+        
+        <div class="flex border-b border-white/10 mb-8">
+          <button class="flex-1 py-3 text-xs font-bold uppercase tracking-widest text-white border-b-2 border-primary-container" id="login-tab-btn" onclick="switchTab('login-tab','register-tab',this)">Entrar</button>
+          <button class="flex-1 py-3 text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors" id="register-tab-btn" onclick="switchTab('register-tab','login-tab',this)">Cadastrar</button>
+        </div>
+
+        <div id="login-tab" class="space-y-6">
+          <div class="space-y-2">
+            <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">E-mail</label>
+            <input type="email" id="login-email" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all" placeholder="seu@email.com">
+          </div>
+          <div class="space-y-2">
+            <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">Senha</label>
+            <input type="password" id="login-pass" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all" placeholder="••••••••">
+          </div>
+          <button class="w-full bg-primary-container text-on-primary-container py-5 font-bold uppercase tracking-widest hover:brightness-110 transition-all rounded" onclick="doLogin()">Entrar no Dashboard</button>
+        </div>
+
+        <div id="register-tab" class="hidden space-y-6">
+          <div class="space-y-2">
+            <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">Nome da Barbearia</label>
+            <input type="text" id="reg-name" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all" placeholder="Minha Barbearia">
+          </div>
+          <div class="space-y-2">
+            <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">Seu Nome</label>
+            <input type="text" id="reg-user" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all" placeholder="Nome Sobrenome">
+          </div>
+          <div class="space-y-2">
+            <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">E-mail</label>
+            <input type="email" id="reg-email" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all" placeholder="seu@email.com">
+          </div>
+          <div class="space-y-2">
+            <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">Senha</label>
+            <input type="password" id="reg-pass" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all" placeholder="••••••••">
+          </div>
+          <button class="w-full bg-primary-container text-on-primary-container py-5 font-bold uppercase tracking-widest hover:brightness-110 transition-all rounded" onclick="doRegister()">Criar Conta Grátis</button>
+        </div>
+
+        <div class="text-center pt-4">
+          <button class="text-zinc-600 uppercase text-[10px] font-bold tracking-widest hover:text-white transition-colors" onclick="goTo('landing')">← Voltar para o Início</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BOOKING SCREEN (STITCH ELITE) ===== -->
+  <div id="booking" class="screen">
+    <main class="pt-24 pb-32 min-h-screen px-4 md:px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
+      <!-- Left Column: Step Content -->
+      <div class="flex-grow space-y-12">
+        <!-- Stepper Progress Indicator -->
+        <div class="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide">
+          <div class="flex items-center gap-3 shrink-0">
+            <span class="w-8 h-8 rounded-full border border-primary-container flex items-center justify-center text-primary-container font-sans text-xs font-bold" id="si-1">1</span>
+            <span class="font-sans text-white uppercase tracking-widest text-[10px] font-bold">Serviço</span>
+          </div>
+          <div class="h-[1px] w-8 bg-white/10"></div>
+          <div class="flex items-center gap-3 shrink-0">
+            <span class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-zinc-500 font-sans text-xs" id="si-2">2</span>
+            <span class="font-sans text-zinc-500 uppercase tracking-widest text-[10px]">Horário</span>
+          </div>
+          <div class="h-[1px] w-8 bg-white/10"></div>
+          <div class="flex items-center gap-3 shrink-0">
+            <span class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-zinc-500 font-sans text-xs" id="si-3">3</span>
+            <span class="font-sans text-zinc-500 uppercase tracking-widest text-[10px]">Confirmação</span>
+          </div>
+        </div>
+
+        <!-- Section: Services & Barbers (Step 1) -->
+        <div id="step1" class="booking-step active space-y-8">
+          <div class="space-y-2">
+            <h1 class="font-serif text-4xl md:text-6xl text-white uppercase italic tracking-tighter">Escolha o seu <span class="text-primary-container">Serviço</span></h1>
+            <p class="text-zinc-400 font-sans text-lg font-light max-w-xl">Selecione uma das nossas especialidades de engenharia capilar.</p>
+          </div>
+          <div id="booking-services" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamic Services Load Here -->
+          </div>
+          
+          <div class="space-y-2 pt-12">
+            <h2 class="font-serif text-3xl md:text-5xl text-white uppercase italic tracking-tighter">Escolha o <span class="text-primary-container">Mestre</span></h2>
+            <p class="text-zinc-400 font-sans text-lg font-light max-w-xl">Selecione seu profissional de preferência.</p>
+          </div>
+          <div id="booking-barbers" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Dynamic Barbers Load Here -->
+          </div>
+
+          <div class="flex justify-end pt-8">
+            <button class="bg-primary-container text-on-primary-container font-sans font-bold px-10 py-5 uppercase tracking-widest flex items-center gap-3 rounded-lg hover:brightness-110 active:scale-95 transition-all" id="btn-step1" onclick="nextStep(2)" disabled>
+              Próximo Passo
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section: Schedule (Step 2) -->
+        <div id="step2" class="booking-step hidden space-y-8">
+          <div class="space-y-2">
+            <h1 class="font-serif text-4xl md:text-6xl text-white uppercase italic tracking-tighter">Calibração de <span class="text-primary-container">Horário</span></h1>
+            <p class="text-zinc-400 font-sans text-lg font-light max-w-xl">Selecione o momento ideal para sua transformação.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="glass-panel p-6 rounded-lg">
+              <div class="calendar-nav flex justify-between items-center mb-6">
+                <button class="text-primary-container" onclick="changeMonth(-1)"><span class="material-symbols-outlined">chevron_left</span></button>
+                <span class="font-serif text-xl text-white uppercase italic" id="cal-month-label">Janeiro</span>
+                <button class="text-primary-container" onclick="changeMonth(1)"><span class="material-symbols-outlined">chevron_right</span></button>
+              </div>
+              <div class="grid grid-cols-7 gap-2 text-center text-[10px] text-zinc-600 font-bold uppercase mb-4">
+                <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sab</span>
+              </div>
+              <div id="cal-grid" class="grid grid-cols-7 gap-2">
+                <!-- Calendar Grid -->
+              </div>
+            </div>
+            <div class="space-y-6">
+              <h3 class="font-sans text-xs font-bold text-zinc-500 uppercase tracking-widest" id="time-title">Horários Disponíveis</h3>
+              <div id="time-slots" class="grid grid-cols-3 gap-3">
+                <!-- Dynamic Times Load Here -->
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between pt-8">
+            <button class="text-zinc-500 uppercase text-xs font-bold tracking-widest hover:text-white transition-colors" onclick="nextStep(1)">← Voltar aos Serviços</button>
+            <button class="bg-primary-container text-on-primary-container font-sans font-bold px-10 py-5 uppercase tracking-widest flex items-center gap-3 rounded-lg hover:brightness-110 active:scale-95 transition-all" id="btn-step2" onclick="nextStep(3)" disabled>
+              Avançar
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section: Confirm (Step 3) -->
+        <div id="step3" class="booking-step hidden space-y-8">
+          <div class="space-y-2">
+            <h1 class="font-serif text-4xl md:text-6xl text-white uppercase italic tracking-tighter">Finalizar <span class="text-primary-container">Reserva</span></h1>
+            <p class="text-zinc-400 font-sans text-lg font-light max-w-xl">Confirme os detalhes do seu ritual.</p>
+          </div>
+          
+          <div id="vip-booking-banner" class="hidden glass-panel p-6 border-l-4 border-primary-container rounded-r-lg">
+            <div class="flex items-center gap-4">
+              <span class="material-symbols-outlined text-primary-container">verified</span>
+              <div>
+                <p class="font-serif text-white uppercase italic">Assinante VIP</p>
+                <p class="text-zinc-400 text-sm">Identificamos seu plano ativo. A reserva será processada automaticamente.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-panel p-8 rounded-lg space-y-8">
+            <div id="booking-summary" class="space-y-4">
+              <!-- Dynamic Details Load Here -->
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="form-group">
+                <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block mb-2">Identificação</label>
+                <input type="text" id="client-name" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all placeholder:text-zinc-700" placeholder="Seu nome completo">
+              </div>
+              <div class="form-group">
+                <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block mb-2">Contato WhatsApp</label>
+                <input type="tel" id="client-phone" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all placeholder:text-zinc-700" placeholder="(00) 00000-0000">
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <h3 class="font-serif text-xl text-white uppercase italic">Forma de Liquidação</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="pay-shop" class="glass-panel p-6 rounded-lg cursor-pointer border-2 border-transparent hover:border-primary-container/30 transition-all flex justify-between items-center group" onclick="selectPayment('shop')">
+                  <div>
+                    <p class="text-white font-bold uppercase text-xs tracking-widest">Presencial</p>
+                    <p class="text-zinc-500 text-[10px] uppercase">No Atelier</p>
+                  </div>
+                  <span class="material-symbols-outlined text-zinc-500 group-hover:text-primary-container">payments</span>
+                </div>
+                <div id="pay-pix" class="glass-panel p-6 rounded-lg cursor-pointer border-2 border-transparent hover:border-primary-container/30 transition-all flex justify-between items-center group" onclick="selectPayment('pix')">
+                  <div>
+                    <p class="text-white font-bold uppercase text-xs tracking-widest">Digital (Pix)</p>
+                    <p class="text-zinc-500 text-[10px] uppercase">Imediato</p>
+                  </div>
+                  <span class="material-symbols-outlined text-zinc-500 group-hover:text-primary-container">qr_code_2</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="w-full bg-primary-container text-on-primary-container py-6 font-bold uppercase tracking-widest hover:brightness-110 transition-all rounded shadow-[0_0_30px_rgba(212,175,55,0.2)]" onclick="confirmBooking()">Ã¢Å“â€ Confirmar Experiência</button>
+          </div>
+          <button class="text-zinc-500 uppercase text-xs font-bold tracking-widest hover:text-white transition-colors" onclick="nextStep(2)">← Revisar Detalhes</button>
+        </div>
+
+        <!-- Section: Success (Step 4) -->
+        <div id="step4" class="booking-step hidden space-y-12 text-center py-20">
+          <div class="relative inline-block">
+            <div class="absolute inset-0 bg-primary-container blur-[40px] opacity-20"></div>
+            <span class="material-symbols-outlined text-8xl text-primary-container relative z-10" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+          </div>
+          <div class="space-y-4">
+            <h1 class="font-serif text-5xl md:text-7xl text-white uppercase italic tracking-tighter">Sua vaga está <span class="text-primary-container">Garantida</span>.</h1>
+            <p class="text-zinc-400 font-sans text-xl font-light max-w-2xl mx-auto">A precisão do nosso trabalho agora aguarda sua presença.</p>
+          </div>
+          <div id="confirm-details" class="max-w-md mx-auto glass-panel p-8 rounded-lg text-left">
+            <!-- Details -->
+          </div>
+          <div class="flex flex-col md:flex-row gap-4 justify-center">
+            <button class="bg-primary-container text-on-primary-container px-12 py-5 font-bold text-xs uppercase tracking-widest rounded hover:brightness-110 transition-all" onclick="sendWhatsApp()">📱 Notificar via WhatsApp</button>
+            <button class="glass-panel text-white px-12 py-5 font-bold text-xs uppercase tracking-widest border border-white/10 rounded hover:bg-white/5 transition-all" onclick="resetBooking()">Novo Agendamento</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Sidebar Summary -->
+      <aside class="w-full md:w-96">
+        <div class="glass-panel p-8 sticky top-24 space-y-8 rounded-xl shadow-2xl border-t border-white/10">
+          <div class="space-y-2">
+            <h2 class="font-serif text-2xl text-white uppercase italic" id="shop-name-display">BarberPro</h2>
+            <p class="text-zinc-500 text-[10px] uppercase tracking-widest font-bold" id="shop-address-display">Atelier de Precisão</p>
+            <div class="h-1 w-12 bg-primary-container mt-4"></div>
+          </div>
+          
+          <div id="booking-final-summary" class="space-y-6">
+            <!-- Dynamic Summary Load Here -->
+          </div>
+
+          <div class="pt-8 border-t border-white/5">
+            <div class="flex justify-between items-end mb-4">
+              <span class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">Total Estimado</span>
+              <span id="booking-total-price" class="font-serif text-4xl text-primary-container">R$ 0,00</span>
+            </div>
+            <p class="text-[10px] text-zinc-600 uppercase tracking-widest leading-relaxed">O pagamento será processado no estÃƒÂºdio após o serviço.</p>
+          </div>
+          <button class="w-full text-zinc-600 uppercase text-[10px] font-bold tracking-widest hover:text-white transition-colors pt-4" onclick="goTo('landing')">Cancelar & Sair</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+  </div>
+
+  <!-- ===== CLIENT LOGIN SCREEN (ELITE) ===== -->
+  <div id="client-login" class="screen">
+    <div class="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      <div class="absolute inset-0 z-0">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary-container/10 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-[100px]"></div>
+      </div>
+      <div class="relative z-10 w-full max-w-md glass-panel p-10 rounded-xl space-y-8 border-t border-white/10 shadow-2xl">
+        <div class="text-center space-y-2">
+          <div class="text-3xl font-serif font-black text-white tracking-tighter italic uppercase">BarberPro</div>
+          <p class="text-primary-container font-sans text-[10px] font-bold uppercase tracking-[0.2em]">ÃƒÂrea VIP</p>
+          <p class="text-zinc-500 font-sans text-xs font-light">Gerencie seus agendamentos e assinaturas.</p>
+        </div>
+        
+        <div id="client-auth-form" class="space-y-6">
+          <div class="space-y-2">
+            <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">Seu WhatsApp</label>
+            <input type="tel" id="client-login-phone" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all placeholder:text-zinc-700" placeholder="(11) 99999-9999" maxlength="15" onkeyup="maskPhone(this)">
+          </div>
+          <div class="space-y-2">
+            <label class="text-zinc-500 uppercase text-[10px] font-bold tracking-widest">Senha</label>
+            <input type="password" id="client-login-pwd" class="w-full bg-white/5 border border-white/10 rounded p-4 text-white focus:border-primary-container outline-none transition-all placeholder:text-zinc-700" placeholder="Sua senha de acesso">
+          </div>
+          <button class="w-full bg-primary-container text-on-primary-container py-5 font-bold uppercase tracking-widest hover:brightness-110 transition-all rounded shadow-[0_0_20px_rgba(212,175,55,0.1)]" id="btn-client-login-screen" onclick="doClientLoginScreen()">Acessar Painel VIP</button>
+          <p class="text-center text-[10px] text-zinc-500 uppercase tracking-widest">Não tem conta? <a class="text-white hover:text-primary-container cursor-pointer transition-colors" onclick="goTo('booking'); setTimeout(()=>nextStep(3),100)">Cadastre-se no agendamento</a></p>
+        </div>
+        
+        <div class="text-center pt-4">
+          <button class="text-zinc-600 uppercase text-[10px] font-bold tracking-widest hover:text-white transition-colors" onclick="goTo('landing')">← Voltar para o Início</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CLIENT PANEL (ELITE) ===== -->
+  <div id="client-panel" class="screen">
+    <div class="min-h-screen bg-midnight relative overflow-hidden">
+      <!-- Decor -->
+      <div class="absolute inset-0 z-0 pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-primary-container/5 to-transparent"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[120px]"></div>
+      </div>
+
+      <!-- Topbar -->
+      <header class="relative z-10 border-b border-white/5 bg-midnight/50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div class="flex items-center gap-6">
+            <button class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:text-white transition-colors" onclick="logoutClient()">
+              <span class="material-symbols-outlined text-xl">logout</span>
+            </button>
+            <div class="space-y-0.5">
+              <h2 id="client-panel-title" class="text-white font-serif italic text-xl uppercase tracking-tight">Painel VIP</h2>
+              <p class="text-zinc-500 font-sans text-[10px] uppercase tracking-[0.2em] font-bold">Assinante BarberPro</p>
+            </div>
+          </div>
+          <button class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:brightness-110 transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]" onclick="goTo('booking')">Novo Agendamento</button>
+        </div>
+      </header>
+
+      <main class="relative z-10 max-w-7xl mx-auto px-6 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          <!-- Sidebar / Status -->
+          <div class="lg:col-span-4 space-y-8">
+            <!-- Membership Card -->
+            <div id="client-plan-card" class="glass-panel p-8 rounded-xl border border-primary-container/20 space-y-6" style="display:none;">
+              <div class="flex justify-between items-start">
+                <div class="space-y-1">
+                  <h3 class="text-primary-container font-serif italic text-2xl uppercase tracking-tight" id="client-plan-name">Assinatura VIP</h3>
+                  <p class="text-zinc-500 font-sans text-[10px] uppercase tracking-widest font-bold">Plano Ativo</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+                  <span class="material-symbols-outlined">stars</span>
+                </div>
+              </div>
+              
+              <div class="space-y-4">
+                <div class="flex justify-between text-[10px] uppercase tracking-widest font-bold text-zinc-500">
+                  <span>Cortes no mês</span>
+                  <span class="text-white"><strong id="client-plan-used">0</strong> / <span id="client-plan-total">4</span></span>
+                </div>
+                <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                  <div id="client-plan-progress" class="h-full bg-primary-container transition-all duration-1000 shadow-[0_0_10px_rgba(212,175,55,0.5)]" style="width:0%;"></div>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-white/5 flex justify-between items-center">
+                <span class="text-zinc-500 font-sans text-[10px] uppercase tracking-widest">Expira em</span>
+                <span class="text-white font-sans text-xs font-bold" id="client-plan-expires">--</span>
+              </div>
+              
+              <button class="w-full border border-white/10 hover:bg-white/5 text-white py-4 rounded font-sans text-[10px] font-bold uppercase tracking-widest transition-all" onclick="goTo('booking')">Agendar com meu Plano</button>
+            </div>
+
+            <!-- No Plan State -->
+            <div id="client-no-plan-card" class="glass-panel p-8 rounded-xl border border-white/5 text-center space-y-6" style="display:none;">
+              <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto text-4xl">💎</div>
+              <div class="space-y-2">
+                <h3 class="text-white font-serif italic text-xl uppercase">Clube do Barbeiro</h3>
+                <p class="text-zinc-500 font-sans text-xs leading-relaxed">Você ainda não faz parte do nosso clube VIP. Assine e ganhe cortes mensais com desconto!</p>
+              </div>
+              <div id="client-available-plans" class="space-y-3">
+                <!-- Plans injected by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Appointments List -->
+          <div class="lg:col-span-8 space-y-8">
+            <div class="flex items-center justify-between">
+              <h3 class="text-white font-serif italic text-2xl uppercase tracking-tight">Meus Agendamentos</h3>
+              <span class="text-zinc-500 font-sans text-[10px] uppercase tracking-widest font-bold">Histórico & Ativos</span>
+            </div>
+            
+            <div id="client-appointments-list" class="space-y-4">
+              <!-- Populated by JS -->
+              <div class="glass-panel p-12 rounded-xl border border-white/5 text-center">
+                <p class="text-zinc-500 font-sans text-xs italic">Nenhum agendamento encontrado.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN ===== -->
+  <!-- ===== ADMIN ===== -->
+  <div id="admin" class="screen bg-midnight min-h-screen text-white">
+
+    <!-- Overlay -->
+    <div class="sidebar-overlay fixed inset-0 bg-black/60 backdrop-blur-sm z-[998] opacity-0 pointer-events-none transition-opacity duration-300" id="sidebar-overlay" onclick="closeSidebar()" aria-hidden="true"></div>
+
+    <!-- BarberPro Toggle Sidebar -->
+    <aside class="admin-sidebar fixed top-0 left-0 bottom-0 w-72 bg-coal border-r border-white/5 z-[999] -translate-x-full transition-transform duration-500 ease-out flex flex-col" id="admin-sidebar" role="navigation" aria-label="Menu do Admin">
+
+      <!-- Header -->
+      <div class="p-8 flex items-center justify-between">
+        <div class="text-white font-serif italic text-2xl uppercase tracking-tighter">Barber<span class="text-primary-container font-black not-italic">PRO</span></div>
+        <button class="text-zinc-500 hover:text-white lg:hidden" onclick="closeSidebar()" aria-label="Fechar menu">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- User Card -->
+      <div class="mx-6 p-6 bg-white/5 border border-white/5 rounded-xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-primary-container/10 border border-primary-container/20 flex items-center justify-center text-xl shadow-[0_0_20px_rgba(212,175,55,0.1)]">✂️</div>
+        <div class="space-y-0.5">
+          <div class="sidebar-user-name text-white font-serif italic text-sm uppercase tracking-tight">Atelier de Corte</div>
+          <div class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest">Master Admin</div>
+        </div>
+      </div>
+
+      <!-- Nav Items -->
+      <div class="flex-1 overflow-y-auto px-6 py-8 space-y-8 scrollbar-hide">
+
+        <div class="space-y-2">
+          <div class="px-2 text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-[0.2em] mb-4">Principal</div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all active" onclick="adminNav('dashboard',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">📊</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Dashboard</span>
+          </div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('agenda',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">📅</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Agenda</span>
+          </div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('financeiro',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">💰</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Faturamento</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="px-2 text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-[0.2em] mb-4">Gestão</div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('services',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">✂️</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Serviços</span>
+          </div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('barbers',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">👤</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Barbeiros</span>
+          </div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('hours',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">🕒</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Horários</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="px-2 text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-[0.2em] mb-4">Relatórios</div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('history',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">📋</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Histórico</span>
+          </div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('clients',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">👥</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Clientes</span>
+          </div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('plans',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">⭐</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Planos VIP</span>
+          </div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('subscribers',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">💎</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Assinantes</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="px-2 text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-[0.2em] mb-4">Marketing</div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('discounts',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">🎟️</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Cupons</span>
+          </div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('expenses',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">📈</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Despesas</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="px-2 text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-[0.2em] mb-4">Sistema</div>
+          <div class="nav-item group flex items-center gap-4 px-4 py-3 rounded-lg border border-transparent hover:bg-white/5 hover:border-white/5 cursor-pointer transition-all" onclick="adminNav('configuracoes',this)">
+            <span class="text-xl group-[.active]:text-primary-container transition-colors">⚙️</span>
+            <span class="text-zinc-400 group-[.active]:text-white font-sans text-[10px] font-bold uppercase tracking-widest transition-colors">Configurações</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom -->
+      <div class="p-6 border-t border-white/5 space-y-4 bg-midnight/50">
+        <button class="w-full bg-primary-container text-on-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]" onclick="openPublicPage()">Ã°Å¸â€˜ÂÃ¯Â¸Â Ver Agenda Pública</button>
+        <button class="w-full bg-red-500/10 border border-red-500/20 text-red-500 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all" onclick="logout()">🚪 Sair do Sistema</button>
+      </div>
+    </aside>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 h-16 bg-coal border-t border-white/5 flex items-center justify-around px-4 z-[900] lg:hidden">
+      <div class="flex flex-col items-center gap-1 text-primary-container active" onclick="adminNav('dashboard',this)">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="text-[8px] font-bold uppercase tracking-widest">Início</span>
+      </div>
+      <div class="flex flex-col items-center gap-1 text-zinc-500" onclick="adminNav('financeiro',this)">
+        <span class="material-symbols-outlined">payments</span>
+        <span class="text-[8px] font-bold uppercase tracking-widest">Caixa</span>
+      </div>
+      <div class="flex flex-col items-center gap-1 text-zinc-500" onclick="openSidebar()">
+        <span class="material-symbols-outlined">menu</span>
+        <span class="text-[8px] font-bold uppercase tracking-widest">Menu</span>
+      </div>
+    </nav>
+
+    <div class="admin-main lg:ml-72 min-h-screen pb-20 lg:pb-0">
+      <div id="view-dashboard" class="animate-in">
+        
+        <!-- Topbar -->
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <div class="flex items-center gap-4">
+            <button class="lg:hidden text-zinc-500 hover:text-white" onclick="openSidebar()">
+              <span class="material-symbols-outlined">menu</span>
+            </button>
+            <h2 id="dashboard-greeting" class="text-white font-serif italic text-2xl uppercase tracking-tight">Painel de Gestão</h2>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/5 rounded-full">
+              <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+              <span class="text-zinc-400 font-sans text-[10px] font-bold uppercase tracking-widest">Sistema Online</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="p-8 space-y-8">
+          
+          <!-- Stats Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="glass-panel p-6 rounded-xl border border-white/5 space-y-4 relative overflow-hidden group hover:border-primary-container/20 transition-all">
+              <div class="absolute -right-4 -top-4 w-16 h-16 bg-white/5 rounded-full blur-xl group-hover:bg-primary-container/5 transition-all"></div>
+              <p class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-[0.2em]">Agendamentos (Hoje)</p>
+              <div class="flex items-end justify-between">
+                <span class="text-white font-serif italic text-4xl" id="stat-today">0</span>
+                <span class="text-green-500 font-sans text-[10px] font-bold uppercase tracking-widest bg-green-500/5 border border-green-500/20 px-2 py-1 rounded">Ativo</span>
+              </div>
+            </div>
+            
+            <div class="glass-panel p-6 rounded-xl border border-white/5 space-y-4 relative overflow-hidden group hover:border-primary-container/20 transition-all">
+              <p class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-[0.2em]">Receita do Dia</p>
+              <div class="flex items-end justify-between">
+                <span class="text-primary-container font-serif italic text-4xl" id="stat-revenue-hoje">R$ 0</span>
+                <span class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest bg-white/5 px-2 py-1 rounded">Hoje</span>
+              </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-xl border border-white/5 space-y-4 relative overflow-hidden group hover:border-primary-container/20 transition-all">
+              <p class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-[0.2em]">Total da Semana</p>
+              <div class="flex items-end justify-between">
+                <span class="text-white font-serif italic text-4xl" id="stat-week-total">0</span>
+                <span class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest bg-white/5 px-2 py-1 rounded">7 dias</span>
+              </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-xl border border-white/5 space-y-4 relative overflow-hidden group hover:border-primary-container/20 transition-all">
+              <p class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-[0.2em]">Taxa de Presença</p>
+              <div class="flex items-end justify-between">
+                <span class="text-white font-serif italic text-4xl" id="stat-presence-rate">94%</span>
+                <span class="text-green-500 font-sans text-[10px] font-bold uppercase tracking-widest bg-green-500/5 border border-green-500/20 px-2 py-1 rounded">Excelente</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Public Link Card -->
+          <div class="glass-panel p-8 rounded-2xl border border-primary-container/20 bg-gradient-to-br from-primary-container/[0.03] to-transparent flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
+            <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-primary-container/5 rounded-full blur-[100px]"></div>
+            <div class="space-y-3 z-10 text-center lg:text-left">
+              <h3 class="text-white font-serif italic text-2xl uppercase tracking-tight">Sua vitrine online está ativa</h3>
+              <p class="text-zinc-500 font-sans text-xs italic">Compartilhe o link do seu Atelier de Corte no Instagram e WhatsApp para encher sua agenda.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto z-10">
+              <div class="flex items-center gap-3 px-6 py-4 bg-black/40 border border-white/5 rounded-xl flex-1 lg:flex-initial w-full sm:w-auto">
+                <code class="text-primary-container font-sans text-xs font-bold" id="dash-public-link">link_da_barbearia</code>
+                <button class="text-zinc-500 hover:text-white transition-colors" onclick="copyPublicLink()">
+                  <span class="material-symbols-outlined text-base">content_copy</span>
+                </button>
+              </div>
+              <button class="w-full sm:w-auto bg-primary-container text-on-primary-container px-8 py-4 rounded-xl font-sans text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-white transition-all shadow-[0_0_30px_rgba(212,175,55,0.2)]" onclick="openPublicPage()">Ver Página →</button>
+            </div>
+          </div>
+
+          <!-- Dashboard Main Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Daily Appointments -->
+            <div class="lg:col-span-8 space-y-6">
+              <div class="flex items-center justify-between">
+                <h3 class="text-white font-serif italic text-xl uppercase tracking-tight flex items-center gap-3">
+                  <span class="w-8 h-[1px] bg-primary-container/50"></span>
+                  Agenda de Hoje
+                </h3>
+                <span id="appt-count" class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">0 agendamentos</span>
+              </div>
+              <div id="admin-appt-list" class="space-y-3">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Side Cards -->
+            <div class="lg:col-span-4 space-y-8">
+              
+              <!-- Active Services -->
+              <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-white font-serif italic text-xl uppercase tracking-tight">Serviços</h3>
+                  <button class="text-primary-container font-sans text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors" onclick="adminNav('services',null)">Ver Todos</button>
+                </div>
+                <div id="dash-services-list" class="space-y-3">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+
+              <!-- Quick Info Card -->
+              <div class="glass-panel p-6 rounded-xl border border-white/5 bg-white/[0.02] space-y-4">
+                <div class="flex items-center gap-3 text-primary-container">
+                  <span class="material-symbols-outlined text-lg">info</span>
+                  <p class="font-sans text-[10px] font-bold uppercase tracking-widest">Dica do Especialista</p>
+                </div>
+                <p class="text-zinc-500 font-sans text-xs italic leading-relaxed">Oferecer planos VIP pode aumentar seu faturamento recorrente em até <span class="text-white font-bold not-italic">30%</span>.</p>
+                <button class="w-full border border-white/10 text-white py-3 rounded font-sans text-[8px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all" onclick="adminNav('plans',null)">Configurar Planos VIP</button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Charts Section -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-12 space-y-6">
+              <div class="flex items-center justify-between">
+                <h3 class="text-white font-serif italic text-xl uppercase tracking-tight">Faturamento & Analytics</h3>
+                <div class="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 rounded-full">
+                  <span class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest">Últimos 30 dias</span>
+                </div>
+              </div>
+              <div class="glass-panel p-8 rounded-2xl border border-white/5 h-[400px]">
+                <canvas id="chart-revenue"></canvas>
+              </div>
+            </div>
+
+            <div class="lg:col-span-6 space-y-6">
+              <h3 class="text-white font-serif italic text-xl uppercase tracking-tight">Serviços Populares</h3>
+              <div class="glass-panel p-8 rounded-2xl border border-white/5 h-[350px] flex items-center justify-center">
+                <canvas id="chart-services"></canvas>
+              </div>
+            </div>
+
+            <div class="lg:col-span-6 space-y-6">
+              <h3 class="text-white font-serif italic text-xl uppercase tracking-tight">Desempenho Barbeiros</h3>
+              <div class="glass-panel p-8 rounded-2xl border border-white/5 h-[350px]">
+                <canvas id="chart-barbers"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="view-agenda" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Agenda Completa</h2>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 rounded-full">
+              <span class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest">Visualização Mensal</span>
+            </div>
+          </div>
+        </header>
+        <div class="p-8 space-y-8">
+          <div class="flex flex-wrap gap-2">
+            <button class="schedule-filter active px-6 py-3 rounded-lg border border-white/5 bg-white/5 text-zinc-400 font-sans text-[10px] font-bold uppercase tracking-widest hover:text-white hover:border-white/10 transition-all" onclick="setAgendaFilter('hoje', this)">Hoje</button>
+            <button class="schedule-filter px-6 py-3 rounded-lg border border-white/5 bg-transparent text-zinc-400 font-sans text-[10px] font-bold uppercase tracking-widest hover:text-white hover:border-white/10 transition-all" onclick="setAgendaFilter('amanha', this)">Amanhã</button>
+            <button class="schedule-filter px-6 py-3 rounded-lg border border-white/5 bg-transparent text-zinc-400 font-sans text-[10px] font-bold uppercase tracking-widest hover:text-white hover:border-white/10 transition-all" onclick="setAgendaFilter('semana', this)">Esta semana</button>
+            <button class="schedule-filter px-6 py-3 rounded-lg border border-white/5 bg-transparent text-zinc-400 font-sans text-[10px] font-bold uppercase tracking-widest hover:text-white hover:border-white/10 transition-all" onclick="setAgendaFilter('proxsemana', this)">Próxima semana</button>
+          </div>
+          <div class="flex flex-wrap gap-3" id="agenda-barber-filters"></div>
+          <div id="agenda-list" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <div id="view-services" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Serviços</h2>
+          <button class="bg-primary-container text-on-primary-container px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]" onclick="openModal('modal-new-service')">+ Novo Serviço</button>
+        </header>
+        <div class="p-8">
+          <div class="glass-panel rounded-2xl border border-white/5 overflow-hidden">
+            <div class="p-6 border-b border-white/5 bg-white/[0.02]">
+              <h3 class="text-zinc-400 font-sans text-[10px] font-bold uppercase tracking-widest">Catálogo de Serviços Profissionais</h3>
+            </div>
+            <div id="admin-services-list" class="divide-y divide-white/5"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-barbers" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Barbeiros</h2>
+          <button class="bg-primary-container text-on-primary-container px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]" onclick="openModal('modal-new-barber')">+ Novo Barbeiro</button>
+        </header>
+        <div class="p-8">
+          <div id="admin-barbers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+      </div>
+
+      <div id="view-hours" style="display:none">
+        <div class="admin-topbar">
+          <div class="topbar-left">
+            <button class="hamburger-btn" onclick="openSidebar()" aria-label="Abrir menu"><span class="hb-line"></span><span class="hb-line"></span><span class="hb-line"></span></button>
+            <h2>Horários</h2>
+          </div>
+          <div class="topbar-right">
+            <button class="btn-sm btn-sm-gold" onclick="saveHours()">✓ Salvar</button>
+          </div>
+        </div>
+      <div id="view-hours" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Horários</h2>
+          <button class="bg-primary-container text-on-primary-container px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]" onclick="saveHours()">✓ Salvar</button>
+        </header>
+        <div class="p-8">
+          <div class="glass-panel rounded-2xl border border-white/5 overflow-hidden">
+            <div id="hours-list" class="divide-y divide-white/5"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-history" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Histórico</h2>
+          <button class="border border-white/10 text-white px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all" onclick="exportCSV()">📅 Exportar CSV</button>
+        </header>
+        <div class="p-8 space-y-6">
+          <div class="glass-panel p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+            <input type="text" class="w-full bg-transparent border-none text-white font-sans text-xs focus:ring-0 placeholder:text-zinc-600" id="history-search-input" placeholder="Ã°Å¸â€Â Buscar por cliente, serviço ou barbeiro..." oninput="searchHistory(this.value)">
+          </div>
+          <div id="history-list" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <div id="view-discounts" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Cupons</h2>
+          <button class="bg-primary-container text-on-primary-container px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all" onclick="openModal('modal-new-discount')">+ Novo Cupom</button>
+        </header>
+        <div class="p-8">
+          <div id="discounts-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+      </div>
+
+      <div id="view-clients" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Clientes</h2>
+          <div class="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 rounded-full">
+            <span class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest">Base de Dados</span>
+          </div>
+        </header>
+        <div class="p-8 space-y-6">
+          <div class="glass-panel p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+            <input type="text" class="w-full bg-transparent border-none text-white font-sans text-xs focus:ring-0 placeholder:text-zinc-600" id="client-search-input" placeholder="Ã°Å¸â€Â Buscar cliente por nome ou telefone..." oninput="searchClients(this.value)">
+          </div>
+          <div id="clients-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+      </div>
+
+      <div id="view-plans" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Planos VIP</h2>
+          <button class="bg-primary-container text-on-primary-container px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all" onclick="openModal('modal-new-plan')">+ Novo Plano</button>
+        </header>
+        <div class="p-8">
+          <div id="plans-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+      </div>
+
+      <div id="view-subscribers" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Assinantes</h2>
+          <button class="border border-white/10 text-white px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all" onclick="adminNav('clients')">Ver Todos</button>
+        </header>
+        <div class="p-8">
+          <div id="subscribers-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        </div>
+      </div>
+
+      <div id="view-expenses" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Despesas</h2>
+          <button class="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all" onclick="openModal('modal-new-expense')">+ Nova Despesa</button>
+        </header>
+        <div class="p-8 space-y-8">
+          <div class="glass-panel p-6 rounded-xl border border-white/5 bg-red-500/[0.02] flex items-center justify-between">
+            <p class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Total Saídas (Mês)</p>
+            <      <div id="view-configuracoes" style="display:none" class="animate-in">
+        <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-midnight/80 backdrop-blur-md z-[100]">
+          <h2 class="text-white font-serif italic text-2xl uppercase tracking-tight">Configurações</h2>
+          <button class="bg-primary-container text-on-primary-container px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]" id="btn-save-settings" onclick="saveSettings()">✓ Salvar</button>
+        </header>
+        <div class="p-8 max-w-4xl mx-auto space-y-8">
+          
+          <!-- Dados da Barbearia -->
+          <div class="glass-panel p-8 rounded-2xl border border-white/5 space-y-6">
+            <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">Ã°Å¸ÂÂª Dados da Barbearia</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Nome do Estabelecimento</label>
+                <input type="text" id="cfg-name" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: Barbearia do João">
+              </div>
+              <div class="space-y-2">
+                <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">E-mail de Contato</label>
+                <input type="email" id="cfg-email" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="seu@email.com">
+              </div>
+              <div class="md:col-span-2 space-y-2">
+                <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Endereço Completo</label>
+                <input type="text" id="cfg-address" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: Rua das Flores, 123 - Centro">
+              </div>
+              <div class="md:col-span-2 space-y-2">
+                <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Nova Senha (Opcional)</label>
+                <input type="password" id="cfg-pass" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Mudar senha de acesso">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagamento & Integrações -->
+          <div class="glass-panel p-8 rounded-2xl border border-white/5 space-y-8">
+            <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">💳 Integrações & Pagamentos</h3>
+            
+            <div class="space-y-6">
+              <div class="space-y-2">
+                <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Chave Pix (Recebimento Direto)</label>
+                <input type="text" id="cfg-pix-key" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-primary-container font-sans text-sm focus:border-primary-container transition-all" placeholder="CPF, E-mail ou Celular">
+              </div>
+              
+              <div class="pt-4 border-t border-white/5 space-y-4">
+                <div class="space-y-2">
+                  <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Mercado Pago Access Token</label>
+                  <input type="password" id="cfg-mp-token" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-mono text-xs focus:border-primary-container transition-all" placeholder="APP_USR-...">
+                </div>
+                <a href="https://www.mercadopago.com.br/developers/panel/credentials" target="_blank" class="inline-block text-primary-container font-sans text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors">Acessar credenciais MP →</a>
+              </div>
+
+              <div class="pt-4 border-t border-white/5 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-2">
+                    <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Z-API Instance ID</label>
+                    <input type="text" id="cfg-zapi-instance" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-mono text-xs focus:border-primary-container transition-all" placeholder="ID da Instância">
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Z-API Token</label>
+                    <input type="password" id="cfg-zapi-token" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-mono text-xs focus:border-primary-container transition-all" placeholder="Token da Instância">
+                  </div>
+                </div>
+                <a href="https://developer.z-api.io/" target="_blank" class="inline-block text-primary-container font-sans text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors">Acessar painel Z-API →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plano Atual -->
+          <div class="glass-panel p-8 rounded-2xl border border-white/5 bg-primary-container/[0.02]">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">⭐ Assinatura BarberPro</h3>
+              <span class="px-3 py-1 bg-primary-container/10 border border-primary-container/20 rounded-full text-primary-container font-sans text-[8px] font-bold uppercase tracking-widest">Plano Profissional</span>
+            </div>
+            <div id="cfg-plan-info" class="space-y-4">
+              <!-- JS Injected -->
+              <div class="animate-pulse flex space-x-4">
+                <div class="flex-1 space-y-4 py-1">
+                  <div class="h-4 bg-white/5 rounded w-3/4"></div>
+                  <div class="space-y-2">
+                    <div class="h-4 bg-white/5 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+ano Atual</span></div>
+            <  <!-- ===== MODALS ===== -->
+  <div class="modal-overlay" id="modal-new-service">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">✂️ Novo Serviço</h3>
+        <button onclick="closeModal('modal-new-service')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Nome do Serviço</label>
+          <input type="text" id="svc-name" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: Corte Degradê">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Preço (R$)</label>
+            <input type="number" id="svc-price" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="45">
+          </div>
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Duração (min)</label>
+            <input type="number" id="svc-duration" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="30">
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Descrição</label>
+          <input type="text" id="svc-desc" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Breve descrição">
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-new-service')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="addService()" class="flex-1 bg-primary-container text-on-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repeat for other modals... I'll provide a concise version for all -->
+  <!-- MODAL: EDIT SERVICE -->
+  <div class="modal-overlay" id="modal-edit-service">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">Ã¢Å“Å½ Editar Serviço</h3>
+        <button onclick="closeModal('modal-edit-service')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <input type="hidden" id="edit-svc-id">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Nome do Serviço</label>
+          <input type="text" id="edit-svc-name" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Preço (R$)</label>
+            <input type="number" id="edit-svc-price" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+          </div>
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Duração (min)</label>
+            <input type="number" id="edit-svc-duration" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Descrição</label>
+          <input type="text" id="edit-svc-desc" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-edit-service')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="saveEditService()" class="flex-1 bg-primary-container text-on-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW BARBER -->
+  <div class="modal-overlay" id="modal-new-barber">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">👤 Novo Barbeiro</h3>
+        <button onclick="closeModal('modal-new-barber')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Nome do Profissional</label>
+          <input type="text" id="barber-name" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="João Silva">
+        </div>
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Especialidade</label>
+          <input type="text" id="barber-role" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Corte e Barba">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Emoji / Avatar</label>
+            <input type="text" id="barber-emoji" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="✂️" maxlength="2">
+          </div>
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Comissão (%)</label>
+            <input type="number" id="barber-commission" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="50">
+          </div>
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-new-barber')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="addBarber()" class="flex-1 bg-primary-container text-on-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW APPT -->
+  <div class="modal-overlay" id="modal-new-appt">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">📅 Novo Agendamento</h3>
+        <button onclick="closeModal('modal-new-appt')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Cliente</label>
+          <input type="text" id="appt-client" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Nome do cliente">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Serviço</label>
+            <select id="appt-service" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all"></select>
+          </div>
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Profissional</label>
+            <select id="appt-barber" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all"></select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Data</label>
+            <input type="date" id="appt-date" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+          </div>
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Horário</label>
+            <input type="time" id="appt-time" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+          </div>
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-new-appt')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="addManualAppt()" class="flex-1 bg-primary-container text-on-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all">Agendar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-edit-barber">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">Ã¢Å“Å½ Editar Barbeiro</h3>
+        <button onclick="closeModal('modal-edit-barber')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <input type="hidden" id="edit-barber-id">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Nome</label>
+          <input type="text" id="edit-barber-name" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+        </div>
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Especialidade</label>
+          <input type="text" id="edit-barber-role" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-edit-barber')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="saveEditBarber()" class="flex-1 bg-primary-container text-on-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW DISCOUNT -->
+  <div class="modal-overlay" id="modal-new-discount">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">🎟️ Novo Cupom</h3>
+        <button onclick="closeModal('modal-new-discount')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Código do Cupom</label>
+          <input type="text" id="disc-code" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all uppercase" placeholder="EX: PROMO10">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Tipo de Desconto</label>
+            <select id="disc-type" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+              <option value="percent">Percentual (%)</option>
+              <option value="fixed">Valor fixo (R$)</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Valor</label>
+            <input type="number" id="disc-value" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="10">
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Descrição</label>
+          <input type="text" id="disc-desc" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: Boas-vindas">
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-new-discount')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="addDiscount()" class="flex-1 bg-primary-container text-on-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]">Criar Cupom</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW EXPENSE -->
+  <div class="modal-overlay" id="modal-new-expense">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">📈 Nova Despesa</h3>
+        <button onclick="closeModal('modal-new-expense')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Descrição</label>
+          <input type="text" id="exp-desc" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: Conta de Energia">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Valor (R$)</label>
+            <input type="number" id="exp-value" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="150.00">
+          </div>
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Data</label>
+            <input type="date" id="exp-date" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+          </div>
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-new-expense')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="addExpense()" class="flex-1 bg-red-500 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-red-600 transition-all">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BLOCK TIME -->
+  <div class="modal-overlay" id="modal-new-block">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">🚫 Bloquear Agenda</h3>
+        <button onclick="closeModal('modal-new-block')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Profissional</label>
+          <select id="block-barber" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all"></select>
+        </div>
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Data</label>
+          <input type="date" id="block-date" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">InÃ­cio</label>
+            <input type="time" id="block-start" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+          </div>
+          <div class="space-y-1">
+            <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Fim</label>
+            <input type="time" id="block-end" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all">
+          </div>
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-new-block')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="addBlockTime()" class="flex-1 bg-zinc-800 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-700 transition-all">Bloquear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PIX CHECKOUT -->
+  <div class="modal-overlay" id="modal-pix-checkout">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-sm w-full text-center">
+      <div class="p-8 space-y-6">
+        <h2 class="text-primary-container font-serif italic text-2xl uppercase tracking-tight" id="pix-title">Pagamento Pix</h2>
+        <p class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Copie o cÃ³digo e pague no app do banco.</p>
+        
+        <div class="bg-white/5 border border-white/5 rounded-xl p-6 space-y-4">
+          <div class="space-y-1">
+            <p class="text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-widest">Total a pagar</p>
+            <p class="text-primary-container font-serif italic text-3xl" id="pix-value">R$ 0,00</p>
+          </div>
+          <div class="space-y-2 pt-4 border-t border-white/5">
+            <div id="pix-key-display" class="bg-black/40 p-4 rounded-lg font-mono text-xs text-white break-all select-all">chave@pix.com</div>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('pix-key-display').innerText); showToast('📋 Código copiado!')" class="text-primary-container font-sans text-[8px] font-bold uppercase tracking-widest hover:text-white transition-colors">Copiar Chave</button>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-4">
+          <button id="btn-confirm-pix" class="w-full bg-green-500 text-black py-4 rounded-xl font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_30px_rgba(34,197,94,0.2)]">✓ JÃ¡ realizei o pagamento</button>
+          <button onclick="closeModal('modal-pix-checkout')" class="w-full text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-widest hover:text-white transition-colors">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ASSIGN PLAN -->
+  <div class="modal-overlay" id="modal-assign-plan">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-white/5 flex items-center justify-between">
+        <h3 class="text-white font-serif italic text-lg uppercase tracking-tight">✂️ Vincular Plano</h3>
+        <button onclick="closeModal('modal-assign-plan')" class="text-zinc-500 hover:text-white transition-colors">×</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Selecione o Cliente</label>
+          <select id="assign-client-id" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all"></select>
+        </div>
+        <div class="space-y-1">
+          <label class="text-zinc-500 font-sans text-[10px] font-bold uppercase tracking-widest">Selecione o Plano</label>
+          <select id="assign-plan-id" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-primary-container transition-all"></select>
+        </div>
+      </div>
+      <div class="p-6 bg-white/[0.02] border-t border-white/5 flex gap-3">
+        <button onclick="closeModal('modal-assign-plan')" class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Cancelar</button>
+        <button onclick="assignPlan()" class="flex-1 bg-primary-container text-on-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all">Vincular</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING WIZARD -->
+  <div class="modal-overlay" id="modal-onboarding" style="align-items:center;backdrop-filter:blur(20px)">
+    <div class="modal glass-panel !p-0 overflow-hidden border border-white/10 rounded-3xl max-w-lg w-full">
+      <div class="h-1 bg-white/5">
+        <div id="ob-progress" class="h-full bg-primary-container transition-all duration-500" style="width:25%"></div>
+      </div>
+      
+      <div class="p-12 text-center space-y-8">
+        <!-- Step 1 -->
+        <div class="ob-step space-y-6" id="ob-step-1">
+          <div class="text-5xl">✨</div>
+          <h2 class="text-white font-serif italic text-3xl tracking-tight">Seja bem-vindo.</h2>
+          <p class="text-zinc-500 font-sans text-xs leading-relaxed max-w-xs mx-auto">Vamos configurar sua barbearia para o próximo nível em poucos instantes.</p>
+          <div class="space-y-4 pt-4 text-left">
+            <div class="space-y-1">
+              <label class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest ml-1">Nome do Estabelecimento</label>
+          <input type="text" id="ob-name" class="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: BarberPro Matriz">
+            </div>
+          </div>
+          <button onclick="obNext(2)" class="w-full bg-primary-container text-on-primary-container py-5 rounded-xl font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_40px_rgba(212,175,55,0.2)]">PrÃ³ximo Passo →</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="ob-step space-y-6 hidden" id="ob-step-2">
+          <div class="text-5xl">âœ‚ï¸</div>
+          <h2 class="text-white font-serif italic text-3xl tracking-tight">Primeiro Serviço.</h2>
+          <div class="space-y-4 pt-4 text-left">
+            <div class="space-y-1">
+              <label class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest ml-1">Nome do Serviço</label>
+              <input type="text" id="ob-svc-name" class="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: Corte Degradê">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest ml-1">Preço (R$)</label>
+                <input type="number" id="ob-svc-price" class="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="45">
+              </div>
+              <div class="space-y-1">
+                <label class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest ml-1">Duração (min)</label>
+                <input type="number" id="ob-svc-dur" class="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="30">
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-4 pt-4">
+            <button onclick="obNext(1)" class="flex-1 text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-widest hover:text-white transition-colors">Voltar</button>
+            <button onclick="obNext(3)" class="flex-[2] bg-primary-container text-on-primary-container py-5 rounded-xl font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_40px_rgba(212,175,55,0.2)]">PrÃ³ximo →</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="ob-step space-y-6 hidden" id="ob-step-3">
+          <div class="text-5xl">✂️</div>
+          <h2 class="text-white font-serif italic text-3xl tracking-tight">O Especialista.</h2>
+          <div class="space-y-4 pt-4 text-left">
+            <div class="space-y-1">
+              <label class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest ml-1">Nome do Barbeiro</label>
+              <input type="text" id="ob-barber-name" class="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: João Silva">
+            </div>
+            <div class="space-y-1">
+              <label class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest ml-1">Especialidade</label>
+              <input type="text" id="ob-barber-role" class="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white font-sans text-sm focus:border-primary-container transition-all" placeholder="Ex: Barba & Cabelo">
+            </div>
+          </div>
+          <div class="flex gap-4 pt-4">
+            <button onclick="obNext(2)" class="flex-1 text-zinc-600 font-sans text-[8px] font-bold uppercase tracking-widest hover:text-white transition-colors">Voltar</button>
+            <button onclick="obNext(4)" class="flex-[2] bg-primary-container text-on-primary-container py-5 rounded-xl font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_40px_rgba(212,175,55,0.2)]">PrÃ³ximo →</button>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="ob-step space-y-6 hidden" id="ob-step-4">
+          <div class="text-6xl animate-bounce">🚀</div>
+          <h2 class="text-white font-serif italic text-3xl tracking-tight">Pronto para o Sucesso.</h2>
+          <p class="text-zinc-500 font-sans text-xs leading-relaxed max-w-xs mx-auto">Sua barbearia está online. Compartilhe o link e comece a agendar agora mesmo.</p>
+          <div id="ob-link-box" onclick="obCopyLink()" class="bg-primary-container/5 border border-primary-container/20 rounded-xl p-5 font-mono text-xs text-primary-container break-all cursor-pointer hover:bg-primary-container/10 transition-all">...</div>
+          <button onclick="obFinish()" class="w-full bg-primary-container text-on-primary-container py-5 rounded-xl font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_40px_rgba(212,175,55,0.2)]">Entrar no Painel ✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast fixed bottom-8 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container px-6 py-3 rounded-full font-sans text-[10px] font-bold uppercase tracking-widest shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300 z-[1000]" id="toast"></div>
+
+
+
+
+</body>
+</html>

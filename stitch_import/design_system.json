@@ -1,0 +1,23 @@
+{
+  "name": "assets/27b20c1d2c0c478bbdce19b382c98292",
+  "displayName": "Modern Noir Barber",
+  "theme": {
+    "colorMode": "DARK",
+    "font": "NOTO_SERIF",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#D4AF37",
+    "headlineFont": "NOTO_SERIF",
+    "bodyFont": "MANROPE",
+    "labelFont": "MANROPE",
+    "namedColors": {
+      "background": "#121414",
+      "primary": "#f2ca50",
+      "primary_container": "#D4AF37",
+      "on_surface": "#e2e2e2",
+      "surface": "#121414",
+      "surface_container": "#1e2020",
+      "outline": "#99907c"
+    }
+  },
+  "styleGuidelines": "## Brand & Style\n\nThis design system embodies a premium, \"Modern Noir\" aesthetic tailored for the high-end grooming industry. It leverages a deep, cinematic atmosphere to evoke feelings of exclusivity, craftsmanship, and heritage. By pairing a dark, monochromatic foundation with metallic amber accents, the interface feels less like a tool and more like a luxury service experience.\n\nThe visual style is Minimalism with Tonal Layering. It avoids unnecessary ornamentation, allowing high-quality typography and selective color pops to guide the user's focus. The mood is serious, professional, and masculine, catering to a clientele that values precision and a curated environment."
+}

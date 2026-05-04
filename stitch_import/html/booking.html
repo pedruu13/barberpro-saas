@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-PT"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Noto+Serif:ital,wght@0,500;0,600;1,500;1,600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#99907c",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "surface-variant": "#333535",
+                    "surface-container-highest": "#333535",
+                    "on-primary": "#3c2f00",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "on-tertiary-container": "#454544",
+                    "tertiary": "#d0cdcd",
+                    "error": "#ffb4ab",
+                    "on-secondary-fixed-variant": "#474646",
+                    "on-secondary": "#313030",
+                    "outline-variant": "#4d4635",
+                    "surface-bright": "#37393a",
+                    "primary": "#f2ca50",
+                    "on-primary-fixed": "#241a00",
+                    "on-tertiary": "#313030",
+                    "surface-tint": "#e9c349",
+                    "surface-container-high": "#282a2b",
+                    "on-secondary-container": "#bab8b7",
+                    "tertiary-container": "#b4b2b2",
+                    "surface-dim": "#121414",
+                    "inverse-primary": "#735c00",
+                    "primary-fixed": "#ffe088",
+                    "secondary": "#c8c6c5",
+                    "on-error": "#690005",
+                    "inverse-on-surface": "#2f3131",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "on-surface-variant": "#d0c5af",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-container-low": "#1a1c1c",
+                    "inverse-surface": "#e2e2e2",
+                    "on-primary-container": "#554300",
+                    "error-container": "#93000a",
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-background": "#e2e2e2",
+                    "tertiary-fixed": "#e5e2e1",
+                    "secondary-container": "#4a4949",
+                    "on-primary-fixed-variant": "#574500",
+                    "primary-container": "#d4af37",
+                    "surface-container-lowest": "#0c0f0f",
+                    "surface-container": "#1e2020",
+                    "surface": "#121414",
+                    "on-surface": "#e2e2e2",
+                    "primary-fixed-dim": "#e9c349",
+                    "background": "#121414"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "base": "8px",
+                    "margin": "32px",
+                    "container-max": "1200px"
+            },
+            "fontFamily": {
+                    "label-md": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "label-sm": ["Manrope"],
+                    "headline-md": ["Noto Serif"],
+                    "headline-lg": ["Noto Serif"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(212, 175, 55, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #121414;
+            color: #e2e2e2;
+        }
+    </style>
+</head>
+<body class="font-body-md antialiased overflow-x-hidden">
+<!-- Top Bar Navigation (Shared Component Context) -->
+<header class="fixed top-0 w-full z-50 bg-black/40 backdrop-blur-md border-b border-white/5 shadow-[0_0_15px_rgba(212,175,55,0.03)]">
+<div class="flex justify-between items-center px-8 h-16 w-full">
+<div class="text-xl font-bold text-white tracking-tighter italic font-headline-md">AXE &amp; EDGE</div>
+<nav class="hidden md:flex gap-8 font-label-md tracking-tight uppercase text-xs">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Solutions</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Pricing</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Enterprise</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Academy</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="font-label-md tracking-tight uppercase text-xs text-on-surface-variant hover:text-white transition-colors">LOG IN</button>
+<button class="font-label-md tracking-tight uppercase text-xs text-primary-container border border-primary-container/30 px-4 py-2 rounded hover:bg-primary-container/10 transition-all">GET ACCESS</button>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 min-h-screen px-4 md:px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
+<!-- Left Column: Step Content -->
+<div class="flex-grow space-y-12">
+<!-- Stepper Progress Indicator -->
+<div class="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide">
+<div class="flex items-center gap-3 shrink-0">
+<span class="w-8 h-8 rounded-full border border-primary-container flex items-center justify-center text-primary-container font-label-md">1</span>
+<span class="font-label-md text-white uppercase tracking-widest">Serviço</span>
+</div>
+<div class="h-[1px] w-8 bg-surface-container-high"></div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="w-8 h-8 rounded-full border border-surface-variant flex items-center justify-center text-on-surface-variant font-label-md">2</span>
+<span class="font-label-md text-on-surface-variant uppercase tracking-widest">Profissional</span>
+</div>
+<div class="h-[1px] w-8 bg-surface-container-high"></div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="w-8 h-8 rounded-full border border-surface-variant flex items-center justify-center text-on-surface-variant font-label-md">3</span>
+<span class="font-label-md text-on-surface-variant uppercase tracking-widest">Horário</span>
+</div>
+<div class="h-[1px] w-8 bg-surface-container-high"></div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="w-8 h-8 rounded-full border border-surface-variant flex items-center justify-center text-on-surface-variant font-label-md">4</span>
+<span class="font-label-md text-on-surface-variant uppercase tracking-widest">Confirmação</span>
+</div>
+</div>
+<!-- Page Title -->
+<div class="space-y-2">
+<h1 class="font-headline-lg text-4xl md:text-5xl text-white uppercase italic tracking-tighter">Escolha o seu <span class="text-primary-container">Serviço</span></h1>
+<p class="text-on-surface-variant font-body-lg max-w-xl">Selecione uma das nossas especialidades de engenharia capilar. Todos os serviços incluem consultoria de imagem e toalha quente.</p>
+</div>
+<!-- Service Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Service Card 1 (Active/Selected) -->
+<div class="relative group cursor-pointer border-2 border-primary-container bg-primary-container/5 p-8 flex flex-col justify-between min-h-[280px] rounded-lg transition-all">
+<div class="flex justify-between items-start">
+<div class="space-y-2">
+<span class="font-label-sm text-primary-container tracking-[0.2em] uppercase">Signature</span>
+<h3 class="font-headline-lg text-white uppercase italic">Corte &amp; Estilo</h3>
+</div>
+<span class="material-symbols-outlined text-primary-container" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="space-y-4">
+<p class="text-on-surface font-body-md">Transformação completa com visagismo, lavagem premium e finalização com produtos AXE &amp; EDGE.</p>
+<div class="flex items-center justify-between pt-4 border-t border-primary-container/20">
+<span class="font-label-md text-primary-container">45 MIN</span>
+<span class="font-headline-md text-white">35€</span>
+</div>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="relative group cursor-pointer border border-surface-variant bg-surface-container-low p-8 flex flex-col justify-between min-h-[280px] rounded-lg hover:border-outline transition-all">
+<div class="flex justify-between items-start">
+<div class="space-y-2">
+<span class="font-label-sm text-on-surface-variant tracking-[0.2em] uppercase">Mastery</span>
+<h3 class="font-headline-lg text-white uppercase italic">Barba Executiva</h3>
+</div>
+</div>
+<div class="space-y-4">
+<p class="text-on-surface-variant font-body-md">Desenho de barba com navalha tradicional, terapia de vapor e hidratação profunda.</p>
+<div class="flex items-center justify-between pt-4 border-t border-surface-variant">
+<span class="font-label-md text-on-surface-variant">30 MIN</span>
+<span class="font-headline-md text-white">25€</span>
+</div>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="md:col-span-2 relative group cursor-pointer border border-surface-variant bg-surface-container-low p-8 flex flex-col md:flex-row justify-between items-center gap-8 rounded-lg hover:border-outline transition-all overflow-hidden">
+<div class="relative z-10 space-y-4 flex-grow">
+<span class="font-label-sm text-on-surface-variant tracking-[0.2em] uppercase">Ultimate Experience</span>
+<h3 class="font-headline-lg text-white uppercase italic">The Full Overhaul</h3>
+<p class="text-on-surface-variant font-body-md max-w-lg">Corte, barba, limpeza facial e massagem craniana. A experiência definitiva para o homem moderno.</p>
+<div class="flex items-center gap-8 pt-4">
+<div class="flex flex-col">
+<span class="font-label-sm text-on-surface-variant uppercase">Tempo</span>
+<span class="font-label-md text-white">90 MIN</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-on-surface-variant uppercase">Investimento</span>
+<span class="font-headline-md text-white">65€</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-64 h-48 bg-surface-container-highest relative grayscale opacity-40 group-hover:opacity-60 transition-opacity rounded">
+<img alt="Luxury Grooming" class="w-full h-full object-cover" data-alt="A close-up shot of a professional barber meticulously using a traditional straight razor on a client's beard in a dimly lit, high-end studio. The scene is characterized by deep blacks and striking contrast, with subtle cyan lighting accents highlighting the metallic edge of the razor. The aesthetic is technological noir, featuring sharp focus and a moody, premium atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChIi426DWTOFonRoR9VOojHh2mrhlB2ZhULmIdizPCl737Esm65BiT622KmhMWyXV2Q1fLPCyOXuKvJrFBcD4q3DutQnSeM3SMC5vpTc1MRreAQ25aVyZfXwqXYWMbPxycJpPZe1uQbpjGYwmgxExXhcoeCPJXXj92DvXglyJlWC5G65ZxJE_LAiUMc99f0UHecnTCw0s3sWJ06WdIB-Vb_3-314QB1-gu7Tc2ze-v4bO89_d3rIzYg__nAXQ09I-gekA56XIkqs6z"/>
+</div>
+</div>
+</div>
+<!-- Interaction Section -->
+<div class="flex justify-end pt-8">
+<button class="bg-primary-container text-on-primary-container font-label-md px-10 py-5 uppercase tracking-widest flex items-center gap-3 rounded-lg hover:brightness-110 active:scale-95 transition-all">
+                    Próximo Passo
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Booking Summary (Glassmorphism Sidebar) -->
+<aside class="w-full md:w-96">
+<div class="glass-panel p-8 sticky top-24 space-y-8 rounded-xl shadow-2xl">
+<div class="space-y-2">
+<h2 class="font-headline-md text-white uppercase italic">Resumo do Booking</h2>
+<div class="h-1 w-12 bg-primary-container rounded-full"></div>
+</div>
+<div class="space-y-6">
+<!-- Selected Service Info -->
+<div class="space-y-4">
+<div class="flex justify-between items-start">
+<div class="space-y-1">
+<span class="font-label-sm text-on-surface-variant uppercase tracking-widest block">Serviço</span>
+<p class="font-label-md text-white">Corte &amp; Estilo Signature</p>
+</div>
+<button class="text-primary-container hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+</button>
+</div>
+<div class="flex justify-between font-body-md">
+<span class="text-on-surface-variant">Duração</span>
+<span class="text-on-surface">45 MIN</span>
+</div>
+<div class="flex justify-between font-body-md">
+<span class="text-on-surface-variant">Preço Base</span>
+<span class="text-on-surface">35,00€</span>
+</div>
+</div>
+<hr class="border-outline-variant/30"/>
+<!-- Empty States for remaining steps -->
+<div class="space-y-4">
+<div class="flex items-center gap-4 text-on-surface-variant/50">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-body-md italic">Selecione um profissional...</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant/50">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-body-md italic">Selecione data e hora...</span>
+</div>
+</div>
+</div>
+<!-- Total and CTA -->
+<div class="pt-8 space-y-4">
+<div class="flex justify-between items-end">
+<span class="font-label-md text-on-surface-variant uppercase tracking-widest">Total Estimado</span>
+<span class="font-headline-lg text-5xl leading-none text-primary-container">35€</span>
+</div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] font-label-sm">O pagamento será processado no estúdio após o serviço.</p>
+</div>
+<!-- Promotion Card -->
+<div class="bg-surface-container-highest/30 border border-outline-variant/30 p-4 flex gap-4 items-center rounded-lg">
+<span class="material-symbols-outlined text-primary-container" data-icon="confirmation_number">confirmation_number</span>
+<div>
+<p class="font-label-md text-white">Tem um código?</p>
+<button class="text-primary-container text-[12px] uppercase font-bold hover:underline">Aplicar desconto</button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer (Shared Component Context) -->
+<footer class="w-full py-12 bg-surface-container-lowest border-t border-surface-container-high">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-white font-bold tracking-widest uppercase text-[12px] font-headline-md">AXE &amp; EDGE</div>
+<div class="flex gap-8">
+<a class="font-label-sm tracking-widest uppercase text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-label-sm tracking-widest uppercase text-on-surface-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="font-label-sm tracking-widest uppercase text-on-surface-variant hover:text-primary transition-colors" href="#">API</a>
+<a class="font-label-sm tracking-widest uppercase text-on-surface-variant hover:text-primary transition-colors" href="#">Status</a>
+</div>
+<div class="font-label-sm tracking-widest uppercase text-on-surface-variant/60">
+            © 2024 AXE &amp; EDGE TECHNOLOGIES. PRECISION ENGINEERED.
+        </div>
+</div>
+</footer>
+<!-- Help Floating Action (Optional UX Anchor) -->
+<div class="fixed bottom-8 right-8 z-40">
+<button class="w-14 h-14 bg-surface-container-high border border-outline-variant/30 rounded-full flex items-center justify-center text-primary-container hover:bg-primary-container hover:text-on-primary transition-all shadow-xl">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+</body></html>

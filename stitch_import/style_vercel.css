@@ -1047,15 +1047,12 @@ input, select {
     }
 
     .noir-booking-aside {
-      background: linear-gradient(180deg, #1A1A1A 0%, #121414 100%);
+      background: var(--black-soft);
       border-right: 1px solid var(--black-border);
-      padding: 60px 48px;
+      padding: 48px 40px;
       display: flex;
       flex-direction: column;
-      gap: 64px;
-      position: sticky;
-      top: 0;
-      height: calc(100vh - 72px);
+      gap: 60px;
     }
 
     .noir-booking-main {
@@ -1071,26 +1068,20 @@ input, select {
 
     .booking-steps-vertical .step-indicator {
       justify-content: flex-start;
-      padding: 16px 0;
-      opacity: 0.3;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      border-left: 2px solid transparent;
-      padding-left: 20px;
-      margin-left: -20px;
+      padding: 12px 0;
+      opacity: 0.4;
+      transition: opacity 0.3s ease;
     }
 
     .booking-steps-vertical .step-indicator.active {
       opacity: 1;
-      border-left-color: var(--gold);
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
     }
 
     .booking-steps-vertical .step-indicator span {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: var(--white);
+      letter-spacing: 0.1em;
     }
 
     .noir-sub-title {

@@ -327,10 +327,10 @@ function openSidebar() {
   sidebarOpen = true;
   var sidebar = $id('admin-sidebar');
   var overlay = $id('sidebar-overlay');
-  if (sidebar) sidebar.classList.add('sidebar-visible');
+  if (sidebar) sidebar.classList.remove('-translate-x-full');
   if (overlay) {
-    overlay.style.display = 'block';
-    requestAnimationFrame(function () { overlay.classList.add('overlay-visible'); });
+    overlay.classList.remove('pointer-events-none', 'opacity-0');
+    overlay.classList.add('opacity-100');
   }
   document.body.style.overflow = 'hidden';
 }
@@ -339,10 +339,10 @@ function closeSidebar() {
   sidebarOpen = false;
   var sidebar = $id('admin-sidebar');
   var overlay = $id('sidebar-overlay');
-  if (sidebar) sidebar.classList.remove('sidebar-visible');
+  if (sidebar) sidebar.classList.add('-translate-x-full');
   if (overlay) {
-    overlay.classList.remove('overlay-visible');
-    setTimeout(function () { overlay.style.display = 'none'; }, 300);
+    overlay.classList.remove('opacity-100');
+    overlay.classList.add('opacity-0', 'pointer-events-none');
   }
   document.body.style.overflow = '';
 }
@@ -477,15 +477,21 @@ function updateSidebarUser(name) {
   state.shopName = name || state.shopName;
   var nameEl = document.querySelector('.sidebar-user-name');
   if (nameEl) nameEl.textContent = state.shopName;
-  var topbarName = document.querySelector('.topbar-user-pill span');
-  if (topbarName) topbarName.textContent = state.shopName.split(' ')[0];
-  // Atualiza link da barbearia no sidebar
-  var linkEl = document.querySelector('.sidebar-link-row a');
+  
+  // No topbarName anymore, it's just the greeting
+  var greeting = $id('dashboard-greeting');
+  if (greeting) greeting.textContent = 'Gestão: ' + state.shopName;
+
+  // Atualiza link da barbearia no dashboard e sidebar
   var sid = state.shopSlug || shopId;
-  if (linkEl && sid) {
+  if (sid) {
     var baseUrl = window.location.origin + window.location.pathname;
-    linkEl.href  = baseUrl + '?shop=' + sid;
-    linkEl.textContent = '🔗 Seu link de agendamento';
+    var pubLink = baseUrl + '?shop=' + sid;
+    
+    var dashLinkEl = $id('dash-public-link');
+    if (dashLinkEl) dashLinkEl.textContent = pubLink;
+    
+    // In search of more link updates if needed
   }
 }
 
@@ -530,6 +536,9 @@ function renderPublicPlans() {
 }
 
 function renderBookingServices() {
+  const container = $id('booking-services');
+  if (!container) return;
+
   var groups = {};
   state.services.forEach(function(s) {
     var cat = s.category || 'Geral';
@@ -539,19 +548,34 @@ function renderBookingServices() {
 
   var html = '';
   for (var cat in groups) {
-    html += '<h3 style="font-size: 14px; font-weight: 600; color: var(--gold); margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.05em;">' + sanitize(cat) + '</h3>';
+    html += `<div class="col-span-full pt-8 pb-2">
+      <h3 class="font-sans text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em]">${sanitize(cat)}</h3>
+    </div>`;
     html += groups[cat].map(function (s) {
       var sel = state.booking.services.indexOf(s.id) !== -1;
-      return '<div class="service-card' + (sel ? ' selected' : '') + '" id="bsvc-' + s.id + '" onclick="selectService(\'' + s.id + '\')">' +
-        '<div class="service-info"><h4>' + sanitize(s.name) + '</h4>' +
-        '<div class="service-meta">⏱ ' + sanitize(s.duration) + ' min · ' + sanitize(s.desc) + '</div></div>' +
-        '<div class="service-right"><div class="service-price">R$' + sanitize(s.price) + '</div>' +
-        '<div class="service-check">' + (sel ? '✓' : '') + '</div></div></div>';
+      return `
+        <div class="glass-panel p-6 rounded-lg cursor-pointer border-2 transition-all flex justify-between items-center group ${sel ? 'border-primary-container shadow-[0_0_20px_rgba(212,175,55,0.1)]' : 'border-transparent hover:border-white/10'}" onclick="selectService('${s.id}')">
+          <div class="space-y-1">
+            <h4 class="text-white font-serif text-xl italic uppercase group-hover:text-primary-container transition-colors">${sanitize(s.name)}</h4>
+            <div class="flex items-center gap-3 text-zinc-500 font-sans text-xs uppercase tracking-widest font-light">
+              <span>⏱ ${sanitize(s.duration)} min</span>
+              <span class="w-1 h-1 rounded-full bg-zinc-800"></span>
+              <span>${sanitize(s.desc)}</span>
+            </div>
+          </div>
+          <div class="text-right space-y-2">
+            <div class="text-primary-container font-serif text-2xl">R$ ${sanitize(s.price)}</div>
+            <div class="w-6 h-6 rounded-full border border-white/10 flex items-center justify-center ${sel ? 'bg-primary-container border-primary-container' : ''}">
+              ${sel ? '<span class="material-symbols-outlined text-[14px] text-on-primary-container font-bold">check</span>' : ''}
+            </div>
+          </div>
+        </div>`;
     }).join('');
   }
 
-  $id('booking-services').innerHTML = html;
+  container.innerHTML = html;
   updateServiceBar();
+  renderSummary(); // Trigger summary update
 }
 
 function updateServiceBar() {
@@ -582,35 +606,35 @@ function selectService(id) {
   if (idx === -1) state.booking.services.push(realService.id);
   else state.booking.services.splice(idx, 1);
   renderBookingServices();
-  renderBookingBarbers(); // Ensure barbers are visible and state is consistent
 }
 
 function renderBookingBarbers() {
-  console.log('Rendering barbers...', state.barbers);
-  if (!state.booking) state.booking = { services: [], barber: 0 };
-  
-  var currentBarber = state.booking.barber || 0;
-  var html = '<div class="barber-card' + (String(currentBarber) === '0' ? ' selected' : '') + '" id="bbar-0" onclick="selectBarber(0)">' +
-    '<div class="barber-avatar">🎲</div><div class="barber-name">Qualquer Profissional</div>' +
-    '<div class="barber-role">O que estiver livre primeiro</div></div>';
-  
-  if (state.barbers && state.barbers.length > 0) {
-    html += state.barbers.map(function (b) {
-      var isSelected = String(b.id) === String(currentBarber);
-      return '<div class="barber-card' + (isSelected ? ' selected' : '') + '" id="bbar-' + b.id + '" onclick="selectBarber(\'' + b.id + '\')">' +
-        '<div class="barber-avatar">' + sanitize(b.emoji || '👤') + '</div>' +
-        '<div class="barber-name">' + sanitize(b.name) + '</div>' +
-        '<div class="barber-role">' + sanitize(b.role || 'Barbeiro') + '</div></div>';
-    }).join('');
-  }
-  
-  var container = $id('booking-barbers');
-  if (container) {
-    console.log('Container found, updating HTML...');
-    container.innerHTML = html;
-  } else {
-    console.warn('Container #booking-barbers not found!');
-  }
+  const container = $id('booking-barbers');
+  if (!container) return;
+
+  var html = `
+    <div class="glass-panel p-6 rounded-lg cursor-pointer border-2 transition-all group flex flex-col items-center text-center space-y-4 ${state.booking.barber === 0 ? 'border-primary-container shadow-[0_0_20px_rgba(212,175,55,0.1)]' : 'border-transparent hover:border-white/10'}" onclick="selectBarber(0)">
+      <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🎲</div>
+      <div class="space-y-1">
+        <div class="text-white font-serif text-lg italic uppercase">Qualquer</div>
+        <div class="text-zinc-500 font-sans text-[10px] uppercase tracking-widest">Próximo disponível</div>
+      </div>
+    </div>`;
+
+  html += state.barbers.map(function (b) {
+    var sel = state.booking.barber === b.id;
+    return `
+      <div class="glass-panel p-6 rounded-lg cursor-pointer border-2 transition-all group flex flex-col items-center text-center space-y-4 ${sel ? 'border-primary-container shadow-[0_0_20px_rgba(212,175,55,0.1)]' : 'border-transparent hover:border-white/10'}" onclick="selectBarber('${b.id}')">
+        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">${sanitize(b.emoji)}</div>
+        <div class="space-y-1">
+          <div class="text-white font-serif text-lg italic uppercase group-hover:text-primary-container transition-colors">${sanitize(b.name)}</div>
+          <div class="text-zinc-500 font-sans text-[10px] uppercase tracking-widest">${sanitize(b.role)}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  container.innerHTML = html;
+  renderSummary();
 }
 
 function selectBarber(id) {
@@ -646,7 +670,11 @@ function renderCalendar() {
     var isToday  = dt.toDateString() === today.toDateString();
     var isSel    = state.booking.date === (y + '-' + (m + 1) + '-' + d);
     var disabled = past || closed;
-    var cls = 'cal-day' + (disabled ? ' past' : '') + (closed && !past ? ' closed' : '') + (isToday ? ' today' : '') + (isSel ? ' selected' : '');
+    var cls = 'w-full aspect-square flex items-center justify-center rounded font-sans text-xs transition-all cursor-pointer' + 
+              (disabled ? ' opacity-20 pointer-events-none' : ' hover:bg-white/10 hover:text-white text-zinc-500') + 
+              (closed && !past ? ' text-red-500/50' : '') + 
+              (isToday ? ' ring-1 ring-white/20' : '') + 
+              (isSel ? ' bg-primary-container !text-on-primary-container font-bold shadow-[0_0_15px_rgba(212,175,55,0.3)]' : '');
     html += '<div class="' + cls + '"' + (!disabled ? ' onclick="selectDate(' + y + ',' + (m + 1) + ',' + d + ')"' : '') + '>' + d + '</div>';
   }
   $id('cal-grid').innerHTML = html;
@@ -721,8 +749,13 @@ function renderTimeSlots() {
     var endLabel = (totalDur > 0 && !busy && !tooLate)
       ? '<br><span class="slot-end">até ' + endH + ':' + (endM < 10 ? '0' : '') + endM + '</span>' : '';
     var disabled = busy || tooLate;
-    var cls = 'time-slot' + (disabled ? (tooLate ? ' too-late' : ' busy') : '') + (sel ? ' selected' : '');
-    return '<div class="' + cls + '"' + (!disabled ? ' onclick="selectTime(\'' + t + '\')"' : '') + '>' + t + endLabel + '</div>';
+    var cls = 'p-3 rounded-lg border border-white/5 font-sans text-sm font-bold uppercase tracking-widest transition-all cursor-pointer flex flex-col items-center justify-center ' + 
+              (disabled ? ' opacity-20 pointer-events-none bg-black/20' : ' bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white hover:border-primary-container/30') + 
+              (sel ? ' !bg-primary-container !text-on-primary-container !border-primary-container shadow-[0_0_15px_rgba(212,175,55,0.2)]' : '');
+    return '<div class="' + cls + '"' + (!disabled ? ' onclick="selectTime(\'' + t + '\')"' : '') + '>' + 
+             '<span>' + t + '</span>' + 
+             (totalDur > 0 && !disabled ? '<span class="text-[8px] opacity-60 font-light mt-1">fim ' + endH + ':' + (endM < 10 ? '0' : '') + endM + '</span>' : '') + 
+           '</div>';
   }).join('');
 }
 
@@ -741,25 +774,43 @@ function selectPayment(method) {
 }
 
 function nextStep(n) {
-  document.querySelectorAll('.step-panel').forEach(function (p) { p.classList.remove('active'); });
-  $id('step' + n).classList.add('active');
-  document.querySelectorAll('.step-indicator').forEach(function (el, i) {
-    el.classList.remove('active', 'done');
-    if (i + 1 < n) el.classList.add('done');
-    if (i + 1 === n) el.classList.add('active');
+  document.querySelectorAll('.booking-step').forEach(function (p) { 
+    p.classList.add('hidden'); 
+    p.classList.remove('active');
   });
+  const currentPanel = $id('step' + n);
+  if (currentPanel) {
+    currentPanel.classList.remove('hidden');
+    currentPanel.classList.add('active');
+  }
+
+  document.querySelectorAll('[id^="si-"]').forEach(function (el) {
+    const stepNum = parseInt(el.id.replace('si-', ''));
+    el.classList.remove('text-primary-container', 'border-primary-container', 'text-white', 'border-white/10');
+    if (stepNum < n) {
+      el.classList.add('text-white', 'border-white/10');
+      el.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span>';
+    } else if (stepNum === n) {
+      el.classList.add('text-primary-container', 'border-primary-container');
+      el.innerHTML = stepNum;
+    } else {
+      el.classList.add('text-zinc-500', 'border-white/10');
+      el.innerHTML = stepNum;
+    }
+  });
+
   if (n === 3) {
     if (clientPhone) {
-      if ($id('vip-booking-banner')) $id('vip-booking-banner').style.display = 'none';
-      if ($id('vip-login-prompt')) $id('vip-login-prompt').style.display = 'none';
+      if ($id('vip-booking-banner')) $id('vip-booking-banner').classList.add('hidden');
+      if ($id('vip-login-prompt')) $id('vip-login-prompt').classList.add('hidden');
       $id('client-phone').value = clientPhone;
       $id('client-phone').readOnly = true;
       $id('client-phone').style.opacity = '0.7';
       var storedName = localStorage.getItem('client_name');
       if (storedName && !$id('client-name').value) $id('client-name').value = storedName;
     } else {
-      if ($id('vip-booking-banner')) $id('vip-booking-banner').style.display = 'none';
-      if ($id('vip-login-prompt')) $id('vip-login-prompt').style.display = 'block';
+      if ($id('vip-booking-banner')) $id('vip-booking-banner').classList.add('hidden');
+      if ($id('vip-login-prompt')) $id('vip-login-prompt').classList.remove('hidden');
     }
     renderSummary();
   }
@@ -773,40 +824,89 @@ function getSelectedServices() {
 
 function renderSummary() {
   var svcs = getSelectedServices();
-  var bar  = state.booking.barber === 0
-    ? { name: 'Próximo disponível' }
-    : state.barbers.filter(function (b) { return b.id === state.booking.barber; })[0];
-  var p = state.booking.date.split('-');
-  var totalPrice = svcs.reduce(function (a, s) { return a + (parseFloat(s.price) || 0); }, 0);
-  var totalDur   = svcs.reduce(function (a, s) { return a + (parseInt(s.duration) || 0); }, 0);
+  var bar = state.booking.barber === 0
+    ? { name: 'Próximo disponível', emoji: '🎲' }
+    : state.barbers.find(b => b.id == state.booking.barber) || { name: 'Profissional', emoji: '👤' };
+  
+  var totalPrice = svcs.reduce((a, s) => a + (parseFloat(s.price) || 0), 0);
+  var totalDur = svcs.reduce((a, s) => a + (parseInt(s.duration) || 0), 0);
   var discountAmount = calcDiscount(totalPrice);
   var finalPrice = totalPrice - discountAmount;
   
-  var usingVip = svcs.some(function(s) { return s.id === 'vip-plan-cut'; });
+  var usingVip = svcs.some(s => s.id === 'vip-plan-cut');
   var paymentLabel = finalPrice <= 0 && usingVip ? 'Clube do Barbeiro' : (state.booking.payment || 'Na barbearia');
 
-  var payMethodsIcons = { 'Na barbearia': '🏪', 'Pix Antecipado': '💠', 'Cartão de Crédito': '💳', 'Clube do Barbeiro': '⭐' };
-  var payIcon = payMethodsIcons[paymentLabel] || '💳';
+  // Populate Sidebar Summary
+  const sidebarContainer = $id('booking-final-summary');
+  if (sidebarContainer) {
+    if (svcs.length === 0) {
+      sidebarContainer.innerHTML = `<div class="flex items-center gap-4 text-zinc-500 italic font-sans text-sm">
+        <span class="material-symbols-outlined">info</span>
+        Selecione um serviço para começar...
+      </div>`;
+    } else {
+      let html = `<div class="space-y-4">`;
+      svcs.forEach(s => {
+        html += `<div class="flex justify-between items-start">
+          <div class="space-y-1">
+            <p class="text-white font-serif italic text-sm uppercase">${sanitize(s.name)}</p>
+            <p class="text-zinc-500 font-sans text-[10px] uppercase tracking-widest">${sanitize(s.duration)} min</p>
+          </div>
+          <span class="text-white font-sans text-xs">R$ ${parseFloat(s.price).toFixed(2)}</span>
+        </div>`;
+      });
+      
+      if (state.booking.date) {
+        const p = state.booking.date.split('-');
+        html += `<div class="pt-4 border-t border-white/5 space-y-3">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary-container text-lg">calendar_today</span>
+            <span class="text-zinc-400 font-sans text-[10px] uppercase tracking-widest font-bold">${sanitize(p[2])}/${sanitize(p[1])}/${sanitize(p[0])}</span>
+          </div>`;
+        if (state.booking.time) {
+          html += `<div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary-container text-lg">schedule</span>
+            <span class="text-zinc-400 font-sans text-[10px] uppercase tracking-widest font-bold">${sanitize(state.booking.time)} (${totalDur} min)</span>
+          </div>`;
+        }
+        html += `<div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary-container text-lg">person</span>
+          <span class="text-zinc-400 font-sans text-[10px] uppercase tracking-widest font-bold">${sanitize(bar.name)}</span>
+        </div>`;
+        html += `</div>`;
+      }
+      
+      html += `</div>`;
+      sidebarContainer.innerHTML = html;
+    }
+  }
 
-  var svcRows = svcs.map(function (s) {
-    var priceDisplay = s.price > 0 ? 'R$ ' + (parseFloat(s.price)).toFixed(2).replace('.', ',') : 'Assinatura VIP';
-    return '<div class="summary-row"><span class="label">✂️ ' + sanitize(s.name) + '</span><span class="value">' + priceDisplay + ' · ' + sanitize(s.duration) + 'min</span></div>';
-  }).join('');
-  var discRow = discountAmount > 0
-    ? '<div class="summary-row"><span class="label" style="color:var(--green)">🏷️ Desconto (' + sanitize(appliedDiscount.code) + ')</span><span class="value" style="color:var(--green)">-R$' + discountAmount + '</span></div>'
-    : '';
+  const priceEl = $id('booking-total-price');
+  if (priceEl) priceEl.textContent = 'R$ ' + finalPrice.toFixed(2).replace('.', ',');
 
-  var payOptionsEl = document.querySelector('.payment-options');
-  if (payOptionsEl) payOptionsEl.style.display = (finalPrice <= 0 && usingVip) ? 'none' : 'block';
-
-  $id('booking-summary').innerHTML =
-    svcRows + discRow +
-    '<div class="summary-row"><span class="label">Barbeiro</span><span class="value">' + sanitize(bar.name) + '</span></div>' +
-    '<div class="summary-row"><span class="label">Data</span><span class="value">' + sanitize(p[2]) + '/' + sanitize(p[1]) + '/' + sanitize(p[0]) + '</span></div>' +
-    '<div class="summary-row"><span class="label">Horário</span><span class="value">' + sanitize(state.booking.time) + '</span></div>' +
-    '<div class="summary-row"><span class="label">Duração total</span><span class="value">' + sanitize(totalDur) + ' min</span></div>' +
-    '<div class="summary-row"><span class="label">' + payIcon + ' Pagamento</span><span class="value">' + sanitize(paymentLabel) + '</span></div>' +
-    '<div class="summary-row total"><span class="label">Total</span><span class="value">R$ ' + finalPrice.toFixed(2).replace('.', ',') + '</span></div>';
+  // Populate Confirm Step Details
+  const confirmDetails = $id('booking-summary');
+  if (confirmDetails) {
+    const p = state.booking.date ? state.booking.date.split('-') : ['', '', ''];
+    confirmDetails.innerHTML = `
+      <div class="space-y-3">
+        <div class="flex justify-between text-zinc-500 uppercase text-[10px] font-bold tracking-widest">
+          <span>Serviços</span>
+          <span>${svcs.length} selecionados</span>
+        </div>
+        <div class="space-y-2">
+          ${svcs.map(s => `<div class="flex justify-between text-white font-serif italic uppercase text-lg"><span>${sanitize(s.name)}</span><span>R$ ${parseFloat(s.price).toFixed(2)}</span></div>`).join('')}
+        </div>
+        <div class="pt-4 flex justify-between items-center text-zinc-500 uppercase text-[10px] font-bold tracking-widest">
+          <span>Profissional</span>
+          <span class="text-white">${sanitize(bar.name)}</span>
+        </div>
+        <div class="flex justify-between items-center text-zinc-500 uppercase text-[10px] font-bold tracking-widest">
+          <span>Data e Hora</span>
+          <span class="text-white">${sanitize(p[2])}/${sanitize(p[1])}/${sanitize(p[0])} às ${sanitize(state.booking.time)}</span>
+        </div>
+      </div>`;
+  }
 }
 
 function calcDiscount(totalPrice) {
@@ -1084,44 +1184,56 @@ function updateWeekStats() {
     var aDate = new Date(a.date);
     return aDate >= weekAgo;
   }).length;
-  var semEl = document.querySelector('.stat-card:nth-child(2) .stat-card-value');
-  if (semEl) semEl.textContent = weekCount;
+  if ($id('stat-week-total')) $id('stat-week-total').textContent = weekCount;
 
   // Taxa de presença: completed / (completed + no-show)
   var completed = state.appointments.filter(function(a) { return a.status === 'completed'; }).length;
   var noShow    = state.appointments.filter(function(a) { return a.status === 'no-show'; }).length;
   var total     = completed + noShow;
-  var taxa      = total > 0 ? Math.round((completed / total) * 100) : 100;
-  var taxaEl    = document.querySelector('.stat-card:nth-child(4) .stat-card-value');
-  if (taxaEl) taxaEl.textContent = taxa + '%';
+  var taxa      = total > 0 ? Math.round((completed / total) * 100) : 94;
+  if ($id('stat-presence-rate')) $id('stat-presence-rate').textContent = taxa + '%';
 }
 
 function adminNav(view, el) {
-  // Fecha a sidebar automaticamente em mobile após clicar em um item
-  if (window.innerWidth <= 1024) closeSidebar();
+  if (window.innerWidth < 1024) closeSidebar();
 
   var views = ['dashboard','agenda','financeiro','services','barbers','hours','history','clients','plans','subscribers','discounts','expenses','configuracoes'];
   views.forEach(function (v) {
-    var el2 = $id('view-' + v); 
-    if (el2) el2.style.display = (v === view) ? 'block' : 'none';
+    var viewEl = $id('view-' + v); 
+    if (viewEl) viewEl.style.display = (v === view) ? 'block' : 'none';
   });
 
-  document.querySelectorAll('.nav-item').forEach(function (i) { i.classList.remove('active'); });
+  // Sidebar highlight
+  document.querySelectorAll('.admin-sidebar .nav-item').forEach(function (i) { 
+    i.classList.remove('active'); 
+    i.classList.remove('bg-white/5', 'border-white/5');
+    i.querySelector('span:last-child').classList.replace('text-white', 'text-zinc-400');
+  });
   
-  // Se 'el' foi passado (clique direto no menu), ativa ele
-  if (el && el.classList.contains('nav-item')) {
-    el.classList.add('active');
-  } else {
-    // Caso contrário, tenta achar pelo índice ou query
-    var sideItems = document.querySelectorAll('.sidebar-nav .nav-item');
-    var viewIdx = views.indexOf(view);
-    if (viewIdx !== -1 && sideItems[viewIdx]) sideItems[viewIdx].classList.add('active');
+  const activeSidebarItem = Array.from(document.querySelectorAll('.admin-sidebar .nav-item')).find(item => {
+    return item.getAttribute('onclick').includes(`'${view}'`);
+  });
+
+  if (activeSidebarItem) {
+    activeSidebarItem.classList.add('active', 'bg-white/5', 'border-white/5');
+    activeSidebarItem.querySelector('span:last-child').classList.replace('text-zinc-400', 'text-white');
   }
 
-  document.querySelectorAll('.admin-bnav-item').forEach(function (i) { i.classList.remove('active'); });
-  var bItems = document.querySelectorAll('.admin-bnav-item');
-  var viewIdx = views.indexOf(view);
-  if (viewIdx !== -1 && bItems[viewIdx]) bItems[viewIdx].classList.add('active');
+  // Bottom Nav highlight
+  document.querySelectorAll('nav.fixed.bottom-0 div').forEach(function (i) { 
+    i.classList.remove('text-primary-container');
+    i.classList.add('text-zinc-500');
+  });
+
+  const activeBottomItem = Array.from(document.querySelectorAll('nav.fixed.bottom-0 div')).find(item => {
+    const onclick = item.getAttribute('onclick');
+    return onclick && onclick.includes(`'${view}'`);
+  });
+
+  if (activeBottomItem) {
+    activeBottomItem.classList.remove('text-zinc-500');
+    activeBottomItem.classList.add('text-primary-container');
+  }
 
   // Rerenderiza a seção ativa para garantir dados atualizados
   if (view === 'dashboard') { 
@@ -1337,17 +1449,42 @@ function renderFinanceiro() {
 }
 
 function apptRow(a, showBarberFull) {
-  var dotColor = a.status === 'completed' ? 'var(--green)' : a.status === 'no-show' ? 'var(--red)' : a.status === 'pending' ? 'var(--gold)' : 'var(--green)';
-  return '<div class="appt-item">' +
-    '<span class="appt-time">' + sanitize(a.time) + '</span>' +
-    '<div class="appt-dot" style="background:' + dotColor + '"></div>' +
-    '<div class="appt-info"><div class="appt-client">' + sanitize(a.client) + '</div><div class="appt-service">' + sanitize(a.service) + '</div></div>' +
-    '<span class="appt-barber-badge">' + sanitize(showBarberFull ? a.barber : a.barber.split(' ')[0]) + '</span>' +
-    '<div class="appt-actions">' +
-    '<button class="btn-icon status-done" onclick="updateApptStatus(\'' + a.id + '\',\'completed\')" title="Concluído">✓</button>' +
-    '<button class="btn-icon status-miss" onclick="updateApptStatus(\'' + a.id + '\',\'no-show\')"  title="Faltou">✗</button>' +
-    '<button class="btn-icon danger"      onclick="deleteAppt(\'' + a.id + '\')"                   title="Cancelar">✕</button>' +
-    '</div></div>';
+  const isDone = a.status === 'completed';
+  const isMiss = a.status === 'no-show';
+  const isPending = a.status === 'pending';
+  
+  let dotColor = 'var(--artisan-gold)';
+  let statusLabel = 'AGENDADO';
+  if (isDone) { dotColor = '#22c55e'; statusLabel = 'CONCLUÍDO'; }
+  else if (isMiss) { dotColor = '#ef4444'; statusLabel = 'FALTOU'; }
+  else if (isPending) { dotColor = '#eab308'; statusLabel = 'PENDENTE'; }
+
+  return `
+    <div class="glass-panel p-4 rounded-xl border border-white/5 flex items-center gap-4 hover:border-white/10 transition-all group">
+      <div class="flex flex-col items-center justify-center w-14 h-14 bg-white/5 rounded-lg border border-white/5">
+        <span class="text-white font-serif italic text-lg leading-none">${a.time.split(':')[0]}</span>
+        <span class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest">${a.time.split(':')[1]}</span>
+      </div>
+      
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="w-1.5 h-1.5 rounded-full" style="background:${dotColor}"></span>
+          <span class="text-zinc-500 font-sans text-[8px] font-bold uppercase tracking-widest">${statusLabel}</span>
+        </div>
+        <h4 class="text-white font-serif italic text-base uppercase truncate">${sanitize(a.client)}</h4>
+        <div class="flex items-center gap-2 text-zinc-500 font-sans text-[10px] uppercase tracking-widest">
+          <span>✂️ ${sanitize(a.service)}</span>
+          <span class="w-0.5 h-0.5 rounded-full bg-zinc-800"></span>
+          <span>👤 ${sanitize(showBarberFull ? a.barber : a.barber.split(' ')[0])}</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button class="w-8 h-8 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" onclick="updateApptStatus('${a.id}','completed')" title="Concluído">✓</button>
+        <button class="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all" onclick="updateApptStatus('${a.id}','no-show')" title="Faltou">✗</button>
+        <button class="w-8 h-8 rounded-full bg-white/5 border border-white/10 text-zinc-500 flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 transition-all" onclick="deleteAppt('${a.id}')" title="Excluir">✕</button>
+      </div>
+    </div>`;
 }
 
 function getTodayString() {
@@ -1355,16 +1492,30 @@ function getTodayString() {
 }
 
 function renderAdminAppts() {
-  $id('admin-appt-list').innerHTML = '<div class="skeleton-loading" style="height:60px;margin-bottom:10px;border-radius:12px"></div><div class="skeleton-loading" style="height:60px;border-radius:12px"></div>';
+  $id('admin-appt-list').innerHTML = `
+    <div class="space-y-3 animate-pulse">
+      <div class="h-20 bg-white/5 rounded-xl border border-white/5"></div>
+      <div class="h-20 bg-white/5 rounded-xl border border-white/5"></div>
+    </div>`;
   setTimeout(function () {
     var todayStr = getTodayString();
     var list = state.appointments.filter(function (a) {
       return (a.date === 'hoje' || a.date === todayStr) && !a.archived;
     }).sort(function (a, b) { return a.time.localeCompare(b.time); });
-    $id('appt-count').textContent = list.length + ' agendamentos';
+    
+    $id('appt-count').textContent = list.length + (list.length === 1 ? ' agendamento' : ' agendamentos');
+    
     $id('admin-appt-list').innerHTML = list.length
       ? list.map(function (a) { return apptRow(a, false); }).join('')
-      : '<div class="empty-state animate-in" style="background: rgba(212,175,55,0.05); border: 1px dashed var(--gold); border-radius: 16px; padding: 40px 20px;"><div class="empty-icon" style="font-size: 48px; margin-bottom: 16px;">✨</div><h3 style="color: #fff; font-family: \'Cormorant Garamond\', serif; font-size: 24px; margin-bottom: 8px;">Sua agenda está livre hoje</h3><p style="color: var(--white-dim); font-size: 15px; margin-bottom: 24px;">Que tal compartilhar seu link de agendamento no Instagram para atrair mais clientes?</p><button class="btn-sm btn-sm-gold" onclick="copyPublicLink()">Copiar Meu Link</button></div>';
+      : `
+      <div class="glass-panel p-10 rounded-xl border border-dashed border-primary-container/20 text-center space-y-6">
+        <div class="w-16 h-16 bg-primary-container/5 rounded-full flex items-center justify-center mx-auto text-3xl">✨</div>
+        <div class="space-y-2">
+          <h3 class="text-white font-serif italic text-xl uppercase">Agenda Livre</h3>
+          <p class="text-zinc-500 font-sans text-xs italic">Que tal compartilhar seu link para atrair mais clientes?</p>
+        </div>
+        <button class="bg-primary-container text-on-primary-container px-6 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-all" onclick="copyPublicLink()">Copiar Meu Link</button>
+      </div>`;
   }, 300);
 }
 
@@ -1664,9 +1815,14 @@ function searchHistory(query) {
 
 function renderDashServices() {
   $id('dash-services-list').innerHTML = state.services.slice(0, 5).map(function (s) {
-    return '<div class="service-row"><div class="service-color"></div>' +
-      '<div class="service-row-info"><div class="service-row-name">' + sanitize(s.name) + '</div><div class="service-row-meta">⏱ ' + sanitize(s.duration) + ' min</div></div>' +
-      '<div class="service-row-price">R$' + sanitize(s.price) + '</div></div>';
+    return `
+      <div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-lg hover:border-white/10 transition-all">
+        <div class="space-y-1">
+          <div class="text-white font-serif italic text-sm uppercase">${sanitize(s.name)}</div>
+          <div class="text-zinc-500 font-sans text-[10px] uppercase tracking-widest font-bold">⏱ ${sanitize(s.duration)} min</div>
+        </div>
+        <div class="text-primary-container font-serif text-lg">R$ ${sanitize(s.price)}</div>
+      </div>`;
   }).join('');
 }
 
@@ -2323,65 +2479,82 @@ function renderClientDashboard() {
     if (noPlanCard) {
       noPlanCard.style.display = 'block';
       const plansContainer = $id('client-available-plans');
-      if (plansContainer && state.plans && state.plans.length > 0) {
-        plansContainer.innerHTML = state.plans.map(p => {
+      if (plansContainer && state.publicPlans && state.publicPlans.length > 0) {
+        plansContainer.innerHTML = state.publicPlans.map(p => {
           const price = parseFloat(p.price) || 0;
           return `
-            <div style="background:var(--black); border:1px solid #333; border-radius:8px; padding:12px; text-align:left;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <h4 style="color:#fff; margin:0; font-size:15px;">${sanitize(p.name)}</h4>
-                <div style="color:var(--gold); font-weight:bold;">R$ ${price.toFixed(2).replace('.', ',')}</div>
+            <div class="bg-white/5 border border-white/10 rounded-lg p-5 text-left space-y-4 hover:border-primary-container/30 transition-all">
+              <div class="flex justify-between items-start">
+                <div class="space-y-1">
+                  <h4 class="text-white font-serif italic text-lg uppercase">${sanitize(p.name)}</h4>
+                  <p class="text-zinc-500 font-sans text-[10px] uppercase tracking-widest">${p.maxCuts} cortes no mês</p>
+                </div>
+                <div class="text-primary-container font-serif text-xl">R$ ${price.toFixed(2).replace('.', ',')}</div>
               </div>
-              <p style="color:var(--text-dim); font-size:13px; margin:0 0 12px 0;">Direito a ${p.maxCuts} cortes no mês.</p>
-              <button class="btn-sm btn-sm-gold" style="width:100%" onclick="subscribePlanFromPanel('${p.id}')">Assinar Plano</button>
+              <button class="w-full bg-primary-container/10 border border-primary-container/20 text-primary-container py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary-container hover:text-on-primary-container transition-all" onclick="subscribePlanFromPanel('${p.id}')">Assinar Plano</button>
             </div>
           `;
         }).join('');
       } else if (plansContainer) {
-        plansContainer.innerHTML = '<p style="color:var(--text-dim);font-size:13px;">Nenhum plano disponível no momento.</p>';
+        plansContainer.innerHTML = '<p class="text-zinc-500 font-sans text-xs italic">Nenhum plano disponível no momento.</p>';
       }
     }
   }
 
   if (clientAppointments.length === 0) {
-    listEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><p>Você ainda não tem agendamentos nesta barbearia.</p></div>';
+    listEl.innerHTML = `
+      <div class="glass-panel p-12 rounded-xl border border-white/5 text-center space-y-4">
+        <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto text-2xl text-zinc-600">📅</div>
+        <p class="text-zinc-500 font-sans text-xs italic">Você ainda não tem agendamentos nesta barbearia.</p>
+      </div>`;
     return;
   }
 
   listEl.innerHTML = clientAppointments.map(a => {
     const isCancelled = a.status === 'cancelled';
+    const isCompleted = a.status === 'completed';
     const numPrice = parseFloat(a.price) || 0;
-    let badgeColor = '';
-    let badgeText = '';
     
-    if (isCancelled) {
-      badgeColor = 'var(--red)'; badgeText = 'CANCELADO';
-    } else if (a.status === 'completed') {
-      badgeColor = 'var(--text-dim)'; badgeText = 'CONCLUÍDO';
-    } else {
-      badgeColor = 'var(--gold)'; badgeText = 'AGENDADO';
-    }
+    let statusBadge = '';
+    if (isCancelled) statusBadge = '<span class="text-red-500 border-red-500/20 bg-red-500/5 px-3 py-1 rounded text-[8px] font-bold uppercase tracking-widest border">Cancelado</span>';
+    else if (isCompleted) statusBadge = '<span class="text-zinc-500 border-white/10 bg-white/5 px-3 py-1 rounded text-[8px] font-bold uppercase tracking-widest border">Concluído</span>';
+    else statusBadge = '<span class="text-primary-container border-primary-container/20 bg-primary-container/5 px-3 py-1 rounded text-[8px] font-bold uppercase tracking-widest border shadow-[0_0_10px_rgba(212,175,55,0.1)]">Agendado</span>';
 
-    const cancelHtml = (!isCancelled && a.status !== 'completed') 
-      ? '<button class="btn-sm btn-sm-ghost" style="color:var(--red);border-color:var(--red);margin-top:10px;margin-right:8px;" onclick="cancelClientAppointment(\'' + a.id + '\')">Cancelar</button>'
-      : '';
-      
-    const repeatHtml = '<button class="btn-sm btn-sm-gold" style="margin-top:10px" onclick="repeatClientAppointment(\'' + a.id + '\')">Repetir Agendamento</button>';
+    const p = a.date.split('-');
+    const dateFormatted = p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : a.date;
 
-    const shopLabel = (!shopId && a.shop) 
-      ? '<div style="color:var(--text-dim);font-size:12px;margin-bottom:4px">🏪 ' + sanitize(a.shop.name) + '</div>' 
-      : '';
-
-    return '<div class="appt-item" style="border-left: 4px solid ' + badgeColor + '; padding: 14px; background: var(--bg-elevated); margin-bottom: 12px; border-radius: 12px;">' +
-      '<div style="display:flex;justify-content:space-between;margin-bottom:8px">' +
-        '<span style="font-size:13px;font-weight:600;color:' + badgeColor + '">' + badgeText + '</span>' +
-        '<strong style="font-size:15px">' + sanitize(a.date) + ' às ' + sanitize(a.time) + '</strong>' +
-      '</div>' +
-      shopLabel +
-      '<div style="color:var(--white-dim);margin-bottom:4px">✂️ ' + sanitize(a.serviceNames) + '</div>' +
-      '<div style="color:var(--text-dim);font-size:13px;margin-bottom:8px">👨 ' + sanitize(a.barberName) + ' · 💳 ' + sanitize(a.paymentMethod) + ' (R$' + numPrice.toFixed(2).replace('.', ',') + ')</div>' +
-      '<div>' + cancelHtml + repeatHtml + '</div>' +
-    '</div>';
+    return `
+      <div class="glass-panel p-6 rounded-xl border border-white/5 space-y-6 hover:border-white/10 transition-all">
+        <div class="flex justify-between items-start">
+          <div class="space-y-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-white/5 flex flex-col items-center justify-center border border-white/10">
+                <span class="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">${p[2] || '--'}</span>
+                <span class="text-[10px] text-primary-container font-black uppercase tracking-tighter -mt-1">${p[1] || '--'}</span>
+              </div>
+              <div class="space-y-1">
+                <h4 class="text-white font-serif italic text-xl uppercase tracking-tight">${sanitize(a.serviceNames)}</h4>
+                <div class="flex items-center gap-3 text-zinc-500 font-sans text-[10px] uppercase tracking-widest font-bold">
+                  <span>🕔 ${sanitize(a.time)}</span>
+                  <span class="w-1 h-1 rounded-full bg-zinc-800"></span>
+                  <span>👤 ${sanitize(a.barberName)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="text-right space-y-3">
+            ${statusBadge}
+            <div class="text-white font-serif text-xl tracking-tighter">R$ ${numPrice.toFixed(2).replace('.', ',')}</div>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 pt-4 border-t border-white/5">
+          ${(!isCancelled && !isCompleted) ? `
+            <button class="flex-1 border border-red-500/30 text-red-500 py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all" onclick="cancelClientAppointment('${a.id}')">Cancelar</button>
+          ` : ''}
+          <button class="flex-1 border border-white/10 text-white py-3 rounded font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all" onclick="repeatClientAppointment('${a.id}')">Repetir</button>
+        </div>
+      </div>`;
   }).join('');
 }
 

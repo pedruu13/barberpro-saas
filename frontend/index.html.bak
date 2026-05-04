@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BarberPro | Gestão Inteligente para Barbearias</title>
+  
+  <!-- SEO & Social -->
+  <meta name="description" content="A plataforma definitiva para barbeiros modernos. Agendamento online, gestão financeira, clube de assinatura e marketing automatizado.">
+  <meta property="og:title" content="BarberPro - Onde a Tradição Encontra a Precisão">
+  <meta property="og:description" content="Transforme sua barbearia com a tecnologia que os melhores profissionais já usam.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=1200">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="modern-noir">
+
+  <!-- ===== PÁGINA DE AGENDAMENTO PÚBLICO (BOOKING) ===== -->
+  <div id="booking" class="screen">
+    <div class="booking-container">
+      
+      <!-- Cabeçalho Glassmorphic -->
+      <header class="booking-header">
+        <div class="booking-header-content">
+          <div class="booking-brand">
+            <h1 id="shop-name-display">Barber<span>Pro</span></h1>
+            <p id="shop-address-display">✦ Agendamento Online</p>
+          </div>
+          <div class="booking-steps">
+            <div class="step-indicator active" id="ind-1" onclick="nextStep(1)">1</div>
+            <div class="step-indicator" id="ind-2">2</div>
+            <div class="step-indicator" id="ind-3">3</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="booking-main">
+        
+        <!-- STEP 1: SERVIÇOS -->
+        <section id="step1" class="step-panel active">
+          <div class="step-title-wrap">
+            <h2 class="step-title">Escolha os Serviços</h2>
+            <p class="step-desc">Selecione um ou mais tratamentos para seu visual.</p>
+          </div>
+
+          <!-- Planos do Clube (Aparece se houver) -->
+          <div id="booking-plans-container" style="display:none; margin-bottom: 30px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px">
+              <span style="font-size:20px">⭐</span>
+              <h3 style="font-size:16px; color:#fff; margin:0">Planos de Assinatura</h3>
+            </div>
+            <div id="booking-plans-list" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:15px;"></div>
+            <div style="height:1px; background:rgba(255,255,255,0.1); margin:30px 0"></div>
+          </div>
+
+          <div id="booking-services" class="services-grid">
+            <!-- Renderizado via JS -->
+          </div>
+
+          <!-- Barra de Navegação Inferior (Sticky) -->
+          <div class="svc-bar" id="svc-bar">
+            <div class="svc-bar-content">
+              <div class="svc-bar-info">
+                <span id="svc-bar-label">0 serviços selecionados</span>
+                <strong id="svc-bar-total">R$ 0,00</strong>
+              </div>
+              <button class="btn-step-next" id="btn-step1" onclick="nextStep(2)">Escolher Barbeiro →</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2: BARBEIRO & DATA -->
+        <section id="step2" class="step-panel">
+          <button class="btn-back" onclick="nextStep(1)">← Voltar aos serviços</button>
+          
+          <div class="selection-grid">
+            <div class="selection-left">
+              <h3 class="selection-title">Profissionais</h3>
+              <div id="booking-barbers" class="barbers-list">
+                <!-- Renderizado via JS -->
+              </div>
+            </div>
+            
+            <div class="selection-right">
+              <h3 class="selection-title">Data & Horário</h3>
+              <div class="calendar-card">
+                <div class="cal-header">
+                  <button onclick="changeMonth(-1)">‹</button>
+                  <span id="cal-month-label">Maio 2024</span>
+                  <button onclick="changeMonth(1)">›</button>
+                </div>
+                <div class="cal-grid" id="cal-grid"></div>
+              </div>
+
+              <div class="time-slots-card">
+                <h4 id="time-title">Selecione uma data acima</h4>
+                <div class="time-slots-grid" id="time-slots">
+                  <!-- Renderizado via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <footer class="step-footer">
+            <button class="btn-step-next" id="btn-step2" onclick="nextStep(3)" disabled>Continuar Agendamento →</button>
+          </footer>
+        </section>
+
+        <!-- STEP 3: IDENTIFICAÇÃO & PAGAMENTO -->
+        <section id="step3" class="step-panel">
+          <button class="btn-back" onclick="nextStep(2)">← Voltar para horários</button>
+          
+          <div class="checkout-grid">
+            <div class="checkout-form-side">
+              <div class="glass-card form-card">
+                <h3>Seus Dados</h3>
+                
+                <div id="vip-login-prompt" style="display:none; background: rgba(212,175,55,0.1); border: 1px solid var(--gold); border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                  <p style="color: var(--gold); font-size: 13px; margin: 0 0 10px 0;">Já é cliente VIP? Faça login para usar seu plano.</p>
+                  <button class="btn-sm btn-sm-gold" onclick="goTo('client-login')">Entrar na Área VIP</button>
+                </div>
+
+                <div class="form-group">
+                  <label>Nome Completo</label>
+                  <input type="text" id="client-name" placeholder="Como quer ser chamado?">
+                </div>
+                <div class="form-group">
+                  <label>WhatsApp</label>
+                  <input type="tel" id="client-phone" placeholder="(00) 00000-0000">
+                </div>
+                
+                <div class="payment-options">
+                  <h3 style="margin-top: 25px;">Forma de Pagamento</h3>
+                  <div class="payment-methods">
+                    <div class="payment-radio selected" id="pay-shop" onclick="selectPayment('shop')">
+                      <div class="pay-icon">🏪</div>
+                      <div class="pay-info">
+                        <strong>Na barbearia</strong>
+                        <span>Pague após o serviço</span>
+                      </div>
+                      <div class="pay-check">✓</div>
+                    </div>
+                    <div class="payment-radio" id="pay-pix" onclick="selectPayment('pix')">
+                      <div class="pay-icon">💠</div>
+                      <div class="pay-info">
+                        <strong>Pix Antecipado</strong>
+                        <span>Pague agora com segurança</span>
+                      </div>
+                      <div class="pay-check">✓</div>
+                    </div>
+                    <div class="payment-radio" id="pay-card" onclick="selectPayment('card')">
+                      <div class="pay-icon">💳</div>
+                      <div class="pay-info">
+                        <strong>Cartão de Crédito</strong>
+                        <span>Pague online (Em breve)</span>
+                      </div>
+                      <div class="pay-check">✓</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="coupon-section" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+                  <div style="display:flex; gap:10px">
+                    <input type="text" id="coupon-code" placeholder="CUPOM" style="flex:1; text-transform:uppercase">
+                    <button class="btn-sm btn-sm-ghost" onclick="applyCoupon()">Aplicar</button>
+                  </div>
+                  <p id="coupon-applied" style="display:none; color:var(--green); font-size:12px; margin-top:8px;"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="checkout-summary-side">
+              <div class="glass-card summary-card">
+                <h3>Resumo da Visita</h3>
+                <div id="booking-summary">
+                  <!-- Renderizado via JS -->
+                </div>
+                <button class="btn-step-next btn-full" onclick="confirmBooking()">✓ Confirmar Agendamento</button>
+                <p class="secure-notice">🔒 Conexão segura e criptografada</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 4: SUCESSO -->
+        <section id="step4" class="step-panel">
+          <div class="success-screen">
+            <div class="success-icon">✓</div>
+            <h2>Agendamento Confirmado!</h2>
+            <p>Seu horário foi reservado com sucesso. Enviamos os detalhes para seu WhatsApp.</p>
+            
+            <div class="success-details" id="confirm-details">
+              <!-- Renderizado via JS -->
+            </div>
+
+            <div class="success-actions">
+              <a href="#" id="btn-add-calendar" target="_blank" class="btn-full btn-ghost">📅 Adicionar à minha agenda</a>
+              <button class="btn-full" onclick="resetBooking()">Fazer novo agendamento</button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== LANDING PAGE (PORTAL) ===== -->
+  <div id="landing" class="screen active">
+    
+    <!-- Navbar Premium -->
+    <nav class="main-nav" id="main-nav">
+      <div class="nav-container">
+        <div class="nav-logo">Barber<span>Pro</span></div>
+        <div class="nav-links desktop-only">
+          <a href="#features">Recursos</a>
+          <a href="#pricing">Planos</a>
+          <a href="#about">Sobre</a>
+          <button class="btn-nav-login" onclick="goTo('login')">Entrar</button>
+          <button class="btn-nav-cta" onclick="goTo('login')">Começar Agora</button>
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Menu">☰</button>
+      </div>
+    </nav>
+
+    <!-- Mobile Dropdown -->
+    <div class="nav-mobile-dropdown" id="nav-mobile-dropdown">
+      <a href="#features" onclick="closeMobileNav()">Recursos</a>
+      <a href="#pricing" onclick="closeMobileNav()">Planos</a>
+      <button class="btn-nav-login" onclick="goTo('login')">Entrar</button>
+      <button class="btn-nav-cta" onclick="goTo('login')">Começar Agora</button>
+    </div>
+
+    <!-- Hero Section "Modern Noir" -->
+    <section class="hero-section">
+      <div class="hero-bg">
+        <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000" alt="Barbearia Fundo">
+        <div class="hero-overlay"></div>
+      </div>
+      
+      <div class="hero-content">
+        <div class="badge-hero">✦ Onde a Tradição Encontra a Precisão</div>
+        <h1 class="hero-title">O Futuro da sua <br><span>Barbearia é Digital</span></h1>
+        <p class="hero-subtitle">A BarberPro é a plataforma All-in-One que transforma sua gestão em uma experiência de luxo para você e seus clientes.</p>
+        
+        <div class="hero-cta-group">
+          <div class="hero-cta-card card-client" onclick="goTo('booking')">
+            <div class="card-icon">✂️</div>
+            <div class="card-text">
+              <h3>Quero Agendar</h3>
+              <p>Sou cliente e quero marcar um horário</p>
+            </div>
+            <div class="card-arrow">→</div>
+          </div>
+          
+          <div class="hero-cta-card card-barber" onclick="goTo('login')">
+            <div class="card-icon">💼</div>
+            <div class="card-text">
+              <h3>Sou Barbeiro</h3>
+              <p>Quero gerenciar minha barbearia</p>
+            </div>
+            <div class="card-arrow">→</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="stats-ribbon">
+      <div class="stat-item"><strong>+500</strong> Barbearias</div>
+      <div class="stat-item"><strong>+50k</strong> Agendamentos</div>
+      <div class="stat-item"><strong>4.9/5</strong> Avaliação App</div>
+    </section>
+  </div>
+
+  <!-- ===== LOGIN / REGISTER SCREEN ===== -->
+  <div id="login" class="screen">
+    <div class="auth-container">
+      <div class="auth-card glass-card">
+        <div class="auth-header">
+          <div class="auth-logo" onclick="goTo('landing')">Barber<span>Pro</span></div>
+          <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchTab('login-tab', 'register-tab', this)">Login</button>
+            <button class="auth-tab" onclick="switchTab('register-tab', 'login-tab', this)">Criar Conta</button>
+          </div>
+        </div>
+
+        <div id="login-tab" class="auth-content">
+          <h2>Bem-vindo de volta</h2>
+          <p>Acesse seu painel administrativo</p>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="login-email" placeholder="seu@email.com">
+          </div>
+          <div class="form-group">
+            <label>Senha</label>
+            <input type="password" id="login-pass" placeholder="••••••••">
+          </div>
+          <button class="btn-full" onclick="doLogin()">Entrar no Dashboard</button>
+          <div style="text-align:center; margin-top:20px;">
+            <p style="font-size:13px; color:var(--text-dim)">É cliente de uma barbearia?</p>
+            <button class="btn-sm btn-sm-ghost" style="width:100%" onclick="goTo('client-login')">Acessar Área do Cliente VIP</button>
+          </div>
+        </div>
+
+        <div id="register-tab" class="auth-content" style="display:none">
+          <h2>Comece grátis</h2>
+          <p>Teste todas as ferramentas por 7 dias</p>
+          <div class="form-group">
+            <label>Nome da Barbearia</label>
+            <input type="text" id="reg-name" placeholder="Ex: Elite Cut">
+          </div>
+          <div class="form-group">
+            <label>E-mail Profissional</label>
+            <input type="email" id="reg-email" placeholder="barba@exemplo.com">
+          </div>
+          <div class="form-group">
+            <label>Criar Senha</label>
+            <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+          </div>
+          <button class="btn-full" onclick="doRegister()">Criar conta grátis →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ÁREA DO CLIENTE (LOGIN) ===== -->
+  <div id="client-login" class="screen">
+    <div class="auth-container">
+      <div class="auth-card glass-card" style="max-width: 400px">
+        <div class="auth-header">
+          <div class="auth-logo" onclick="goTo('landing')">Barber<span>Pro</span> <span>VIP</span></div>
+          <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchTab('cl-login-tab', 'cl-register-tab', this)">Entrar</button>
+            <button class="auth-tab" onclick="switchTab('cl-register-tab', 'cl-login-tab', this)">Cadastrar</button>
+          </div>
+        </div>
+
+        <div id="cl-login-tab" class="auth-content">
+          <h2>Olá de novo!</h2>
+          <p>Acesse seu histórico e planos ativos.</p>
+          <div class="form-group"><label>WhatsApp</label><input type="tel" id="client-login-phone" placeholder="(00) 00000-0000"></div>
+          <div class="form-group"><label>Senha</label><input type="password" id="client-login-pwd" placeholder="••••••••"></div>
+          <button class="btn-full" id="btn-client-login-screen" onclick="doClientLoginScreen()">Entrar na Área VIP</button>
+        </div>
+
+        <div id="cl-register-tab" class="auth-content" style="display:none">
+          <h2>Seja VIP</h2>
+          <p>Cadastre-se para gerenciar seus agendamentos.</p>
+          <div class="form-group"><label>Nome Completo</label><input type="text" id="cl-reg-name" placeholder="Seu nome"></div>
+          <div class="form-group"><label>WhatsApp</label><input type="tel" id="cl-reg-phone" placeholder="(00) 00000-0000"></div>
+          <div class="form-group"><label>Criar Senha</label><input type="password" id="cl-reg-pass" placeholder="Mínimo 6 caracteres"></div>
+          <button class="btn-full" onclick="doClientRegister()">Criar Conta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAINEL DO CLIENTE (DASHBOARD) ===== -->
+  <div id="client-panel" class="screen">
+    <div class="admin-wrapper">
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <div class="nav-logo" style="margin-right:20px" onclick="goTo('landing')">Barber<span>Pro</span></div>
+          <h2>Olá, <span id="client-display-name">Cliente</span>!</h2>
+        </div>
+        <div class="topbar-right">
+          <button class="btn-sm btn-sm-ghost" onclick="logout()">Sair</button>
+        </div>
+      </header>
+
+      <main class="admin-content" style="padding-top: 20px;">
+        <div class="dashboard-grid">
+          
+          <!-- Plano Atual -->
+          <div class="section-card" id="client-plan-card" style="display:none; grid-column: span 12; background: linear-gradient(135deg, #1a1a1a 0%, #000 100%); border: 1px solid var(--gold);">
+            <div class="section-card-header"><span>⭐ Seu Plano Ativo</span></div>
+            <div style="padding: 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px">
+              <div>
+                <h3 id="client-plan-name" style="font-size: 24px; color: var(--gold); margin:0 0 10px 0">Plano Elite</h3>
+                <p style="color:var(--text-dim); margin:0">Expira em: <strong id="client-plan-expires">00/00/0000</strong></p>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:14px; color:var(--white-dim); margin-bottom:8px">Cortes Utilizados</div>
+                <div style="font-size:32px; font-weight:bold; color:#fff"><span id="client-plan-used">0</span> / <span id="client-plan-total">4</span></div>
+                <div style="width:150px; height:8px; background:rgba(255,255,255,0.1); border-radius:10px; margin-top:10px; overflow:hidden">
+                  <div id="client-plan-progress" style="width:0%; height:100%; background:var(--gold)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sem Plano -->
+          <div class="section-card" id="client-no-plan-card" style="grid-column: span 12; border: 1px dashed #333;">
+            <div style="padding: 30px; text-align:center">
+              <div style="font-size:40px; margin-bottom:15px">⭐</div>
+              <h3 style="color:#fff; margin-bottom:10px">Seja um Assinante VIP</h3>
+              <p style="color:var(--text-dim); max-width:500px; margin:0 auto 25px">Economize até 40% com nossos planos mensais e tenha prioridade nos agendamentos.</p>
+              <div id="client-available-plans" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; max-width:800px; margin:0 auto">
+                <!-- JS Render -->
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card" style="grid-column: span 12">
+            <div class="section-card-header">
+              <span>📅 Seus Agendamentos</span>
+              <button class="btn-sm btn-sm-gold" onclick="goTo('booking')">+ Novo Horário</button>
+            </div>
+            <div id="client-appointments-list" style="padding: 20px;">
+              <!-- Renderizado via JS -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN WRAPPER ===== -->
+  <div id="admin" class="screen">
+    <div class="admin-wrapper">
+      
+      <!-- Sidebar Dark-Elevated -->
+      <aside class="admin-sidebar" id="admin-sidebar">
+        <div class="sidebar-header">
+          <div class="nav-logo">Barber<span>Pro</span></div>
+          <button class="sidebar-close mobile-only" onclick="closeSidebar()">×</button>
+        </div>
+        
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">✂️</div>
+          <div class="sidebar-user-info">
+            <span class="sidebar-user-name">Barbearia Admin</span>
+            <span class="sidebar-user-status">Plano Pro ✓</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-group">Menu Principal</div>
+          <button class="nav-item active" onclick="adminNav('dashboard', this)"><span>📊</span> Dashboard</button>
+          <button class="nav-item" onclick="adminNav('agenda', this)"><span>📅</span> Agenda & Reservas</button>
+          <button class="nav-item" onclick="adminNav('financeiro', this)"><span>💰</span> Faturamento</button>
+          
+          <div class="nav-group">Gestão de Negócio</div>
+          <button class="nav-item" onclick="adminNav('services', this)"><span>✂️</span> Serviços</button>
+          <button class="nav-item" onclick="adminNav('barbers', this)"><span>👤</span> Equipe (Barbeiros)</button>
+          <button class="nav-item" onclick="adminNav('hours', this)"><span>⏰</span> Horários de Funcionamento</button>
+          <button class="nav-item" onclick="adminNav('history', this)"><span>📜</span> Histórico de Atendimentos</button>
+          
+          <div class="nav-group">Marketing & CRM</div>
+          <button class="nav-item" onclick="adminNav('clients', this)"><span>👥</span> Meus Clientes</button>
+          <button class="nav-item" onclick="adminNav('plans', this)"><span>⭐</span> Planos Mensais (Clube)</button>
+          <button class="nav-item" onclick="adminNav('subscribers', this)"><span>💎</span> Assinantes Ativos</button>
+          <button class="nav-item" onclick="adminNav('discounts', this)"><span>🎫</span> Cupons de Desconto</button>
+
+          <div class="nav-group">Financeiro Avançado</div>
+          <button class="nav-item" onclick="adminNav('expenses', this)"><span>📉</span> Lançar Despesas</button>
+          
+          <div class="nav-group">Configuração</div>
+          <button class="nav-item" onclick="adminNav('configuracoes', this)"><span>⚙️</span> Ajustes & Integrações</button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-link-row">
+            <a href="#" target="_blank" id="sidebar-shop-link">🔗 carregar link...</a>
+          </div>
+          <button class="btn-logout" onclick="logout()">Sair do Sistema</button>
+        </div>
+      </aside>
+
+      <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+      <div class="admin-main">
+        
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard">
+          <header class="admin-topbar">
+            <div class="topbar-left">
+              <button class="hamburger-btn" onclick="openSidebar()" aria-label="Abrir menu">
+                <span class="hb-line"></span><span class="hb-line"></span><span class="hb-line"></span>
+              </button>
+              <h2 id="dashboard-greeting">Bom dia, Barber!</h2>
+            </div>
+            <div class="topbar-right">
+              <div class="topbar-user-pill">
+                <span>Admin</span>
+                <div class="user-status-dot"></div>
+              </div>
+            </div>
+          </header>
+
+          <main class="admin-content">
+            <div class="dashboard-grid">
+              
+              <!-- Stats Cards -->
+              <div class="stat-card">
+                <div class="stat-card-label">Agendamentos Hoje</div>
+                <div class="stat-card-value" id="stat-today">0</div>
+                <div class="stat-card-trend up">✦ <span id="today-date">---</span></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label">Reservas na Semana</div>
+                <div class="stat-card-value" id="stat-week">0</div>
+                <div class="stat-card-trend">+12% vs anterior</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label">Faturamento Hoje</div>
+                <div class="stat-card-value" id="stat-revenue-hoje">R$ 0</div>
+                <div class="stat-card-trend up">↑ 8% meta diária</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label">Taxa de Presença</div>
+                <div class="stat-card-value" id="stat-retention">94%</div>
+                <div class="stat-card-trend">Excelente</div>
+              </div>
+
+              <!-- Main Sections -->
+              <div class="section-card appt-section">
+                <div class="section-card-header">
+                  <span>📅 Próximos de Hoje</span>
+                  <button class="btn-sm" onclick="openModal('modal-new-appt')">+ Agendar</button>
+                </div>
+                <div id="appt-count" style="padding: 10px 24px 0; font-size: 13px; color: var(--text-dim);">0 agendamentos</div>
+                <div class="admin-appt-list" id="admin-appt-list">
+                  <!-- Renderizado via JS -->
+                </div>
+              </div>
+
+              <div class="section-card chart-section">
+                <div class="section-card-header"><span>📈 Faturamento 7 Dias</span></div>
+                <div class="chart-container">
+                  <canvas id="financeChart"></canvas>
+                </div>
+              </div>
+
+              <div class="section-card services-dash">
+                <div class="section-card-header"><span>✂️ Serviços Populares</span></div>
+                <div class="dash-services-list" id="dash-services-list">
+                  <!-- Renderizado via JS -->
+                </div>
+              </div>
+
+              <div class="section-card link-section">
+                <div class="section-card-header"><span>🔗 Link de Agendamento</span></div>
+                <div class="public-link-box">
+                  <div class="link-url" id="dash-public-link">carregando...</div>
+                  <div class="link-actions">
+                    <button class="btn-sm btn-sm-gold" onclick="copyPublicLink()">Copiar Link</button>
+                    <button class="btn-sm" onclick="openPublicPage()">Visualizar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+
+        <!-- AGENDA VIEW -->
+        <div id="view-agenda" style="display:none">
+          <header class="admin-topbar">
+            <div class="topbar-left">
+              <button class="hamburger-btn" onclick="openSidebar()">☰</button>
+              <h2>Agenda & Reservas</h2>
+            </div>
+            <div class="topbar-right">
+              <button class="btn-sm btn-sm-gold" onclick="openModal('modal-new-appt')">+ Novo Agendamento</button>
+              <button class="btn-sm btn-sm-ghost" onclick="openModal('modal-new-block')">🚫 Bloquear Horário</button>
+            </div>
+          </header>
+          <div class="admin-content">
+            <div class="schedule-filters">
+              <button class="schedule-filter active" onclick="setAgendaFilter('hoje', this)">Hoje</button>
+              <button class="schedule-filter" onclick="setAgendaFilter('amanha', this)">Amanhã</button>
+              <button class="schedule-filter" onclick="setAgendaFilter('semana', this)">Esta semana</button>
+              <button class="schedule-filter" onclick="setAgendaFilter('proxsemana', this)">Próxima semana</button>
+            </div>
+            
+            <!-- Filtro por Barbeiro -->
+            <div id="agenda-barber-filters" style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:5px">
+               <!-- JS -->
+            </div>
+
+            <div class="section-card">
+              <div id="agenda-list" class="admin-appt-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FINANCEIRO VIEW -->
+        <div id="view-financeiro" style="display:none">
+          <header class="admin-topbar">
+            <div class="topbar-left">
+              <button class="hamburger-btn" onclick="openSidebar()">☰</button>
+              <h2>Faturamento & Financeiro</h2>
+            </div>
+            <div class="topbar-right">
+              <button class="btn-sm btn-sm-gold" onclick="exportCSV()">📥 Exportar CSV</button>
+            </div>
+          </header>
+          <div class="admin-content">
+            <div class="finance-stats-grid">
+              <div class="fstat-card">
+                <div class="fstat-label">Total Recebido</div>
+                <div class="fstat-value" id="tot-pago" style="color:var(--green)">R$ 0,00</div>
+              </div>
+              <div class="fstat-card">
+                <div class="fstat-label">Pendente</div>
+                <div class="fstat-value" id="tot-pend" style="color:var(--gold)">R$ 0,00</div>
+              </div>
+              <div class="fstat-card">
+                <div class="fstat-label">Faturamento Bruto</div>
+                <div class="fstat-value" id="tot-geral">R$ 0,00</div>
+              </div>
+            </div>
+            <div class="section-card">
+              <div class="section-card-header">
+                <span>Histórico de Lançamentos</span>
+                <select id="fin-filter-status" onchange="renderFinanceiro()" style="background:var(--bg-card);color:#fff;border:1px solid #333;border-radius:6px;padding:4px 8px;font-size:12px">
+                  <option value="all">Ver Todos</option>
+                  <option value="pago">Somente Pagos</option>
+                  <option value="pendente">Pendentes</option>
+                  <option value="cancelado">Cancelados</option>
+                </select>
+              </div>
+              <div id="financeiro-list"></div>
+            </div>
+          </div>
+        </div>
+        <!-- CONFIGURAÇÕES -->
+        <div id="view-configuracoes" style="display:none">
+          <div class="admin-topbar">
+            <div class="topbar-left">
+              <button class="hamburger-btn" onclick="openSidebar()" aria-label="Abrir menu"><span class="hb-line"></span><span class="hb-line"></span><span class="hb-line"></span></button>
+              <h2>Configurações</h2>
+            </div>
+            <div class="topbar-right">
+              <button class="btn-sm btn-sm-gold" id="btn-save-settings" onclick="saveSettings()">✓ Salvar</button>
+            </div>
+          </div>
+          <div class="admin-content">
+  
+            <!-- Dados da Barbearia -->
+            <div class="section-card" style="margin-bottom:20px">
+              <div class="section-card-header"><span>🏪 Dados da Barbearia</span></div>
+              <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+                <div class="form-group" style="margin:0">
+                  <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Nome da Barbearia</label>
+                  <input type="text" id="cfg-name" placeholder="Ex: Barbearia do João" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Endereço Completo</label>
+                  <input type="text" id="cfg-address" placeholder="Ex: Rua das Flores, 123 - Centro" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Email de Acesso</label>
+                  <input type="email" id="cfg-email" placeholder="seu@email.com" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Nova Senha <span style="color:var(--text-dim);font-size:11px">(deixe em branco para não alterar)</span></label>
+                  <input type="password" id="cfg-pass" placeholder="Nova senha" autocomplete="new-password" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+                </div>
+              </div>
+            </div>
+  
+            <!-- Pix Direto (Recebimento) -->
+            <div class="section-card" style="margin-bottom:20px">
+              <div class="section-card-header"><span>💸 Pagamento via Pix (Direto)</span></div>
+              <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+                <p style="color:var(--text-dim);font-size:13px;margin:0">Insira sua <strong style="color:var(--gold)">Chave Pix</strong> para receber pagamentos diretamente na sua conta, seja por assinatura de planos ou agendamentos antecipados.</p>
+                <div class="form-group" style="margin:0">
+                  <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Sua Chave Pix (CPF, CNPJ, Celular, E-mail)</label>
+                  <input type="text" id="cfg-pix-key" placeholder="Ex: 123.456.789-00 ou (11) 99999-9999" autocomplete="off" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+                </div>
+              </div>
+            </div>
+  
+            <!-- Mercado Pago -->
+            <div class="section-card" style="margin-bottom:20px">
+              <div class="section-card-header"><span>💳 Mercado Pago</span></div>
+              <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+                <p style="color:var(--text-dim);font-size:13px;margin:0">Cole aqui o seu <strong style="color:var(--gold)">Access Token</strong> do Mercado Pago para habilitar pagamentos online (Pix e Cartão) no agendamento dos seus clientes.</p>
+                <div class="form-group" style="margin:0">
+                  <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">MP Access Token</label>
+                  <input type="password" id="cfg-mp-token" placeholder="APP_USR-..." autocomplete="off" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;font-family:monospace;box-sizing:border-box">
+                </div>
+                <a href="https://www.mercadopago.com.br/developers/panel/credentials" target="_blank" style="color:var(--gold);font-size:13px;text-decoration:none">🔗 Acessar painel de credenciais do Mercado Pago →</a>
+              </div>
+            </div>
+  
+            <!-- WhatsApp Z-API -->
+            <div class="section-card" style="margin-bottom:20px">
+              <div class="section-card-header"><span>📱 WhatsApp (Z-API)</span></div>
+              <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+                <p style="color:var(--text-dim);font-size:13px;margin:0">Configure o <strong style="color:var(--gold)">Z-API</strong> para enviar confirmações automáticas de agendamento via WhatsApp para seus clientes.</p>
+                <div class="form-group" style="margin:0">
+                  <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Instance ID</label>
+                  <input type="text" id="cfg-zapi-instance" placeholder="Ex: 3D8B9A..." autocomplete="off" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;font-family:monospace;box-sizing:border-box">
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Token da Instância</label>
+                  <input type="password" id="cfg-zapi-token" placeholder="Token gerado no painel Z-API" autocomplete="off" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;font-family:monospace;box-sizing:border-box">
+                </div>
+                <a href="https://developer.z-api.io/" target="_blank" style="color:var(--gold);font-size:13px;text-decoration:none">🔗 Acessar painel Z-API →</a>
+              </div>
+            </div>
+  
+            <!-- Plano -->
+            <div class="section-card" style="margin-bottom:20px">
+              <div class="section-card-header"><span>⭐ Plano Atual</span></div>
+              <div style="padding:20px 24px" id="cfg-plan-info">
+                <div style="color:var(--text-dim);font-size:14px">Carregando dados do plano...</div>
+              </div>
+            </div>
+  
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  
+    <!-- ===== MODALS ===== -->
+    <div class="modal-overlay" id="modal-new-service">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">✂️ Novo Serviço</span><button class="modal-close"
+            onclick="closeModal('modal-new-service')">×</button></div>
+        <div class="form-group"><label>Nome do Serviço</label><input type="text" id="svc-name"
+            placeholder="Ex: Corte Degradê"></div>
+        <div class="form-group"><label>Preço (R$)</label><input type="number" id="svc-price" placeholder="45"></div>
+        <div class="form-group"><label>Duração (minutos)</label><input type="number" id="svc-duration" placeholder="30">
+        </div>
+        <div class="form-group"><label>Descrição</label><input type="text" id="svc-desc" placeholder="Breve descrição">
+        </div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-service')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="addService()">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-edit-service">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">✎ Editar Serviço</span><button class="modal-close"
+            onclick="closeModal('modal-edit-service')">×</button></div>
+        <input type="hidden" id="edit-svc-id">
+        <div class="form-group"><label>Nome do Serviço</label><input type="text" id="edit-svc-name"></div>
+        <div class="form-group"><label>Preço (R$)</label> <input type="number" id="edit-svc-price"></div>
+        <div class="form-group"><label>Duração (minutos)</label> <input type="number" id="edit-svc-duration"></div>
+        <div class="form-group"><label>Descrição</label> <input type="text" id="edit-svc-desc"></div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-edit-service')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="saveEditService()">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-new-barber">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">👤 Novo Barbeiro</span><button class="modal-close"
+            onclick="closeModal('modal-new-barber')">×</button></div>
+        <div class="form-group"><label>Nome</label> <input type="text" id="barber-name" placeholder="João Silva"></div>
+        <div class="form-group"><label>Especialidade</label> <input type="text" id="barber-role"
+            placeholder="Corte e Barba"></div>
+        <div class="form-group"><label>Emoji</label> <input type="text" id="barber-emoji" placeholder="✂️" maxlength="2"></div>
+        <div class="form-group"><label>Comissão (%)</label> <input type="number" id="barber-commission" placeholder="Ex: 50" min="0" max="100"></div>
+        <div class="form-group"><label>Chave Pix (Opcional)</label> <input type="text" id="barber-pix" placeholder="Chave do Barbeiro"></div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-barber')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="addBarber()">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-new-appt">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">📅 Novo Agendamento</span><button class="modal-close"
+            onclick="closeModal('modal-new-appt')">×</button></div>
+        <div class="form-group"><label>Cliente</label> <input type="text" id="appt-client" placeholder="Nome do cliente">
+        </div>
+        <div class="form-group"><label>Serviço</label> <select id="appt-service"></select></div>
+        <div class="form-group"><label>Barbeiro</label> <select id="appt-barber"></select></div>
+        <div class="form-group"><label>Data</label> <input type="date" id="appt-date"></div>
+        <div class="form-group"><label>Horário</label> <input type="time" id="appt-time" value="09:00"></div>
+        <div class="form-group">
+          <label>Forma de Pagto</label>
+          <select id="appt-pay">
+            <option value="Dinheiro">Dinheiro</option>
+            <option value="Pix">Pix</option>
+            <option value="Cartão de Crédito">Cartão de Crédito</option>
+            <option value="Na barbearia">A combinar</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-appt')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="addManualAppt()">Agendar</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-edit-barber">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">✎ Editar Barbeiro</span><button class="modal-close" onclick="closeModal('modal-edit-barber')">×</button></div>
+        <input type="hidden" id="edit-barber-id">
+        <div class="form-group"><label>Nome</label> <input type="text" id="edit-barber-name"></div>
+        <div class="form-group"><label>Especialidade</label> <input type="text" id="edit-barber-role"></div>
+        <div class="form-group"><label>Emoji</label> <input type="text" id="edit-barber-emoji" maxlength="2"></div>
+        <div class="form-group"><label>Comissão (%)</label> <input type="number" id="edit-barber-commission" min="0" max="100"></div>
+        <div class="form-group"><label>Chave Pix (Opcional)</label> <input type="text" id="edit-barber-pix"></div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-edit-barber')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="saveEditBarber()">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-new-discount">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">🎫 Novo Cupom de Desconto</span><button class="modal-close" onclick="closeModal('modal-new-discount')">×</button></div>
+        <div class="form-group"><label>Código do Cupom</label><input type="text" id="disc-code" placeholder="Ex: PROMO10" style="text-transform:uppercase"></div>
+        <div class="form-group"><label>Tipo de Desconto</label><select id="disc-type"><option value="percent">Percentual (%)</option><option value="fixed">Valor fixo (R$)</option></select></div>
+        <div class="form-group"><label>Valor</label><input type="number" id="disc-value" placeholder="10"></div>
+        <div class="form-group"><label>Descrição</label><input type="text" id="disc-desc" placeholder="Ex: Desconto de boas-vindas"></div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-discount')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="addDiscount()">Criar Cupom</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-new-expense">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">📉 Nova Despesa</span><button class="modal-close" onclick="closeModal('modal-new-expense')">×</button></div>
+        <div class="form-group"><label>Descrição</label><input type="text" id="exp-desc" placeholder="Ex: Conta de Luz"></div>
+        <div class="form-group"><label>Valor (R$)</label><input type="number" id="exp-value" placeholder="150.00"></div>
+        <div class="form-group"><label>Data</label><input type="date" id="exp-date"></div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-expense')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="addExpense()">Salvar Despesa</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-new-block">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">🚫 Bloquear Agenda</span><button class="modal-close" onclick="closeModal('modal-new-block')">×</button></div>
+        <div class="form-group"><label>Barbeiro</label><select id="block-barber"></select></div>
+        <div class="form-group"><label>Data</label><input type="date" id="block-date"></div>
+        <div style="display:flex;gap:12px">
+          <div class="form-group" style="flex:1"><label>Hora Início</label><input type="time" id="block-start"></div>
+          <div class="form-group" style="flex:1"><label>Hora Fim</label><input type="time" id="block-end"></div>
+        </div>
+        <div class="form-group"><label>Motivo (opcional)</label><input type="text" id="block-reason" placeholder="Ex: Almoço"></div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-block')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="addBlockTime()">Bloquear</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-new-plan">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">⭐ Novo Plano</span><button class="modal-close" onclick="closeModal('modal-new-plan')">×</button></div>
+        <div class="form-group"><label>Nome do Plano</label><input type="text" id="plan-name" placeholder="Ex: Clube Ouro"></div>
+        <div class="form-group"><label>Preço Mensal (R$)</label><input type="number" id="plan-price" placeholder="100.00"></div>
+        <div class="form-group"><label>Cortes por mês</label><input type="number" id="plan-cuts" placeholder="4"></div>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-plan')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="addPlan()">Criar Plano</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal-overlay" id="modal-assign-plan">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title">⭐ Atribuir Plano</span><button class="modal-close" onclick="closeModal('modal-assign-plan')">×</button></div>
+        <input type="hidden" id="assign-client-id">
+        <div class="form-group"><label>Selecione o Plano Mensal</label>
+          <select id="assign-plan-select"></select>
+        </div>
+        <p style="font-size:12px; color:var(--text-dim)">Ao atribuir um plano, o cliente terá sua cota renovada por 30 dias. O pagamento deve ser cobrado na barbearia.</p>
+        <div class="modal-footer">
+          <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-assign-plan')">Cancelar</button>
+          <button class="btn-sm btn-sm-gold" onclick="saveClientPlan()">Atribuir</button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- ===== ONBOARDING WIZARD ===== -->
+    <div class="modal-overlay" id="modal-onboarding" style="align-items:center;backdrop-filter:blur(12px)">
+      <div class="modal" style="max-width:480px;width:94%;padding:0;overflow:hidden">
+  
+        <!-- Progress bar -->
+        <div style="height:4px;background:var(--bg-elevated);position:relative">
+          <div id="ob-progress" style="height:100%;background:var(--gold);transition:width 0.4s ease;width:25%"></div>
+        </div>
+  
+        <!-- Step indicator -->
+        <div style="display:flex;justify-content:center;gap:8px;padding:20px 24px 0">
+          <div class="ob-dot active" id="ob-dot-1"></div>
+          <div class="ob-dot" id="ob-dot-2"></div>
+          <div class="ob-dot" id="ob-dot-3"></div>
+          <div class="ob-dot" id="ob-dot-4"></div>
+        </div>
+  
+        <!-- Step 1: Bem-vindo + nome da barbearia -->
+        <div class="ob-step" id="ob-step-1" style="padding:28px 28px 24px">
+          <div style="font-size:36px;margin-bottom:12px">🎉</div>
+          <h3 style="font-size:20px;font-weight:700;margin:0 0 8px">Bem-vindo ao BarberPro!</h3>
+          <p style="color:var(--text-dim);font-size:14px;margin:0 0 24px">Vamos configurar sua barbearia em menos de 2 minutos. Primeiro, confirme o nome e a logo da sua barbearia:</p>
+          <div class="form-group" style="margin:0 0 16px">
+            <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Nome da Barbearia</label>
+            <input type="text" id="ob-name" placeholder="Ex: Barbearia do João" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:12px 14px;color:#fff;font-size:15px;box-sizing:border-box">
+          </div>
+          <div class="form-group" style="margin:0 0 24px">
+            <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Logo (Opcional)</label>
+            <input type="file" id="ob-logo" accept="image/*" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;color:#fff;font-size:13px;box-sizing:border-box">
+          </div>
+          <button class="btn-full" onclick="obNext(2)" style="padding:13px">Próximo →</button>
+        </div>
+  
+        <!-- Step 2: Primeiro serviço -->
+        <div class="ob-step" id="ob-step-2" style="display:none;padding:28px 28px 24px">
+          <div style="font-size:36px;margin-bottom:12px">✂️</div>
+          <h3 style="font-size:20px;font-weight:700;margin:0 0 8px">Adicione seu primeiro serviço</h3>
+          <p style="color:var(--text-dim);font-size:14px;margin:0 0 20px">Qual é o serviço mais pedido na sua barbearia?</p>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+            <div class="form-group" style="margin:0">
+              <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Nome do Serviço</label>
+              <input type="text" id="ob-svc-name" placeholder="Ex: Corte Degradê" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:11px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+            </div>
+            <div style="display:flex;gap:10px">
+              <div class="form-group" style="margin:0;flex:1">
+                <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Preço (R$)</label>
+                <input type="number" id="ob-svc-price" placeholder="45" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:11px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+              </div>
+              <div class="form-group" style="margin:0;flex:1">
+                <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Duração (min)</label>
+                <input type="number" id="ob-svc-dur" placeholder="30" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:11px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-sm btn-sm-ghost" onclick="obNext(1)" style="flex:1;padding:12px">← Voltar</button>
+            <button class="btn-full" onclick="obNext(3)" style="flex:2;padding:12px">Próximo →</button>
+          </div>
+        </div>
+  
+        <!-- Step 3: Primeiro barbeiro -->
+        <div class="ob-step" id="ob-step-3" style="display:none;padding:28px 28px 24px">
+          <div style="font-size:36px;margin-bottom:12px">👤</div>
+          <h3 style="font-size:20px;font-weight:700;margin:0 0 8px">Adicione o primeiro barbeiro</h3>
+          <p style="color:var(--text-dim);font-size:14px;margin:0 0 20px">Pode ser você mesmo! Seus clientes vão escolher o barbeiro na hora de agendar.</p>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+            <div class="form-group" style="margin:0">
+              <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Nome</label>
+              <input type="text" id="ob-barber-name" placeholder="João Silva" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:11px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label style="display:block;font-size:13px;color:var(--white-dim);margin-bottom:6px">Especialidade</label>
+              <input type="text" id="ob-barber-role" placeholder="Corte e Barba" style="width:100%;background:var(--bg-elevated);border:1px solid var(--border-color);border-radius:8px;padding:11px 14px;color:#fff;font-size:14px;box-sizing:border-box">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-sm btn-sm-ghost" onclick="obNext(2)" style="flex:1;padding:12px">← Voltar</button>
+            <button class="btn-full" onclick="obNext(4)" style="flex:2;padding:12px">Próximo →</button>
+          </div>
+        </div>
+  
+        <!-- Step 4: Pronto! Link da barbearia -->
+        <div class="ob-step" id="ob-step-4" style="display:none;padding:28px 28px 24px;text-align:center">
+          <div style="font-size:48px;margin-bottom:12px">🚀</div>
+          <h3 style="font-size:22px;font-weight:700;margin:0 0 10px">Tudo pronto!</h3>
+          <p style="color:var(--text-dim);font-size:14px;margin:0 0 20px">Sua barbearia está configurada. Compartilhe o link abaixo com seus clientes para que eles possam agendar:</p>
+          <div id="ob-link-box" style="background:var(--bg-elevated);border:1px solid var(--gold);border-radius:10px;padding:14px 16px;font-family:monospace;font-size:13px;color:var(--gold);word-break:break-all;margin-bottom:20px;cursor:pointer" onclick="obCopyLink()" title="Clique para copiar"></div>
+          <button class="btn-full" onclick="obFinish()" style="padding:14px;font-size:16px">Ir para o Dashboard ✓</button>
+        </div>
+  
+      </div>
+    </div>
+  
+    <div class="toast" id="toast"></div>
+  
+    <!-- MODAL: CHECKOUT PIX UNIVERSAL -->
+    <div class="modal-overlay" id="modal-pix-checkout">
+      <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <button class="modal-close" onclick="closeModal('modal-pix-checkout')">&times;</button>
+        <h2 style="margin-bottom:10px; color:var(--gold);" id="pix-title">Finalizar Pagamento</h2>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:20px;">Copie a chave Pix abaixo, pague no app do seu banco e depois confirme aqui.</p>
+        
+        <div style="background:var(--bg); border:1px solid var(--border-color); padding:20px; border-radius:12px; margin-bottom:20px;">
+          <div style="font-size:13px; color:#888; margin-bottom:5px;">Destinatário: <span id="pix-shop-name" style="color:#fff;">Barbearia</span></div>
+          <div style="font-size:13px; color:#888; margin-bottom:15px;">Valor: <strong id="pix-value" style="color:var(--gold); font-size:18px;">R$ 0,00</strong></div>
+          
+          <div style="font-size:12px; color:var(--gold); margin-bottom:5px; font-weight:bold;">CHAVE PIX</div>
+          <div id="pix-key-display" style="background:#111; padding:12px; border-radius:8px; font-family:monospace; font-size:16px; word-break:break-all; user-select:all; margin-bottom:10px; color:#fff;">chave@pix.com</div>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('pix-key-display').innerText); showToast('📋 Chave copiada!')" style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:8px 16px; border-radius:20px; cursor:pointer; font-size:13px; font-weight:bold;">📋 Copiar Chave</button>
+        </div>
+  
+        <button id="btn-confirm-pix" class="btn-primary" style="width:100%; font-size:16px; padding:16px; background:#10B981; color:#000;">✓ Já realizei o pagamento</button>
+        <button onclick="closeModal('modal-pix-checkout')" style="width:100%; margin-top:10px; background:transparent; border:none; color:var(--text-dim); padding:10px; cursor:pointer;">Cancelar</button>
+      </div>
+    </div>
+  
+  </body>
+  </html>

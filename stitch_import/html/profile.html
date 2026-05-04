@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#99907c",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-variant": "#333535",
+                        "surface-container-highest": "#333535",
+                        "on-primary": "#3c2f00",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-container": "#454544",
+                        "tertiary": "#d0cdcd",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed-variant": "#474646",
+                        "on-secondary": "#313030",
+                        "outline-variant": "#4d4635",
+                        "surface-bright": "#37393a",
+                        "primary": "#f2ca50",
+                        "on-primary-fixed": "#241a00",
+                        "on-tertiary": "#313030",
+                        "surface-tint": "#e9c349",
+                        "surface-container-high": "#282a2b",
+                        "on-secondary-container": "#bab8b7",
+                        "tertiary-container": "#b4b2b2",
+                        "surface-dim": "#121414",
+                        "inverse-primary": "#735c00",
+                        "primary-fixed": "#ffe088",
+                        "secondary": "#c8c6c5",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#2f3131",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-surface-variant": "#d0c5af",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface-container-low": "#1a1c1c",
+                        "inverse-surface": "#e2e2e2",
+                        "on-primary-container": "#554300",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-background": "#e2e2e2",
+                        "tertiary-fixed": "#e5e2e1",
+                        "secondary-container": "#4a4949",
+                        "on-primary-fixed-variant": "#574500",
+                        "primary-container": "#d4af37",
+                        "surface-container-lowest": "#0c0f0f",
+                        "surface-container": "#1e2020",
+                        "surface": "#121414",
+                        "on-surface": "#e2e2e2",
+                        "primary-fixed-dim": "#e9c349",
+                        "background": "#121414"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "base": "8px",
+                        "margin": "32px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "headline-md": ["Noto Serif"],
+                        "headline-lg": ["Noto Serif"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0c0f0f;
+            color: #e2e2e2;
+        }
+    </style>
+</head>
+<body class="font-body-md bg-background overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-black/40 backdrop-blur-md border-b border-white/5 shadow-[0_0_15px_rgba(212,175,55,0.05)] flex justify-between items-center px-8 h-16 w-full">
+<div class="text-xl font-black text-white tracking-tighter italic font-headline-lg">AXE &amp; EDGE</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-label-sm tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-primary transition-colors duration-300" href="#">Solutions</a>
+<a class="font-label-sm tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-primary transition-colors duration-300" href="#">Pricing</a>
+<a class="font-label-sm tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-primary transition-colors duration-300" href="#">Enterprise</a>
+<a class="font-label-sm tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-primary transition-colors duration-300" href="#">Academy</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="font-label-sm tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-white">LOG IN</button>
+<button class="font-label-sm tracking-tight uppercase font-bold text-xs bg-primary-container text-on-primary-container px-4 py-2 hover:opacity-80 transition-all">GET ACCESS</button>
+</div>
+</nav>
+<main class="pt-16 max-w-container-max mx-auto px-margin">
+<!-- Hero Section: Profile Header -->
+<section class="mt-xl grid grid-cols-1 md:grid-cols-12 gap-lg items-end">
+<div class="md:col-span-4 relative group">
+<div class="aspect-[4/5] overflow-hidden bg-surface-container rounded-lg">
+<img class="w-full h-full object-cover desaturate contrast-125" data-alt="A cinematic, high-contrast portrait of a master barber in a professional studio setting. The lighting is dramatic and low-key, emphasizing facial textures and a sharp, modern haircut. The background is a dark, sophisticated noir aesthetic with deep charcoal tones and subtle amber rim lighting reflecting off metallic tools. The overall mood is mysterious, professional, and precision-engineered." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR5wXxT1OaKzTzHhVx_AZpF5s-apaUJXQMfwCwe0_B9F1Apzh7w1UrTkmpZXrrQ2m3MDz-SeJ4zChim7qCxXrsGdy8s3BcREVggk_ozB8iN5LM6mVT4BefX2P_t7HVVB33v-Zd25cFb3ZhJarUvIkdAdNMaQ29HHALW3Qbioe_Lv46oUTun8p7iypIbkq1Bi9XXbeKgj53KXjjqcnGopY4lOnbEFfKKbAeqOrkzfh1y6Rt9QJfVx4M9Fow6d6p7nhziJHU7wKNKbKA"/>
+</div>
+<div class="absolute -bottom-4 -right-4 p-4 bg-primary-container text-on-primary-container font-label-md flex items-center gap-2 rounded shadow-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+                    MASTER ELITE
+                </div>
+</div>
+<div class="md:col-span-8 pb-4">
+<div class="space-y-xs">
+<span class="text-primary-container font-label-sm tracking-widest uppercase">Especialista em Visagismo</span>
+<h1 class="font-headline-lg text-white uppercase italic text-5xl">Gabriel Von Edge</h1>
+<p class="font-body-lg text-on-surface-variant max-w-2xl">
+                        Fundindo técnicas tradicionais de alfaiataria capilar com estética futurista. Especialista em fades de alta precisão e rituais de barba sob medida.
+                    </p>
+</div>
+<div class="mt-lg flex gap-md">
+<div class="flex flex-col">
+<span class="text-white font-headline-md">1.2k</span>
+<span class="text-zinc-500 font-label-sm uppercase">Cortes</span>
+</div>
+<div class="w-px h-12 bg-white/10"></div>
+<div class="flex flex-col">
+<span class="text-white font-headline-md">4.9</span>
+<span class="text-zinc-500 font-label-sm uppercase">Rating</span>
+</div>
+<div class="w-px h-12 bg-white/10"></div>
+<div class="flex flex-col">
+<span class="text-white font-headline-md">8+</span>
+<span class="text-zinc-500 font-label-sm uppercase">Anos</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Portfolio -->
+<section class="mt-xl">
+<div class="flex justify-between items-end mb-lg">
+<h2 class="font-headline-lg text-white uppercase italic border-l-4 border-primary-container pl-4">Portfolio Selecionado</h2>
+<span class="font-label-sm text-zinc-500 uppercase tracking-widest cursor-pointer hover:text-primary transition-colors">Ver Galeria Completa</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-sm">
+<div class="md:col-span-2 md:row-span-2 aspect-square glass-panel overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" data-alt="A detailed macro shot of a sharp, modern skin fade haircut featuring precise line work. The image is captured in a technological noir style with deep blacks and warm-toned gold highlights. The lighting emphasizes the texture of the hair and the clean scalp transition. The composition is artistic and minimalist, set against a dark, out-of-focus studio background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpSxqR3lGr5jtanTKpTprLZtJvI0Ngku9QGqS_knhN4aKTC5ZgG85GgxihgFlGRq-bR1ogva52wpx0ijPVFGAcZ4QzcDeVEwFkhXxpeXpDVMlizkc4IGfIU_O3Hpc3TudybTeU--ZGhaYaWCckcvFIpojPj9zJWRTrsooOM4z9ubbOgxvJlqqg55Ut4hWMJJkyGwvEHEpTrJewHZI9L9M3BSIBRapLDVf3IUYfGVVvk9Q6YpDVOdkial5LlVt70zqYsL15W8MxywkB"/>
+</div>
+<div class="aspect-square glass-panel overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" data-alt="An atmospheric image of a luxury barber's workstation featuring premium chrome tools and obsidian-colored accessories. Soft amber light reflects off the edges of the shears and razors, creating a high-end digital glow. The setting is dark and sophisticated, emphasizing the precision and craftsmanship of high-end grooming services." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkgfXtuafweTtoIVo1nLtQgEAFAQwKXWnjvMkEL8RjOLBLlWQrayfdm8NfdqUon61dGBuWyIC40dL3UhxsVTLCq2pR0nKXvSaxUu02yCTjmcFzTn_Si8pZRxFPlWaxvX2YhB0DzF482kJc03YSDIQihcbgitVoDfSNthRK19ShwbVVjnCoWcFS1EJc4vZp0xIoK_iLM2cDg1FAumA738CP6nyiCvje3Z-MPRINMQnY6Nv_YbaAPMUitsgLSL-tZk6bgo5CAzFh0czv"/>
+</div>
+<div class="aspect-square glass-panel overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" data-alt="A stylish, desaturated shot of a man receiving a professional beard trim in a dark, minimalist barber shop. The lighting is focused specifically on the area of work, creating a dramatic chiaroscuro effect with golden undertones. The visual style is premium and artisanal, showcasing the mastery of a specialized grooming ritual within a technological noir environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvq1u6gZ5gRvW_o2dORrEZVA5DCLYC9srpaCfcA7dYiiEYnx5lzDbVo-9rwCKwmtcwS64ISNFNE802_gBF59G00LpIR0RoJEL6Uk5OrmUKGS-kICmglMPayIyiVVJddZ6kUK7DgkrCI5dC5sNLIiDi7vZOfvRuWEtF2v6uGYdtcRIZ8qsVJSm3LleGSTFBY7I0BvtsWBOnPOa3g6Am3aSGE3WxNOnWWoVHmE7oMTXgflU9Ask3aEMMC8JL0IbJP22yrymliO_Jk0FZ"/>
+</div>
+<div class="md:col-span-2 aspect-[2/1] glass-panel overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" data-alt="A wide, cinematic shot of a modern, high-end grooming studio interior featuring sleek black leather chairs and minimalist glass surfaces. The space is illuminated by integrated LED lighting in gold and amber tones, creating a futuristic noir atmosphere. The clean lines and open whitespace convey a sense of exclusive, professional mastery and luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_btzDDY6XWD0SUxwcN0PTt3Xz7bhB0thyzo9Pk2HHNfJH-5M3uBvBuS5atBbxxf4e9AE6wXPqfsuOhvpbA9QrtiGpkrqKpeWWFtSJwU-wT3uWhl3rvrzgElVYuwGQciaRz7SVVVhRxJReVNlzI26UO7WYaCaxKHeoY_s_1j7B0SMvMlO16zqvxHFyN4EC0NiRyAZ6_mhvTySCBjTMn_Sdx6UCDnTicNxsCofs1vhDFSNmZ8KRtiBC0WC14ZB9geYAffc4HW-GlgCG"/>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section class="mt-xl grid grid-cols-1 md:grid-cols-12 gap-xl">
+<div class="md:col-span-4">
+<div class="sticky top-24">
+<h2 class="font-headline-lg text-white uppercase italic mb-md">Serviços</h2>
+<p class="text-on-surface-variant font-body-md mb-lg">
+                        Engenharia capilar de precisão. Cada sessão é um ritual de transformação projetado para a arquitetura única do seu rosto.
+                    </p>
+<div class="p-lg glass-panel flex flex-col gap-sm rounded-lg">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<span class="font-label-md text-white">Disponibilidade Imediata</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<span class="font-label-md text-white">Studio Alpha - Setor Elite</span>
+</div>
+</div>
+</div>
+</div>
+<div class="md:col-span-8 flex flex-col gap-md">
+<!-- Service Item -->
+<div class="glass-panel p-lg flex flex-col md:flex-row justify-between items-start md:items-center group hover:bg-white/5 transition-all border-l-2 border-transparent hover:border-primary-container rounded-lg">
+<div>
+<h3 class="font-headline-md text-white">Corte Arquiteto</h3>
+<p class="text-zinc-500 font-label-sm">Visagismo completo + Lavagem Terapêutica</p>
+</div>
+<div class="mt-md md:mt-0 flex items-center gap-xl">
+<span class="font-headline-md text-primary-container">R$ 140</span>
+<button class="bg-primary-container text-on-primary-container font-label-md px-md py-sm uppercase tracking-widest hover:scale-105 active:scale-95 transition-all rounded">Reservar</button>
+</div>
+</div>
+<!-- Service Item -->
+<div class="glass-panel p-lg flex flex-col md:flex-row justify-between items-start md:items-center group hover:bg-white/5 transition-all border-l-2 border-transparent hover:border-primary-container rounded-lg">
+<div>
+<h3 class="font-headline-md text-white">Ritual de Barba Obsidian</h3>
+<p class="text-zinc-500 font-label-sm">Toalha quente + Alinhamento à navalha + Óleo Cold-Pressed</p>
+</div>
+<div class="mt-md md:mt-0 flex items-center gap-xl">
+<span class="font-headline-md text-primary-container">R$ 90</span>
+<button class="bg-primary-container text-on-primary-container font-label-md px-md py-sm uppercase tracking-widest hover:scale-105 active:scale-95 transition-all rounded">Reservar</button>
+</div>
+</div>
+<!-- Service Item -->
+<div class="glass-panel p-lg flex flex-col md:flex-row justify-between items-start md:items-center group hover:bg-white/5 transition-all border-l-2 border-transparent hover:border-primary-container rounded-lg">
+<div>
+<h3 class="font-headline-md text-white">Full Protocol AXE</h3>
+<p class="text-zinc-500 font-label-sm">Corte + Barba + Detox Capilar</p>
+</div>
+<div class="mt-md md:mt-0 flex items-center gap-xl">
+<span class="font-headline-md text-primary-container">R$ 210</span>
+<button class="bg-primary-container text-on-primary-container font-label-md px-md py-sm uppercase tracking-widest hover:scale-105 active:scale-95 transition-all rounded">Reservar</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials -->
+<section class="mt-xl mb-xl">
+<h2 class="font-headline-lg text-white uppercase italic text-center mb-xl">Vereditos</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="glass-panel p-lg relative rounded-lg">
+<span class="material-symbols-outlined text-primary-container/10 absolute top-4 right-4 text-6xl" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-white italic mb-lg">"O Gabriel não apenas corta cabelo, ele entende a geometria do rosto. Uma experiência de luxo absoluto no centro da cidade."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-surface-container-high rounded-full"></div>
+<div>
+<p class="font-label-md text-white">Ricardo Mendes</p>
+<p class="text-zinc-500 text-xs uppercase">CEO, TechFlow</p>
+</div>
+</div>
+</div>
+<div class="glass-panel p-lg relative border-t-2 border-primary-container rounded-lg">
+<span class="material-symbols-outlined text-primary-container/10 absolute top-4 right-4 text-6xl" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-white italic mb-lg">"Precisão absurda. O Ritual Obsidian é obrigatório para quem valoriza os detalhes. Ambiente impecável."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-surface-container-high rounded-full"></div>
+<div>
+<p class="font-label-md text-white">Arthur Silva</p>
+<p class="text-zinc-500 text-xs uppercase">Arquiteto</p>
+</div>
+</div>
+</div>
+<div class="glass-panel p-lg relative rounded-lg">
+<span class="material-symbols-outlined text-primary-container/10 absolute top-4 right-4 text-6xl" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md text-white italic mb-lg">"O melhor atendimento que já recebi. O sistema de reserva é fluido e o resultado final é sempre acima da expectativa."</p>
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-surface-container-high rounded-full"></div>
+<div>
+<p class="font-label-md text-white">Lucas Drumm</p>
+<p class="text-zinc-500 text-xs uppercase">Diretor Criativo</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 bg-surface-container-lowest border-t border-white/5">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-lg">
+<div class="text-zinc-500 font-label-sm tracking-widest uppercase">© 2024 AXE &amp; EDGE TECHNOLOGIES. PRECISION ENGINEERED.</div>
+<div class="flex gap-md">
+<a class="text-zinc-600 font-label-sm tracking-widest uppercase hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="text-zinc-600 font-label-sm tracking-widest uppercase hover:text-primary transition-colors" href="#">Terms</a>
+<a class="text-zinc-600 font-label-sm tracking-widest uppercase hover:text-primary transition-colors" href="#">API</a>
+<a class="text-zinc-600 font-label-sm tracking-widest uppercase hover:text-primary transition-colors" href="#">Status</a>
+</div>
+</div>
+</footer>
+</body></html>

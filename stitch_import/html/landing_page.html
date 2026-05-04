@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-PT"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Noto+Serif:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#99907c",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-variant": "#333535",
+                        "surface-container-highest": "#333535",
+                        "on-primary": "#3c2f00",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-container": "#454544",
+                        "tertiary": "#d0cdcd",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed-variant": "#474646",
+                        "on-secondary": "#313030",
+                        "outline-variant": "#4d4635",
+                        "surface-bright": "#37393a",
+                        "primary": "#f2ca50",
+                        "on-primary-fixed": "#241a00",
+                        "on-tertiary": "#313030",
+                        "surface-tint": "#e9c349",
+                        "surface-container-high": "#282a2b",
+                        "on-secondary-container": "#bab8b7",
+                        "tertiary-container": "#b4b2b2",
+                        "surface-dim": "#121414",
+                        "inverse-primary": "#735c00",
+                        "primary-fixed": "#ffe088",
+                        "secondary": "#c8c6c5",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#2f3131",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-surface-variant": "#d0c5af",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface-container-low": "#1a1c1c",
+                        "inverse-surface": "#e2e2e2",
+                        "on-primary-container": "#554300",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-background": "#e2e2e2",
+                        "tertiary-fixed": "#e5e2e1",
+                        "secondary-container": "#4a4949",
+                        "on-primary-fixed-variant": "#574500",
+                        "primary-container": "#d4af37",
+                        "surface-container-lowest": "#0c0f0f",
+                        "surface-container": "#1e2020",
+                        "surface": "#121414",
+                        "on-surface": "#e2e2e2",
+                        "primary-fixed-dim": "#e9c349",
+                        "background": "#121414"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "base": "8px",
+                        "margin": "32px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "headline-md": ["Noto Serif"],
+                        "headline-lg": ["Noto Serif"],
+                        "body-md": ["Manrope"],
+                        "display-xl": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-xl": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.04em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+<nav class="fixed top-0 w-full z-50 bg-black/40 backdrop-blur-md border-b border-white/10 shadow-[0_0_15px_rgba(212,175,55,0.05)] flex justify-between items-center px-8 h-16 w-full">
+<div class="text-xl font-black text-white tracking-tighter italic uppercase">AXE &amp; EDGE</div>
+<div class="hidden md:flex gap-8">
+<a class="font-inter tracking-tight uppercase font-bold text-xs text-primary-container border-b border-primary-container pb-1 transition-colors duration-300" href="#">Solutions</a>
+<a class="font-inter tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-white transition-colors duration-300" href="#">Pricing</a>
+<a class="font-inter tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-white transition-colors duration-300" href="#">Enterprise</a>
+<a class="font-inter tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-white transition-colors duration-300" href="#">Academy</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="font-inter tracking-tight uppercase font-bold text-xs text-zinc-400 hover:text-white transition-colors duration-300">LOG IN</button>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 font-inter tracking-tight uppercase font-bold text-xs hover:opacity-80 transition-all duration-300">GET ACCESS</button>
+</div>
+</nav>
+<main>
+<section class="relative h-screen flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover grayscale opacity-60" data-alt="A high-contrast, black and white professional photograph of a master barber working in a high-end, modern studio. The lighting is cinematic with deep shadows and sharp highlights reflecting off polished steel instruments. The atmosphere is sophisticated and technological, featuring sleek architectural lines and a minimalist aesthetic with gold/amber glow in the far background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB02V84GF1iQ74mCTBdc45elE1ZN61N8nTRf5M_I3Ci3AuVTPtutHl9zaBocKmGhsSskqK5q0-YoOhNgXGln3U9ktM893znxiBRPuyAyayEvB50-oOLQxIvhLpfuhfEEZwwulbNbvi7-zfavFT9t1IggfrUSMVYqUFrJEVj0NxqPg5ft816IGlEJ8zJDJQCQL-0T1UEdhuO4EyisEBRZ53blbcoTJZK9ib0lDNJ7bYUdBwOiaMZ6EvJVvc6bB9hcrtOD_p3HfVapVqV"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+</div>
+<div class="relative z-10 text-center max-w-4xl px-gutter">
+<div class="mb-6 inline-flex items-center gap-2 px-3 py-1 glass-panel text-primary-container font-bold text-xs uppercase tracking-widest">
+<span class="w-2 h-2 bg-primary-container animate-pulse"></span>
+                Precisão Digital. Mestria Artesanal.
+            </div>
+<h1 class="font-display-xl text-display-xl text-white mb-6 uppercase">O Futuro do Grooming <span class="text-primary-container">Profissional</span></h1>
+<p class="font-body-lg text-body-lg text-zinc-400 mb-10 max-w-2xl mx-auto">
+                Combinamos a tradição da barbearia clássica com tecnologia de ponta para criar experiências de cuidado pessoal incomparáveis. Bem-vindo à AXE &amp; EDGE.
+            </p>
+<div class="flex flex-col md:flex-row gap-4 justify-center">
+<button class="bg-primary-container text-on-primary-container px-8 py-4 font-bold text-xs uppercase tracking-widest hover:scale-105 transition-transform">Marcar Agora</button>
+<button class="glass-panel text-white px-8 py-4 font-bold text-xs uppercase tracking-widest border border-white/20 hover:bg-white/10 transition-colors">Ver Serviços</button>
+</div>
+</div>
+</section>
+<section class="py-20 bg-surface">
+<div class="max-w-7xl mx-auto px-gutter">
+<div class="flex justify-between items-end mb-16">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-white uppercase mb-2">Serviços de Elite</h2>
+<div class="h-1 w-24 bg-primary-container"></div>
+</div>
+<p class="text-zinc-500 font-label-sm uppercase tracking-tighter">Sistemas de Precisão 01 // 04</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="glass-card p-8 group hover:bg-primary-container/5 transition-all duration-500 rounded-lg">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-6" data-icon="content_cut">content_cut</span>
+<h3 class="font-headline-md text-headline-md text-white mb-4 uppercase">Corte Assinatura</h3>
+<p class="text-zinc-400 mb-8">Análise biométrica facial para definição do estilo perfeito adaptado à sua estrutura óssea.</p>
+<div class="flex items-center gap-2 text-white font-bold text-xs group-hover:text-primary-container transition-colors">
+                        VER DETALHES <span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+<div class="glass-card p-8 group hover:bg-primary-container/5 transition-all duration-500 rounded-lg">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-6" data-icon="razor">scooter</span>
+<h3 class="font-headline-md text-headline-md text-white mb-4 uppercase">Barba Sculpt</h3>
+<p class="text-zinc-400 mb-8">Escultura térmica com lâminas de precisão e óleos essenciais de nanotecnologia.</p>
+<div class="flex items-center gap-2 text-white font-bold text-xs group-hover:text-primary-container transition-colors">
+                        VER DETALHES <span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+<div class="glass-card p-8 group hover:bg-primary-container/5 transition-all duration-500 rounded-lg">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-6" data-icon="spa">spa</span>
+<h3 class="font-headline-md text-headline-md text-white mb-4 uppercase">Ritual Spa</h3>
+<p class="text-zinc-400 mb-8">Tratamento dérmico com vapor de ozono e massagem craniana revigorante.</p>
+<div class="flex items-center gap-2 text-white font-bold text-xs group-hover:text-primary-container transition-colors">
+                        VER DETALHES <span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+<div class="glass-card p-8 group hover:bg-primary-container/5 transition-all duration-500 rounded-lg">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-6" data-icon="bolt">bolt</span>
+<h3 class="font-headline-md text-headline-md text-white mb-4 uppercase">Total Upgrade</h3>
+<p class="text-zinc-400 mb-8">A experiência completa de transformação estética para o homem moderno.</p>
+<div class="flex items-center gap-2 text-white font-bold text-xs group-hover:text-primary-container transition-colors">
+                        VER DETALHES <span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 relative overflow-hidden">
+<div class="absolute inset-0 bg-surface-container-lowest">
+<div class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-container/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
+</div>
+<div class="max-w-7xl mx-auto px-gutter relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+<div class="relative">
+<div class="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-primary-container"></div>
+<img class="w-full h-[600px] object-cover grayscale brightness-75 shadow-2xl rounded-lg" data-alt="A cinematic medium shot of a vintage barber shop interior that has been retrofitted with futuristic digital interfaces and glass panels. The scene is lit with monochromatic warm gold and charcoal tones, emphasizing the textures of dark wood and brushed metal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzWEuHA4l0sRKPmdyWISptVSHLSNCIUMyzZAPuGPVXpAlg-iH7fFcxcX54BScDp0DhISMN_Y5OVYHvFRh7UjM9WevHlrutoDsiv6ocByMDoEFy2x4T0vovOT2YoNl8Cm3S6h2eoDODqptrdk9tta7wZpSZLg_LH5XMThbG-Hk68QgP6QqA6LoSCa0aq7gFZJdHU_AOS-8B8Me3W4KpWHgbqpPUv2sWXUnqfxhYgQYNmVgMNp_SQXGQnna1NpS-X5nRmMSXzkEW38mm"/>
+</div>
+<div class="pl-md">
+<h2 class="font-headline-lg text-headline-lg text-white mb-8 uppercase leading-tight">Nossa História: <br/><span class="text-primary-container">Legado de Ferro</span></h2>
+<p class="font-body-lg text-body-lg text-zinc-400 mb-12">
+                        Desde 2012, a AXE &amp; EDGE tem redefinido os padrões de estética masculina. Nascemos da necessidade de criar um refúgio onde a técnica manual se encontra com a inovação digital. Não cortamos apenas cabelo; calibramos identidades.
+                    </p>
+<div class="grid grid-cols-2 gap-8 mb-12">
+<div>
+<div class="text-4xl font-black text-white mb-2 tracking-tighter">12K+</div>
+<div class="text-primary-container font-label-sm uppercase tracking-widest">Sessões Realizadas</div>
+</div>
+<div>
+<div class="text-4xl font-black text-white mb-2 tracking-tighter">98%</div>
+<div class="text-primary-container font-label-sm uppercase tracking-widest">Taxa de Precisão</div>
+</div>
+<div>
+<div class="text-4xl font-black text-white mb-2 tracking-tighter">15</div>
+<div class="text-primary-container font-label-sm uppercase tracking-widest">Mestres Artesãos</div>
+</div>
+<div>
+<div class="text-4xl font-black text-white mb-2 tracking-tighter">04</div>
+<div class="text-primary-container font-label-sm uppercase tracking-widest">Laboratórios Studio</div>
+</div>
+</div>
+<button class="flex items-center gap-3 text-white font-bold text-xs uppercase tracking-widest group">
+                        Descobrir Mais <span class="material-symbols-outlined text-primary-container group-hover:translate-x-2 transition-transform">trending_flat</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 bg-black">
+<div class="max-w-7xl mx-auto px-gutter">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-white mb-4 uppercase">Testemunhos</h2>
+<p class="text-zinc-500 uppercase tracking-widest text-xs">A Voz da Comunidade AXE &amp; EDGE</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="glass-panel p-10 relative rounded-lg">
+<span class="material-symbols-outlined text-white/10 text-8xl absolute top-4 right-4" data-icon="format_quote">format_quote</span>
+<div class="flex gap-1 text-primary-container mb-6">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-white font-body-md mb-8 italic">"A atenção aos detalhes é cirúrgica. Sinto que estou num laboratório de alta performance, não numa barbearia comum."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-zinc-800"></div>
+<div>
+<p class="text-white font-bold text-xs">RICARDO SANTOS</p>
+<p class="text-zinc-500 text-[10px]">CEO, TechFlow</p>
+</div>
+</div>
+</div>
+<div class="glass-panel p-10 relative border-primary-container/30 rounded-lg">
+<span class="material-symbols-outlined text-white/10 text-8xl absolute top-4 right-4" data-icon="format_quote">format_quote</span>
+<div class="flex gap-1 text-primary-container mb-6">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-white font-body-md mb-8 italic">"Finalmente encontrei um lugar que entende de proporções e estética moderna. O agendamento via app é perfeito."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-zinc-800"></div>
+<div>
+<p class="text-white font-bold text-xs">TIAGO OLIVEIRA</p>
+<p class="text-zinc-500 text-[10px]">Arquiteto</p>
+</div>
+</div>
+</div>
+<div class="glass-panel p-10 relative rounded-lg">
+<span class="material-symbols-outlined text-white/10 text-8xl absolute top-4 right-4" data-icon="format_quote">format_quote</span>
+<div class="flex gap-1 text-primary-container mb-6">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-white font-body-md mb-8 italic">"O Ritual Spa mudou a minha perspetiva sobre autocuidado. Tecnologia e relaxamento em perfeita harmonia."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-zinc-800"></div>
+<div>
+<p class="text-white font-bold text-xs">ANDRÉ COSTA</p>
+<p class="text-zinc-500 text-[10px]">Creative Director</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 bg-primary-container text-on-primary-container text-center relative overflow-hidden">
+<div class="absolute inset-0 opacity-10">
+<div class="grid grid-cols-12 h-full">
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+<div class="border-r border-black/20 h-full"></div>
+</div>
+</div>
+<div class="relative z-10 max-w-4xl mx-auto px-gutter">
+<h2 class="font-display-xl text-display-xl uppercase mb-8">Pronto para o Próximo Nível?</h2>
+<p class="font-body-lg text-body-lg mb-12 font-medium">Junte-se à elite. Garanta o seu lugar no futuro do grooming.</p>
+<button class="bg-black text-white px-12 py-5 font-bold text-xs uppercase tracking-[0.2em] hover:scale-110 transition-transform shadow-2xl rounded-lg">RESERVAR EXPERIÊNCIA</button>
+</div>
+</section>
+</main>
+<footer class="bg-black border-t border-zinc-900 w-full py-12">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-white font-bold uppercase tracking-widest text-lg">AXE &amp; EDGE</div>
+<div class="flex gap-8">
+<a class="font-inter text-[10px] tracking-widest uppercase text-zinc-600 hover:text-primary-container transition-colors" href="#">Privacy</a>
+<a class="font-inter text-[10px] tracking-widest uppercase text-zinc-600 hover:text-primary-container transition-colors" href="#">Terms</a>
+<a class="font-inter text-[10px] tracking-widest uppercase text-zinc-600 hover:text-primary-container transition-colors" href="#">API</a>
+<a class="font-inter text-[10px] tracking-widest uppercase text-zinc-600 hover:text-primary-container transition-colors" href="#">Status</a>
+</div>
+<div class="font-inter text-[10px] tracking-widest uppercase text-zinc-600">
+            © 2024 AXE &amp; EDGE TECHNOLOGIES. PRECISION ENGINEERED.
+        </div>
+</div>
+</footer>
+</body></html>
