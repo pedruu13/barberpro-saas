@@ -582,20 +582,29 @@ function selectService(id) {
   if (idx === -1) state.booking.services.push(realService.id);
   else state.booking.services.splice(idx, 1);
   renderBookingServices();
+  renderBookingBarbers(); // Ensure barbers are visible and state is consistent
 }
 
 function renderBookingBarbers() {
-  var html = '<div class="barber-card selected" id="bbar-0" onclick="selectBarber(0)">' +
+  var currentBarber = state.booking.barber || 0;
+  var html = '<div class="barber-card' + (currentBarber === 0 ? ' selected' : '') + '" id="bbar-0" onclick="selectBarber(0)">' +
     '<div class="barber-avatar">🎲</div><div class="barber-name">Qualquer</div>' +
     '<div class="barber-role">Próximo disponível</div></div>';
-  html += state.barbers.map(function (b) {
-    return '<div class="barber-card" id="bbar-' + b.id + '" onclick="selectBarber(\'' + b.id + '\')">' +
-      '<div class="barber-avatar">' + sanitize(b.emoji) + '</div>' +
-      '<div class="barber-name">' + sanitize(b.name) + '</div>' +
-      '<div class="barber-role">' + sanitize(b.role) + '</div></div>';
-  }).join('');
-  $id('booking-barbers').innerHTML = html;
-  state.booking.barber = 0;
+  
+  if (state.barbers && state.barbers.length > 0) {
+    html += state.barbers.map(function (b) {
+      var isSelected = String(b.id) === String(currentBarber);
+      return '<div class="barber-card' + (isSelected ? ' selected' : '') + '" id="bbar-' + b.id + '" onclick="selectBarber(\'' + b.id + '\')">' +
+        '<div class="barber-avatar">' + sanitize(b.emoji) + '</div>' +
+        '<div class="barber-name">' + sanitize(b.name) + '</div>' +
+        '<div class="barber-role">' + sanitize(b.role) + '</div></div>';
+    }).join('');
+  }
+  
+  var container = $id('booking-barbers');
+  if (container) {
+    container.innerHTML = html;
+  }
 }
 
 function selectBarber(id) {
