@@ -71,23 +71,26 @@ app.use((req, res, next) => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error('[Global Error]', err);
+  console.error('[Global Error Handler]:', err);
 
   if (res.headersSent) return next(err);
 
-  // Zod Error Handling
-  if (err.name === 'ZodError' || err instanceof ZodError) {
-    return res.status(400).json({
-      error: 'Dados inválidos',
-      details: err.errors ? err.errors.map(e => e.message) : [err.message]
-    });
+  // Fallback status
+  let status = err.status || err.statusCode || 500;
+  let message = err.message || 'Erro interno no servidor';
+
+  // Zod Error Handling (Checking name/type to be robust)
+  if (err.name === 'ZodError' || err.constructor.name === 'ZodError' || (err.errors && Array.isArray(err.errors))) {
+    status = 400;
+    message = 'Dados inválidos';
+    const details = err.errors ? err.errors.map(e => e.message) : [];
+    return res.status(400).json({ error: message, details });
   }
 
-  const status = err.status || err.statusCode || 500;
   res.status(status).json({
     error: (process.env.NODE_ENV === 'production' && status === 500) 
       ? 'Erro interno no servidor' 
-      : (err.message || 'Erro inesperado')
+      : message
   });
 });
 
