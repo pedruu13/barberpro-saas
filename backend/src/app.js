@@ -9,10 +9,11 @@ const adminRoutes  = require('./routes/adminRoutes');
 const superadminRoutes = require('./routes/superadminRoutes');
 const { authenticate } = require('./middlewares/authMiddleware');
 const logger = require('./lib/logger');
-const { ZodError } = require('zod');
-
-
 const app = express();
+
+// Diagnostic Route for Vercel - TOP LEVEL
+app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // Confia no proxy da Vercel para o express-rate-limit funcionar corretamente
 app.set('trust proxy', 1);
@@ -45,8 +46,6 @@ app.use(express.static(frontendPath));
 // API Routes
 const rateLimit = require('express-rate-limit');
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 50, message: { error: 'Muitas tentativas. Tente novamente em 15 minutos.' } });
-// Rota de diagnóstico para Vercel
-app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/public', publicRoutes);
@@ -57,7 +56,6 @@ app.use('/api/superadmin', superadminRoutes);
 const cronRoutes = require('./routes/cronRoutes');
 app.use('/api/cron', cronRoutes);
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // Fallback: rotas não-API → devolve o HTML principal (SPA fallback)
 app.use((req, res, next) => {
