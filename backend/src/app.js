@@ -71,18 +71,24 @@ app.use((req, res, next) => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  if (err instanceof ZodError) {
+  console.error('[Global Error]', err);
+
+  if (res.headersSent) return next(err);
+
+  // Zod Error Handling
+  if (err.name === 'ZodError' || err instanceof ZodError) {
     return res.status(400).json({
-      error: 'Erro de validação',
-      details: err.errors.map(e => ({ path: e.path.join('.'), message: e.message }))
+      error: 'Dados inválidos',
+      details: err.errors ? err.errors.map(e => e.message) : [err.message]
     });
   }
 
-  logger.error(err);
-  res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'production' ? 'Erro interno no servidor' : err.message
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({
+    error: (process.env.NODE_ENV === 'production' && status === 500) 
+      ? 'Erro interno no servidor' 
+      : (err.message || 'Erro inesperado')
   });
 });
 
 module.exports = app;
-
