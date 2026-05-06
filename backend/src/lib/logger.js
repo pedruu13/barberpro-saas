@@ -1,17 +1,8 @@
-const pino = require('pino');
-
-const isDev = process.env.NODE_ENV !== 'production';
-
-const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-  transport: isDev ? {
-    target: 'pino-pretty',
-    options: {
-      colorize: true,
-      translateTime: 'HH:MM:ss',
-      ignore: 'pid,hostname',
-    },
-  } : undefined,
-});
+const logger = {
+  info: (...args) => console.log('[INFO]', ...args),
+  error: (...args) => console.error('[ERROR]', ...args),
+  warn: (...args) => console.warn('[WARN]', ...args),
+  debug: (...args) => console.debug('[DEBUG]', ...args),
+};
 
 module.exports = logger;
