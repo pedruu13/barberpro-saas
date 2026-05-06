@@ -2,6 +2,7 @@
 // Detecta automaticamente a URL da API:
 // - Se servido pelo Express (localhost:3000), usa URL relativa
 // - Se servido via file:// ou outro servidor, usa localhost:3000
+console.log('BarberPro App Loading...');
 const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:3000/api'
   : '/api';
@@ -54,26 +55,36 @@ const api = {
       const res = await fetch(API_URL + path, opts);
       return await api.handleResponse(res);
     } catch (e) {
-      return { error: 'OFFLINE' };
+      console.error('API POST Error:', e);
+      return { error: 'Sem conexão com o servidor.' };
     }
   },
   put: async (path, body) => {
     try {
       const res = await fetch(API_URL + path, { method: 'PUT', headers: api.getHeaders(), body: JSON.stringify(body) });
       return await api.handleResponse(res);
-    } catch (e) { return { error: 'OFFLINE' }; }
+    } catch (e) { 
+      console.error('API PUT Error:', e);
+      return { error: 'Sem conexão com o servidor.' }; 
+    }
   },
   del: async (path) => {
     try {
       const res = await fetch(API_URL + path, { method: 'DELETE', headers: api.getHeaders() });
       return await api.handleResponse(res);
-    } catch (e) { return { error: 'OFFLINE' }; }
+    } catch (e) { 
+      console.error('API DELETE Error:', e);
+      return { error: 'Sem conexão com o servidor.' }; 
+    }
   },
   get: async (path, auth = true) => {
     try {
       const res = await fetch(API_URL + path, { headers: auth ? api.getHeaders() : {} });
       return await api.handleResponse(res);
-    } catch (e) { return { error: 'OFFLINE' }; }
+    } catch (e) { 
+      console.error('API GET Error:', e);
+      return { error: 'Sem conexão com o servidor.' }; 
+    }
   }
 };
 
@@ -118,7 +129,9 @@ function logout() {
 
 // ===================== TOAST =====================
 function showToast(msg) {
+  console.log('Toast:', msg);
   var t = $id('toast');
+  if (!t) return;
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(function () { t.classList.remove('show'); }, 3000);
@@ -227,6 +240,10 @@ function applyAdminData(data) {
   state.expenses     = data.expenses     || [];
   state.clients      = data.clients      || [];
   state.plans        = data.plans        || [];
+  state.userRole     = data.role         || 'owner';
+  
+  const supremoSec = document.getElementById('supremo-sidebar-section');
+  if (supremoSec) supremoSec.style.display = state.userRole === 'supremo' ? 'block' : 'none';
   
   if (state.appointments.length === 0) {
     const today = new Date().toISOString().split('T')[0];
@@ -384,11 +401,19 @@ function goTo(screen) {
     showToast('💡 Crie sua conta para ter seu próprio link de agendamento!');
   }
 
-  $id('main-nav').style.display = (screen === 'admin') ? 'none' : '';
+  $id('main-nav').style.display = (screen === 'admin' || screen === 'booking') ? 'none' : '';
   
   if (screen === 'booking') renderBooking();
   if (screen === 'admin')   renderAdmin();
   if (screen === 'client-panel') loadClientDashboard();
+
+  // Exibe campo de código da barbearia se não houver shopId detectado
+  if (screen === 'client-login') {
+    const selector = $id('client-slug-field');
+    if (selector) {
+      selector.style.display = (!shopId) ? 'block' : 'none';
+    }
+  }
 }
 
 
@@ -424,7 +449,9 @@ async function doLogin() {
     localStorage.removeItem('clientToken'); // Garante que não misture com conta de cliente
     const data = await api.get('/admin/data');
     if (data.error) {
-      showToast('❌ Erro ao carregar dados do painel.');
+      // Exibe o erro real vindo do backend (ex: Assinatura expirada)
+      showToast('❌ ' + data.error);
+      console.error('Erro ao carregar dados:', data.error);
       return;
     }
     
@@ -560,19 +587,29 @@ function updateServiceBar() {
   var lbl  = $id('svc-bar-label');
   var tot  = $id('svc-bar-total');
   var next = $id('btn-step1');
-  if (!ids.length) { bar.classList.remove('visible'); next.disabled = true; return; }
-  var price = 0, dur = 0;
-  ids.forEach(function (id) {
-    var s = state.services.filter(function (x) { return String(x.id) === String(id); })[0];
-    if (s) { 
-      price += (parseFloat(s.price) || 0); 
-      dur += (parseInt(s.duration) || 0); 
+  
+  if (!ids.length) { 
+    if (bar) bar.classList.remove('visible'); 
+    if (next) next.disabled = true; 
+    return; 
+  }
+  
+  var count = ids.length;
+  var time  = 0;
+  var price = 0;
+  
+  ids.forEach(function(sid) {
+    var s = state.services.filter(function(x){ return String(x.id) === String(sid); })[0];
+    if (s) {
+      time  += (s.duration || 30);
+      price += (parseFloat(s.price) || 0);
     }
   });
-  lbl.textContent = ids.length + ' serviço' + (ids.length > 1 ? 's' : '') + ' · ' + dur + ' min';
-  tot.textContent = 'R$ ' + price.toFixed(2).replace('.', ',');
-  bar.classList.add('visible');
-  next.disabled = false;
+  
+  if (bar) bar.classList.add('visible');
+  if (lbl) lbl.textContent = count + (count === 1 ? ' serviço' : ' serviços') + ' · ' + time + ' min';
+  if (tot) tot.textContent = 'R$ ' + price.toFixed(2).replace('.', ',');
+  if (next) next.disabled = false;
 }
 
 function selectService(id) {
@@ -1100,11 +1137,14 @@ function adminNav(view, el) {
   // Fecha a sidebar automaticamente em mobile após clicar em um item
   if (window.innerWidth <= 1024) closeSidebar();
 
-  var views = ['dashboard','agenda','financeiro','services','barbers','hours','history','clients','plans','subscribers','discounts','expenses','configuracoes'];
+  var views = ['dashboard','agenda','financeiro','services','barbers','hours','history','clients','plans','subscribers','discounts','expenses','configuracoes', 'supremo-shops', 'supremo-analytics'];
   views.forEach(function (v) {
     var el2 = $id('view-' + v); 
     if (el2) el2.style.display = (v === view) ? 'block' : 'none';
   });
+  
+  if (view === 'supremo-shops') loadSupremoShops();
+  if (view === 'supremo-analytics') loadSupremoAnalytics();
 
   document.querySelectorAll('.nav-item').forEach(function (i) { i.classList.remove('active'); });
   
@@ -1897,8 +1937,12 @@ async function loadSettings() {
 
     // Tokens (exibem apenas placeholder, nunca o valor real por segurança)
     if ($id('cfg-mp-token'))      $id('cfg-mp-token').placeholder      = shop.mpAccessToken   ? '••••••• (configurado)' : 'APP_USR-...';
-    if ($id('cfg-zapi-instance')) $id('cfg-zapi-instance').value        = shop.zapiInstance   || '';
-    if ($id('cfg-zapi-token'))    $id('cfg-zapi-token').placeholder     = shop.zapiToken      ? '••••••• (configurado)' : 'Token gerado no painel Z-API';
+    if ($id('cfg-wa-cloud-token'))   $id('cfg-wa-cloud-token').placeholder = shop.waCloudToken ? '••••••• (configurado)' : 'EAAB...';
+    if ($id('cfg-wa-phone-id'))     $id('cfg-wa-phone-id').value       = shop.waPhoneId    || '';
+    if ($id('cfg-wa-template-name'))$id('cfg-wa-template-name').value    = shop.waTemplateName || '';
+    if ($id('cfg-zapi-instance'))   $id('cfg-zapi-instance').value     = shop.zapiInstance || '';
+    if ($id('cfg-zapi-token'))      $id('cfg-zapi-token').placeholder  = shop.zapiToken    ? '••••••• (configurado)' : 'Token gerado no painel Z-API';
+    if ($id('cfg-wa-template'))     $id('cfg-wa-template').value       = shop.waMessageTemplate || '';
 
     // Card do plano
     var planEl = $id('cfg-plan-info');
@@ -1938,6 +1982,10 @@ async function saveSettings() {
     var mpVal    = ($id('cfg-mp-token')      ? $id('cfg-mp-token').value.trim()      : '');
     var zapiInst = ($id('cfg-zapi-instance') ? $id('cfg-zapi-instance').value.trim() : '');
     var zapiTok  = ($id('cfg-zapi-token')    ? $id('cfg-zapi-token').value.trim()    : '');
+    var waTemp   = ($id('cfg-wa-template')   ? $id('cfg-wa-template').value.trim()   : '');
+    var waCTok   = ($id('cfg-wa-cloud-token')? $id('cfg-wa-cloud-token').value.trim(): '');
+    var waPId    = ($id('cfg-wa-phone-id')   ? $id('cfg-wa-phone-id').value.trim()   : '');
+    var waTName  = ($id('cfg-wa-template-name')? $id('cfg-wa-template-name').value.trim(): '');
 
     if (nameVal)  body.name  = nameVal;
     if (addrVal)  body.address = addrVal;
@@ -1948,6 +1996,10 @@ async function saveSettings() {
     if (mpVal)    body.mpAccessToken = mpVal;
     if (zapiInst) body.zapiInstance  = zapiInst;
     if (zapiTok)  body.zapiToken     = zapiTok;
+    if (waTemp !== undefined) body.waMessageTemplate = waTemp;
+    if (waCTok)   body.waCloudToken  = waCTok;
+    if (waPId)    body.waPhoneId     = waPId;
+    if (waTName)  body.waTemplateName = waTName;
 
     if (Object.keys(body).length === 0) {
       showToast('⚠️ Nenhuma alteração para salvar');
@@ -2194,41 +2246,132 @@ async function doClientLogin() {
   }
 }
 
+// ──────────────────────────────────────────────────────────────────
+// Troca de abas na Área VIP (Login / Cadastro)
+// ──────────────────────────────────────────────────────────────────
+function switchVipTab(tab) {
+  const isLogin = tab === 'login';
+  $id('vip-tab-login').style.display    = isLogin ? '' : 'none';
+  $id('vip-tab-register').style.display = isLogin ? 'none' : '';
+  $id('vip-tab-login-btn').classList.toggle('active', isLogin);
+  $id('vip-tab-register-btn').classList.toggle('active', !isLogin);
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Resolve shopId a partir do slug digitado manualmente (fallback)
+// ──────────────────────────────────────────────────────────────────
+async function resolveShopIdFromSlug() {
+  // Se já temos shopId na URL, usa direto
+  if (shopId) return shopId;
+
+  // Tenta recuperar do localStorage (sessão anterior)
+  const saved = localStorage.getItem('client_shopId');
+  if (saved && saved !== 'null') { shopId = saved; return shopId; }
+
+  // Pede o slug ao usuário via campo
+  const slugInput = $id('client-slug-input');
+  const slug = slugInput ? slugInput.value.trim() : '';
+  if (!slug) {
+    showToast('⚠️ Informe o código/slug da sua barbearia.');
+    return null;
+  }
+
+  // Resolve via API
+  try {
+    const data = await api.get('/public/shop/' + encodeURIComponent(slug), false);
+    if (!data || data.error) {
+      showToast('❌ Barbearia não encontrada. Verifique o código.');
+      return null;
+    }
+    shopId = data.shopId;
+    return shopId;
+  } catch(e) {
+    showToast('❌ Erro ao buscar barbearia. Tente novamente.');
+    return null;
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Login — Área VIP (tela dedicada)
+// ──────────────────────────────────────────────────────────────────
 async function doClientLoginScreen() {
   const phone = $id('client-login-phone').value.trim();
-  const pass = $id('client-login-pwd').value.trim();
-  
+  const pass  = $id('client-login-pwd').value.trim();
+
   if (!phone || !pass) {
     showToast('⚠️ Por favor, informe seu WhatsApp e Senha.');
     return;
   }
-  
-  if (!shopId) {
-    showToast('⚠️ Acesse usando o link direto da sua barbearia para fazer login.');
-    return;
-  }
-  
+
   const btn = $id('btn-client-login-screen');
   setButtonLoading(btn, true, 'Verificando...');
-  
+
   try {
-    const res = await api.post('/public/client/login', { shopId, phone, password: pass }, false);
+    const resolvedShopId = await resolveShopIdFromSlug();
+    if (!resolvedShopId) { setButtonLoading(btn, false, 'Acessar Painel VIP'); return; }
+
+    const res = await api.post('/public/client/login', { shopId: resolvedShopId, phone, password: pass }, false);
     if (res && res.error) {
       showToast('❌ ' + res.error);
     } else {
       localStorage.setItem('clientToken', res.token);
       localStorage.setItem('client_phone', res.client.phone);
       localStorage.setItem('client_name', res.client.name || '');
-      localStorage.setItem('client_shopId', shopId);
+      localStorage.setItem('client_shopId', resolvedShopId);
       clientPhone = res.client.phone;
-      clientPlan = res.client.planInfo || null;
+      clientPlan  = res.client.planInfo || null;
       await loadClientDashboard();
       goTo('client-panel');
     }
   } catch(e) {
     showToast('❌ Erro ao entrar.');
   } finally {
-    setButtonLoading(btn, false, 'Entrar na Área VIP');
+    setButtonLoading(btn, false, 'Acessar Painel VIP');
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Cadastro — Área VIP (aba Cadastrar)
+// ──────────────────────────────────────────────────────────────────
+async function doClientRegisterScreen() {
+  const name  = $id('client-reg-name')  ? $id('client-reg-name').value.trim()  : '';
+  const phone = $id('client-reg-phone') ? $id('client-reg-phone').value.trim() : '';
+  const pass  = $id('client-reg-pwd')   ? $id('client-reg-pwd').value.trim()   : '';
+
+  if (!name || !phone || !pass) {
+    showToast('⚠️ Preencha todos os campos para criar sua conta.');
+    return;
+  }
+  if (pass.length < 6) {
+    showToast('⚠️ A senha deve ter pelo menos 6 caracteres.');
+    return;
+  }
+
+  const btn = $id('btn-client-register-screen');
+  setButtonLoading(btn, true, 'Criando conta...');
+
+  try {
+    const resolvedShopId = await resolveShopIdFromSlug();
+    if (!resolvedShopId) { setButtonLoading(btn, false, 'Criar Conta e Acessar →'); return; }
+
+    const res = await api.post('/public/client/register', { shopId: resolvedShopId, name, phone, password: pass }, false);
+    if (res && res.error) {
+      showToast('❌ ' + res.error);
+    } else {
+      localStorage.setItem('clientToken', res.token);
+      localStorage.setItem('client_phone', res.client.phone);
+      localStorage.setItem('client_name', res.client.name || '');
+      localStorage.setItem('client_shopId', resolvedShopId);
+      clientPhone = res.client.phone;
+      clientPlan  = null;
+      showToast('✅ Conta criada com sucesso! Bem-vindo(a)!');
+      await loadClientDashboard();
+      goTo('client-panel');
+    }
+  } catch(e) {
+    showToast('❌ Erro ao criar conta. Tente novamente.');
+  } finally {
+    setButtonLoading(btn, false, 'Criar Conta e Acessar →');
   }
 }
 
@@ -2647,3 +2790,138 @@ async function addBlockTime() {
     showToast('Erro: ' + res.error);
   }
 }
+
+async function loadSupremoShops() {
+  const container = $id('supremo-shops-list');
+  if (container) container.innerHTML = '<div class="section-card" style="padding:40px; text-align:center; grid-column: 1 / -1;"><p style="color:var(--white-dim)">Carregando...</p></div>';
+  
+  const res = await api.get('/superadmin/shops');
+  if (res.error) {
+    showToast('❌ Erro ao carregar lojas: ' + res.error);
+    return;
+  }
+  
+  supremoShopsData = res; // SALVA NO CACHE
+  renderSupremoShops(res);
+}
+
+function renderSupremoShops(shops) {
+  const container = $id('supremo-shops-list');
+  if (!container) return;
+
+  if (shops.length === 0) {
+    container.innerHTML = '<div class="section-card" style="padding:40px; text-align:center; grid-column: 1 / -1;"><p style="color:var(--white-dim)">Nenhuma loja encontrada.</p></div>';
+    return;
+  }
+
+  container.innerHTML = shops.map(s => `
+    <div class="section-card" style="padding:20px; position:relative;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
+        <div>
+          <h3 style="color:var(--gold); font-size:18px; margin:0 0 5px;">${sanitize(s.name)}</h3>
+          <p style="color:var(--text-dim); font-size:12px; margin:0;">${sanitize(s.email)}</p>
+        </div>
+        <span style="background:${s.planStatus === 'active' ? 'var(--green)' : 'var(--red)'}; color:#000; font-size:10px; font-weight:bold; padding:2px 8px; border-radius:10px; text-transform:uppercase;">
+          ${s.planStatus === 'active' ? 'Ativo' : 'Inativo'}
+        </span>
+      </div>
+      
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+        <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; text-align:center;">
+          <div style="font-size:10px; color:var(--text-dim); margin-bottom:2px;">Barbeiros</div>
+          <div style="font-size:16px; font-weight:bold; color:var(--white);">${s._count.barbers}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; text-align:center;">
+          <div style="font-size:10px; color:var(--text-dim); margin-bottom:2px;">Agendamentos</div>
+          <div style="font-size:16px; font-weight:bold; color:var(--white);">${s._count.appointments}</div>
+        </div>
+      </div>
+
+      <div style="font-size:12px; color:var(--text-dim); margin-bottom:15px; border-top:1px solid var(--border-color); padding-top:10px;">
+        Plano: <span style="color:var(--gold)">${sanitize(s.plan)}</span><br>
+        Desde: ${new Date(s.createdAt).toLocaleDateString()}
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn-sm btn-sm-ghost" style="flex:1" onclick="editShopBySupremo('${s.id}')">Editar Plano</button>
+        <button class="btn-sm btn-sm-ghost" style="flex:1; border-color:rgba(255,62,62,0.3); color:#ff3e3e" onclick="deleteShopBySupremo('${s.id}', '${sanitize(s.name)}')">Excluir</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function deleteShopBySupremo(id, name) {
+  if (!confirm('Deseja EXCLUIR DEFINITIVAMENTE a loja "' + name + '"? Esta ação não pode ser desfeita.')) return;
+  const res = await api.del('/superadmin/shops/' + id);
+  if (!res.error) {
+    showToast('✅ Loja excluída com sucesso!');
+    loadSupremoShops();
+  } else {
+    showToast('❌ Erro: ' + res.error);
+  }
+}
+
+async function loadSupremoAnalytics() {
+  const res = await api.get('/superadmin/analytics');
+  if (res.error) {
+    showToast('❌ Erro ao carregar analytics: ' + res.error);
+    return;
+  }
+  
+  if ($id('supremo-stat-shops')) $id('supremo-stat-shops').textContent = res.totalShops;
+  if ($id('supremo-stat-appts')) $id('supremo-stat-appts').textContent = res.totalAppts;
+  if ($id('supremo-stat-revenue')) $id('supremo-stat-revenue').textContent = 'R$ ' + (res.totalRevenue || 0).toFixed(2).replace('.', ',');
+}
+
+let supremoShopsData = []; // Cache para edição rápida
+
+async function editShopBySupremo(id) {
+  // Se não temos no cache, buscamos todas de novo ou só essa (mais simples usar o cache da última listagem)
+  const shop = supremoShopsData.find(s => s.id === id);
+  if (!shop) {
+    // Caso o cache suma, recarrega e tenta de novo
+    await loadSupremoShops();
+    return editShopBySupremo(id);
+  }
+
+  $id('edit-supremo-shop-id').value = shop.id;
+  $id('edit-supremo-shop-plan').value = shop.plan;
+  $id('edit-supremo-shop-status').value = shop.planStatus;
+  
+  // Formata datas para o input date (YYYY-MM-DD)
+  if (shop.trialEndsAt) {
+    $id('edit-supremo-shop-trial').value = new Date(shop.trialEndsAt).toISOString().split('T')[0];
+  } else {
+    $id('edit-supremo-shop-trial').value = '';
+  }
+
+  if (shop.planPaidUntil) {
+    $id('edit-supremo-shop-paid').value = new Date(shop.planPaidUntil).toISOString().split('T')[0];
+  } else {
+    $id('edit-supremo-shop-paid').value = '';
+  }
+
+  openModal('modal-supremo-edit-shop');
+}
+
+// Handler do formulário
+$id('form-supremo-edit-shop')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const id = $id('edit-supremo-shop-id').value;
+  const payload = {
+    plan: $id('edit-supremo-shop-plan').value,
+    planStatus: $id('edit-supremo-shop-status').value,
+    trialEndsAt: $id('edit-supremo-shop-trial').value ? new Date($id('edit-supremo-shop-trial').value).toISOString() : null,
+    planPaidUntil: $id('edit-supremo-shop-paid').value ? new Date($id('edit-supremo-shop-paid').value).toISOString() : null
+  };
+
+  const res = await api.put('/superadmin/shops/' + id + '/plan', payload);
+  if (!res.error) {
+    showToast('✅ Alterações salvas com sucesso!');
+    closeModal('modal-supremo-edit-shop');
+    loadSupremoShops(); // Refresh list
+  } else {
+    showToast('❌ Erro: ' + res.error);
+  }
+});
