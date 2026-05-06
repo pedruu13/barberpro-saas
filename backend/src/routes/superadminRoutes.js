@@ -2,18 +2,13 @@ const express = require('express');
 const router = express.Router();
 const superadminController = require('../controllers/superadminController');
 
-// Super Admin Middleware using an environment variable
-function requireSuperadmin(req, res, next) {
-  const adminKey = req.headers['x-superadmin-key'];
-  if (!process.env.SUPERADMIN_KEY || adminKey !== process.env.SUPERADMIN_KEY) {
-    return res.status(403).json({ error: 'Acesso negado ao Super Admin.' });
-  }
-  next();
-}
+const { authenticate, authorizeSupremo } = require('../middlewares/authMiddleware');
 
-router.use(requireSuperadmin);
+router.use(authenticate);
+router.use(authorizeSupremo);
 
 router.get('/shops', superadminController.getAllShops);
+router.get('/analytics', superadminController.getPlatformKPIs);
 router.put('/shops/:id/plan', superadminController.updateShopPlan);
 router.delete('/shops/:id', superadminController.deleteShop);
 

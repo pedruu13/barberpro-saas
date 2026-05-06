@@ -39,6 +39,7 @@ model Shop {
   address         String?
   email           String    @unique
   password        String
+  role            String     @default("owner") // owner, supremo
   mpAccessToken   String?
   plan            PlanType   @default(trial)
   planStatus      PlanStatus @default(active)
@@ -47,6 +48,13 @@ model Shop {
   zapiInstance    String?
   zapiToken       String?
   pixKey          String?   // Chave Pix da Barbearia para recebimentos
+  waMessageTemplate String?  @default("Olá {{cliente}}! Seu agendamento de {{servico}} na {{barbearia}} foi confirmado para o dia {{data}} às {{hora}} com {{barbeiro}}. Valor: R$ {{preco}}. Te esperamos!")
+  
+  // WhatsApp Cloud API (Meta)
+  waCloudToken    String?
+  waPhoneId       String?
+  waTemplateName  String?   @default("confirmacao_agendamento")
+  
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

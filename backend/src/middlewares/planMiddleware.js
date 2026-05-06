@@ -8,6 +8,9 @@ function requireActivePlan(req, res, next) {
     return res.status(401).json({ error: 'Conta não encontrada ou não autenticada corretamente.' });
   }
 
+  // BYPASS para o Supremo: acesso total e ilimitado
+  if (shop.role === 'supremo') return next();
+
   const now = new Date();
 
   // 1. Verificação de status manual (inativo pelo admin do SaaS)

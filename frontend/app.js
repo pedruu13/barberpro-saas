@@ -35,13 +35,30 @@ const api = {
     };
   },
   handleResponse: async (res) => {
-    // Commented out to fix user blocking issue
-    // if (res.status === 402) { showPaywall(); return { error: 'Assinatura necessária.' }; }
-    if (res.status === 429) return { error: 'Muitas tentativas. Aguarde alguns minutos.' };
+    if (res.status === 401) {
+      if (window.location.hash !== '#login') {
+        localStorage.removeItem('adminToken');
+      }
+      return { error: 'Sessão expirada. Faça login novamente.' };
+    }
+    if (res.status === 403) return { error: 'Sem permissão.' };
+    if (res.status === 429) return { error: 'Muitas tentativas. Aguarde.' };
     
-    const data = await res.json();
+    let data;
+    try {
+      const text = await res.text();
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error('API Non-JSON:', text.substring(0, 200));
+        return { error: 'Resposta inválida do servidor.' };
+      }
+    } catch (e) {
+      return { error: 'Erro ao ler servidor.' };
+    }
+
     if (!res.ok) {
-      return { error: data.error || 'Erro inesperado no servidor.' };
+      return { error: data.error || data.message || 'Erro no servidor.' };
     }
     return data;
   },
@@ -130,11 +147,19 @@ function logout() {
 // ===================== TOAST =====================
 function showToast(msg) {
   console.log('Toast:', msg);
-  var t = $id('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function () { t.classList.remove('show'); }, 3000);
+  const toast = $id('toast');
+  if (!toast) {
+    alert(msg); // Fallback se o DOM ainda não tiver o elemento
+    return;
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  
+  // Garante que o toast suma depois de um tempo
+  if (window.toastTimer) clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 4000);
 }
 
 function openModal(id) { $id(id).classList.add('open'); }

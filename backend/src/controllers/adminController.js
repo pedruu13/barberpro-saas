@@ -27,7 +27,7 @@ const barberSchema = z.object({
 exports.getShopSettings = asyncHandler(async (req, res) => {
   const shop = await prisma.shop.findUnique({
     where: { id: req.user.shopId },
-    select: { id: true, name: true, address: true, email: true, mpAccessToken: true, zapiInstance: true, zapiToken: true, pixKey: true }
+    select: { id: true, name: true, address: true, email: true, mpAccessToken: true, zapiInstance: true, zapiToken: true, pixKey: true, waMessageTemplate: true, waCloudToken: true, waPhoneId: true, waTemplateName: true }
   });
   res.json(shop);
 });
@@ -35,14 +35,17 @@ exports.getShopSettings = asyncHandler(async (req, res) => {
 
 exports.updateShopSettings = async (req, res) => {
   try {
-    const { name, address, email, password, mpAccessToken, zapiInstance, zapiToken } = req.body;
+    const { name, address, email, password, mpAccessToken, zapiInstance, zapiToken, waMessageTemplate, waCloudToken, waPhoneId, waTemplateName } = req.body;
     const updateData = {};
     if (name) updateData.name = name;
     if (address !== undefined) updateData.address = address;
     if (email) updateData.email = email;
     if (mpAccessToken !== undefined) updateData.mpAccessToken = mpAccessToken;
-    if (zapiInstance !== undefined) updateData.zapiInstance = zapiInstance;
     if (zapiToken !== undefined) updateData.zapiToken = zapiToken;
+    if (waMessageTemplate !== undefined) updateData.waMessageTemplate = waMessageTemplate;
+    if (waCloudToken !== undefined) updateData.waCloudToken = waCloudToken;
+    if (waPhoneId !== undefined) updateData.waPhoneId = waPhoneId;
+    if (waTemplateName !== undefined) updateData.waTemplateName = waTemplateName;
     if (req.body.pixKey !== undefined) updateData.pixKey = req.body.pixKey;
     
     if (password) {
@@ -94,9 +97,9 @@ exports.getDashboardData = async (req, res) => {
     ]);
 
     // Busca também o nome da loja
-    const shop = await prisma.shop.findUnique({ where: { id: shopId }, select: { name: true, slug: true } });
+    const shop = await prisma.shop.findUnique({ where: { id: shopId }, select: { name: true, slug: true, address: true, role: true } });
 
-    res.json({ services, barbers, discounts, appointments, hours, blocks, expenses, clients, plans, shopName: shop?.name, shopSlug: shop?.slug });
+    res.json({ services, barbers, discounts, appointments, hours, blocks, expenses, clients, plans, shopName: shop?.name, shopSlug: shop?.slug, address: shop?.address, role: shop?.role });
   } catch (error) {
     console.error('getDashboardData error:', error);
     res.status(500).json({ error: 'Erro no servidor' });

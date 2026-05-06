@@ -129,6 +129,38 @@ exports.createAppointment = async (req, res) => {
       }
     });
 
+    // ─── Enviar Confirmação via WhatsApp (Automático) ─────────────────────────
+    if (clientPhone) {
+      const waData = {
+        clientName: String(clientName),
+        serviceNames: String(serviceNames),
+        date: String(date),
+        time: String(time),
+        barberName: String(barberName),
+        price: finalPrice.toFixed(2).replace('.', ','),
+        shopName: shop.name
+      };
+
+      // Tenta Meta (Oficial) primeiro, se configurado
+      if (shop.waCloudToken && shop.waPhoneId) {
+        notificationService.sendWhatsAppMeta(clientPhone, waData, shop)
+          .catch(e => console.error('[WhatsApp Meta] Auto Confirm Error:', e));
+      } 
+      // Caso contrário, tenta Z-API
+      else if (shop.zapiInstance && shop.zapiToken) {
+        const template = shop.waMessageTemplate || "Olá {{cliente}}! Seu agendamento de {{servico}} na {{barbearia}} foi confirmado para o dia {{data}} às {{hora}} com {{barbeiro}}. Valor: R$ {{preco}}. Te esperamos!";
+        const message = notificationService.formatTemplate(template, waData);
+        
+        notificationService.sendWhatsAppMessage(clientPhone, message, shop)
+          .catch(e => console.error('[Z-API] Auto Confirm Error:', e));
+      }
+      // Log de fallback para teste
+      else {
+        console.log(`[TESTE] Agendamento criado: ${clientName} em ${date} as ${time}.`);
+      }
+    }
+    // ──────────────────────────────────────────────────────────────────────────
+
     // Atualizar CRM de Cliente (assíncrono para não bloquear)
     if (clientPhone) {
       prisma.client.upsert({
@@ -149,9 +181,29 @@ exports.createAppointment = async (req, res) => {
     }
 
     // Tenta pagamento online (Mercado Pago)
-    if (paymentMethod === 'Pix Antecipado' || paymentMethod === 'Cartão de Crédito') {
+    if (paymentMethod === 'Pix Antecipado') {
+      // Mercado Pago exige um e-mail para pagamentos diretos
+      const payerEmail = req.body.clientEmail || 'cliente@agendamento.com.br';
+      const pixData = await paymentService.createDirectPixPayment(shop, newAppt, parseFloat(price) || 0, payerEmail);
+      if (pixData) {
+        // Persistir o ID do pagamento para conferência posterior via Webhook
+        await prisma.appointment.update({
+          where: { id: newAppt.id },
+          data: { externalPaymentId: String(pixData.id) }
+        });
+
+        // Adicionar dados transientes para o frontend exibir o QR Code
+        newAppt.pixQrCode = pixData.qr_code;
+        newAppt.pixQrCodeBase64 = pixData.qr_code_base64;
+        newAppt.externalPaymentId = pixData.id;
+      }
+    } else if (paymentMethod === 'Cartão de Crédito') {
       const preference = await paymentService.createPixPaymentPreference(shop, newAppt, parseFloat(price) || 0);
       if (preference) {
+        await prisma.appointment.update({
+          where: { id: newAppt.id },
+          data: { externalPaymentId: preference.init_point } // Ou salvar como link se preferir
+        });
         newAppt.paymentUrl = preference.init_point;
       }
     }

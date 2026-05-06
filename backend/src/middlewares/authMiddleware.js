@@ -26,4 +26,11 @@ function authenticate(req, res, next) {
   });
 }
 
-module.exports = { authenticate, JWT_SECRET };
+function authorizeSupremo(req, res, next) {
+  if (req.shop && req.shop.role === 'supremo') {
+    return next();
+  }
+  res.status(403).json({ error: 'Acesso restrito ao administrador supremo.' });
+}
+
+module.exports = { authenticate, authorizeSupremo, JWT_SECRET };

@@ -62,9 +62,10 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 // Fallback: rotas não-API → devolve o HTML principal (SPA fallback)
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(frontendPath, 'barbearia-saas.html'));
+    res.sendFile(path.join(frontendPath, 'index.html'));
   } else {
-    next();
+    // API 404 - Garante que rotas de API inexistentes retornem JSON e não HTML
+    res.status(404).json({ error: 'Rota de API não encontrada' });
   }
 });
 
