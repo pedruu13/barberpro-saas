@@ -134,4 +134,26 @@ async function sendWhatsAppMeta(phone, data, shop) {
   }
 }
 
-module.exports = { sendWhatsAppMessage, sendEmailNotification, formatTemplate, sendWhatsAppMeta };
+/**
+ * Placeholder para envio de E-mail.
+ */
+async function sendEmailNotification(email, subject, message) {
+  logger.warn({ email, subject }, '[Email] Sistema de e-mail não configurado. Ignorando.');
+  return false;
+}
+
+/**
+ * Placeholder para envio de SMS.
+ */
+async function sendSms(phone, message) {
+  logger.warn({ phone }, '[SMS] Sistema de SMS não configurado. Ignorando.');
+  return false;
+}
+
+module.exports = { 
+  sendWhatsAppMessage, 
+  sendEmailNotification, 
+  formatTemplate, 
+  sendWhatsAppMeta,
+  sendSms 
+};
