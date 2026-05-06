@@ -3104,9 +3104,6 @@ input, select {
     .discount-row { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
     .discount-info { width: 100%; }
 
-    /* Toast: fica em cima da bottom nav */
-    .toast { bottom: 84px; font-size: 13px; padding: 12px 20px; max-width: calc(100vw - 32px); white-space: normal; text-align: center; }
-
     /* Chart */
     .chart-bars { height: 140px; gap: 4px; }
     .chart-bar-value { font-size: 8px; }

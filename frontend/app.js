@@ -36,10 +36,18 @@ const api = {
   },
   handleResponse: async (res) => {
     if (res.status === 401) {
-      if (window.location.hash !== '#login') {
-        localStorage.removeItem('adminToken');
+      if (window.location.hash !== '#login' && !window.location.hash.includes('login')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('clientToken');
       }
-      return { error: 'Sessão expirada. Faça login novamente.' };
+      // Tentamos pegar o erro real do backend antes de cair no padrão
+      try {
+        const cloned = res.clone();
+        const json = await cloned.json();
+        return { error: json.error || 'Acesso não autorizado.' };
+      } catch (e) {
+        return { error: 'Sessão expirada ou credenciais inválidas.' };
+      }
     }
     if (res.status === 403) return { error: 'Sem permissão.' };
     if (res.status === 429) return { error: 'Muitas tentativas. Aguarde.' };
@@ -1492,7 +1500,7 @@ function renderAgenda() {
       
       var apptBarber = a.barber.trim().toLowerCase();
       var targetBarber = bar.name.trim().toLowerCase();
-      return apptBarber === targetBarber || apptBarber.includes(targetBarber) || targetBarber.includes(apptBarber);
+      return apptBarber === targetBarber || (apptBarber.includes(targetBarber)) || targetBarber.includes(apptBarber);
     }).sort(function (a, b) { return a.time.localeCompare(b.time); });
 
     $id('agenda-list').innerHTML = list.length
