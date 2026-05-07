@@ -2736,29 +2736,6 @@ input, select {
       color: var(--white)
     }
 
-    /* TOAST */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--black-card);
-      border: 1px solid var(--gold-border);
-      border-radius: 10px;
-      padding: 14px 24px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--gold);
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .3s;
-      white-space: nowrap
-    }
-
-    .toast.show {
-      opacity: 1
-    }
 
     /* TIME SLOT END LABEL */
     .slot-end { font-size: 9px; color: var(--white-dimmer); display: block; margin-top: 2px; }
