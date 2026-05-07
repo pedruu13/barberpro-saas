@@ -196,21 +196,21 @@
     /* --- PREMIUM THEME OVERRIDES --- */
 :root {
   /* Obsidian Palette */
-  --black: #08090A; /* True Obsidian */
-  --black-soft: #121417; /* Deep Charcoal */
+  --black: #0F1115; /* True Obsidian */
+  --black-soft: #181B22; /* Deep Charcoal */
   --black-card: rgba(18, 20, 23, 0.7);
   --black-border: rgba(255, 255, 255, 0.08);
   
   /* Luxury Gold Palette */
-  --gold: #C5A059; /* Muted Champagne Gold */
-  --gold-light: #E0C18E;
+  --gold: #D4AF37; /* Muted Champagne Gold */
+  --gold-light: #F1D592;
   --gold-dim: rgba(197, 160, 89, 0.08);
   --gold-border: rgba(197, 160, 89, 0.3);
   
   /* Typographic Colors */
-  --white: #F5F5F7; /* Apple-style off-white */
-  --white-dim: #A1A1A6; /* SF Muted */
-  --white-dimmer: #6E6E73;
+  --white: #FFFFFF; /* Apple-style off-white */
+  --white-dim: #E1E1E6; /* SF Muted */
+  --white-dimmer: #A1A1AA;
   
   /* Status Colors */
   --red: #FF3B30;
@@ -934,7 +934,7 @@ input, select {
 
     /* LOGIN */
     #login.active {
-      background: radial-gradient(circle at center, #121417 0%, #08090A 100%);
+      background: radial-gradient(circle at center, #181B22 0%, #0F1115 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -3501,5 +3501,6 @@ section {
      c o l o r :   v a r ( - - w h i t e ) ; 
      b a c k g r o u n d :   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 0 5 ) ; 
  } 
-  
+ 
+ 
  
