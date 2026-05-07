@@ -14,8 +14,8 @@ async function deletePlan(id) {
   if(!confirm('Deseja excluir este plano? Clientes que já assinaram continuarão com o plano até o vencimento.')) return;
   const res = await api.del('/admin/plans/' + id);
   if(!res.error) {
-    state.plans = state.plans.filter(p => p.id !== id);
-    if (state.publicPlans) state.publicPlans = state.publicPlans.filter(p => p.id !== id);
+    state.plans = state.plans.filter(p => String(p.id) !== String(id));
+    if (state.publicPlans) state.publicPlans = state.publicPlans.filter(p => String(p.id) !== String(id));
     showToast('✅ Plano excluído!');
     renderPlans();
     if (typeof renderPublicPlans === 'function') renderPublicPlans();
